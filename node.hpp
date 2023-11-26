@@ -31,7 +31,7 @@ struct Node {
     vector<vector<vector<int>>> path;
 
     //functions
-    void expand(vector<Node>& visited);
+    void expand(vector<Node>& visited, vector<Node> &st);
 
     //helper functions for expand, each function should produce a new Node unless its invalid.
     void containerToBuffer();
