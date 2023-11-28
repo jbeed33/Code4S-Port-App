@@ -9,6 +9,7 @@ using namespace std;
 vector<vector<int>> containersToBalance(Node n){
 
     vector<vector<int>> validSpots;
+    
     vector<vector<int>> boxesToMove;
     vector<vector<int>> colsToReturn;
 
