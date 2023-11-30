@@ -3,81 +3,67 @@
 
 using namespace std;
 #include "node.hpp";
+#include "helper.hpp";
 #include <vector>
 
-void balanceAlgo(){
-    vector<Node> st;
-    vector<Node> visited;
+/*
+*	takes the node we are expanding from, the start and end columns, the start and end zones,
+*	and if the crane is carrying a container for the current move
+*/
+int cost(Node current, int startCol, int endCol, int startZone, int endZone, bool justCrane){
+	int cost = 0;
+	int startTop;
+	int endTop;
+	int startZoneHeight;
+	int endZoneHeight;
 
-    Node start = Node();
+	if(0 == startZone){	//Starts on ship
+		startTop = findTopShip(current.ship, startCol);
+		startZoneHeight = SHIPHEIGHT - 1;
+	}
+	else if(2 == startZone){	//starts in buffer
+		startTop = findTopBuffer(current.buffer, startCol);
+		startZoneHeight = BUFFERHEIGHT - 1;
+	}
+	else{	//Starts on truck
+		startTop = 0;
+		startZoneHeight = 0;
+	}
 
-    //need to read in manifest from node
+	if(0 == endZone){	//Ends on ship
+		endTop = 1 + findTopShip(current.ship, endCol);
+		endZoneHeight = SHIPHEIGHT - 1;
+	}
+	else if(2 == endZone){	//Ends in buffer
+		endTop = 1 + findTopShip(current.buffer, endCol);
+		endZoneHeight = BUFFERHEIGHT - 1;
+	}
+	else{	//Ends on truck
+		endTop = 0;
+		endZoneHeight = 0;
+	}
 
-    //put start node in stack
-    st.push_back(start);
+	if(true == justCrane && 0 == current.prev[2][0]){	//Dropped off a container to start move
+		cost += current.craneRow - (startTop + 1);
+	}
+	else if(false == justCrane && 1 == current.prev[2][0]) {	//Picked up a container to start move
+		cost += current.craneRow - startTop;
+	}
+	else{	//Maintain position to start move
+		startTop = current.craneRow;
+	}
 
-    // do this while the stack is not empty
-    while(!st.empty()){
-
-        Node curr = st.at(0);
-
-         // check to see if current point is the goal
-        if(balaceGoalTest(curr) == true)
-        {
-            // read path into designated file (filesystem)
-        } 
-
-        // take current point and expand in all directions if only valid (add to st)
-          curr.expand(visited);
-            
-        
-         // add explored node to visited 
-            visited.push_back(curr);
-    }
-};
-
-
-void unloadAndLoadAlgo(){
-   vector<Node> st;
-   vector<Node> visited;
-   vector<Node> containersToLoad;
-   vector<Node> containersToUnload;
-
-   //NEED TO FIGURE OUT A WAY TO PASS LOAD AND UNLOAD INTO RESPECTIVE VECTORS
-
-    Node start = Node();
-
-    //need to read in manifest from node
-
-    //put start node in stack
-    st.push_back(start);
-
-    // do this while the stack is not empty
-    while(!st.empty()){
-
-        Node curr = st.at(0);
-
-         // check to see if current point is the goal
-        if(unloadAndLoadGoalTest(curr) == true)
-        {
-            // read path into designated file (filesystem)
-        } 
-
-        // take current point and expand in all directions if only valid (add to st)
-          curr.expand(visited);
-            
-        
-         // add explored node to visited 
-            visited.push_back(curr);
-    }
-}
-
-bool balaceGoalTest(Node& n){
-
-}
-
-bool unloadAndLoadGoalTest(Node &n){
-
+	if(startZone != endZone){	//move between zones
+		cost += PORTALTIME;
+		cost += startZoneHeight - startTop;	//move up to portal
+	}
+	else{
+		cost += SINGLEMOVETIME;
+		if(endTop > startTop){	//have to move up to get over containers
+			cost += endTop - startTop;
+		}
+	}
+	return cost;
 }
 
 #endif
