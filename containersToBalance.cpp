@@ -1,4 +1,5 @@
 #include<vector>
+#include <iostream>
 #include "node.hpp"
 using namespace std;
 
@@ -8,53 +9,66 @@ using namespace std;
 
 vector<vector<int>> containersToBalance(Node n){
 
-    vector<vector<int>> validSpots;
-    
-    vector<vector<int>> boxesToMove;
-    vector<vector<int>> colsToReturn;
+   vector<vector<int>> emptySpots;
+	vector<vector<int>> boxesToMove;
+	vector<vector<int>> colsToReturn; // <startCol, endCol, startZone, endZone>
 
-    //Algorithm only uses the ship does not use buffer yet.
-    
-    int emptySpace = NULL;
-    //find all avaliable spaces that are valid to move
-   for(int i = 0; i < n.ship.size(); i++){
-            for(int j = 0; j < n.ship.at(0).size(); j++){
+ 
+    vector<int> wall(12,0);
 
-                if(n.ship.at(i).at(j) == emptySpace){ // if space is empty
-                    if(i ==  n.ship.size() - 1){ // the bottom row
-                        validSpots.push_back({i,j});
-                    }
-                    else{
-                        //other rows
-                        if(n.ship.at(i + 1).at(j) != emptySpace) validSpots.push_back({i,j});
-                    }
-                }
-                else if(n.ship.at(i).at(j) != emptySpace){
-                    if(i == 0){ // the top row
-                        boxesToMove.push_back({i,j});
-                    }
-                    else{ // not top row
-                        //there must not be a box above it
-                        if(n.ship.at(i - 1).at(j) == emptySpace) boxesToMove.push_back({i,j});
-                    }
-                }
-            }
-        }
-
-    // get the vectors <startCol, endCol>
-    for(int i = 0; i < boxesToMove.size(); i++){
-        for(int j = 0; j < validSpots.size(); j++){
-
-            //Does not put the same container in the same column.
-            if(boxesToMove.at(i).at(2) != validSpots.at(j).at(2)){
-                colsToReturn.push_back({boxesToMove.at(i).at(2), validSpots.at(j).at(2)});
-            }
-
+    //Scan through top row and detect if there is a wall
+    for(int i = 0; i < n.ship[0].size(); i++){
+        if(n.ship.at(0).at(i).status != 0){
+            wall.at(i) = 1; // there is a wall
         }
     }
+	
+	for (int i = 0; i < n.ship[0].size(); i++) 
+	{ 
+		for (int j = 0; j < n.ship.size(); j++) 
+		{ 
+		    if(n.ship.at(j).at(i).status != 0){
+                //if the box is invalid it cannot move
+                if(n.ship.at(j).at(i).status != -1){
+                    cout << "added box" << endl;
+                     boxesToMove.push_back({j,i, 0, 0});
+                }
+               
+                if(j != 0){ // not the top row
+                 cout << "added empty space" << endl;
+                  emptySpots.push_back({j-1,i, 0, 0});  
+                }
+                break;
+            } else{
+                if(j == n.ship.size()-1){ // bottom row
+                    emptySpots.push_back({j,i});
+                }
+            }
+			
+		}	 
+		cout << endl; 
+	} 
 
-    
+    cout << "Number of boxes: " << boxesToMove.size() << endl;
+    cout << "Number of empty spaces: " << emptySpots.size() << endl;
+      // Getting all possible positions
+	for(int i = 0; i < boxesToMove.size(); i++){
+	    for(int j = 0; j < emptySpots.size(); j++){
+	        // they do not start and end at the same column
+	        if(boxesToMove.at(i).at(1) != emptySpots.at(j).at(1)){
+
+                // next have to check if there is a wall between them
+                int wallsBetween = 0;
+                for(int k = boxesToMove.at(i).at(1); k < emptySpots.at(j).at(1)){
+                    wallsBetween += wall.at(k);
+
+                }
+
+                if(wallsBetween != 0) colsToReturn.push_back({boxesToMove.at(i).at(1), emptySpots.at(j).at(1), boxesToMove.at(i).at(2), emptySpots.at(j).at(3)});
+	        }
+	    }
+	}
+
     return colsToReturn;
-
 
 }
