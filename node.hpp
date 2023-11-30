@@ -26,9 +26,9 @@ struct Node {
     double cost;
     double heuristic;
     double total;
+	int numToLoad;
 
-    int craneRow;
-	int craneCol;
+    pair<int, int> cranePos;
     int craneLocation; // 0- ship, 1-truck, 2-buffer
 
     vector<vector<tuple<Container, int>>> ship;
