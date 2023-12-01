@@ -10,7 +10,14 @@ struct Container {
     string name;
     int weight;
     pair<int,int> pos;
+    int status;
 };
+
+int checkName(string name) {
+    if (name == "NAN") return -1;       //invalid space
+    if (name == "UNUSED") return 0;     // empty space
+    return 2;                           // container stays on ship
+}
 
 vector<vector<Container>> readManifest(string file_path) {
     vector<vector<Container>> ship;
@@ -43,6 +50,7 @@ vector<vector<Container>> readManifest(string file_path) {
         container.pos.second = col;
         container.weight = weight;
         container.name = name;
+        container.status = checkName(name);
 
         // add the container to the 2D vector
         if (row_of_containers.empty()) row_of_containers.push_back(container);
@@ -58,12 +66,6 @@ vector<vector<Container>> readManifest(string file_path) {
     // close the file
     manifest.close();
     return ship;
-}
-
-int checkName(string name) {
-    if (name == "NAN") return -1;       //invalid space
-    if (name == "UNUSED") return 0;     // empty space
-    return 2;                           // container stays on ship
 }
 
 // prints the 2D vector upside down to match to actual grid
