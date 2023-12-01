@@ -17,7 +17,7 @@ const int SINGLEMOVETIME = 1;
 struct Container {
     string name;
     int weight;
-    pair<int, int> pos;
+    int status;
 };
 
 
