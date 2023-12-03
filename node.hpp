@@ -17,7 +17,7 @@ const int SINGLEMOVETIME = 1;
 struct Container {
     string name;
     int weight;
-    pair<int, int> pos;
+    int status;
 };
 
 
@@ -30,9 +30,10 @@ struct Node {
 
     pair<int, int> cranePos;
     int craneLocation; // 0- ship, 1-truck, 2-buffer
+    
 
-    vector<vector<tuple<Container, int>>> ship;
-    vector<vector<tuple<Container, int>>> buffer;
+    vector<vector<Container>> ship;
+    vector<vector<Container>> buffer;
   
 	/*	startRow, startCol, startZone
 	* 	endRow, endCol, endZone

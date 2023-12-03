@@ -18,7 +18,7 @@ vector<int> getWallsForZone(Node &n, int zone ){
     if(zone == 0){
         vector<int> avaliableColsForShip(n.ship[0].size(),0);
          for(int i = 0; i < n.ship[0].size(); i++){
-            if(get<1>(n.ship.at(0).at(i)) != 0){
+            if(n.ship.at(0).at(i).status != 0){
                 avaliableColsForShip.at(i) = 1; // there is a wall
             }
         }
@@ -30,7 +30,7 @@ vector<int> getWallsForZone(Node &n, int zone ){
 
          //Scan through top row and detect if there is a wall for buffer
         for(int i = 0; i < n.buffer[0].size(); i++){
-            if(get<1>(n.ship.at(0).at(i)) != 0){
+            if(n.buffer.at(0).at(i).status != 0){
                 avaliableColsForBuffer.at(i) = 1; // there is a wall
             }
         }
@@ -40,6 +40,7 @@ vector<int> getWallsForZone(Node &n, int zone ){
 
 }
 
+// Return <row, col>
 vector<vector<int>> getContainerDataFromCranePos(Node& n, int craneCol, int zone){
 
     vector<vector<int>> boxPos;
@@ -47,7 +48,7 @@ vector<vector<int>> getContainerDataFromCranePos(Node& n, int craneCol, int zone
         if(zone == 0){ //crane starts from ship
             for (int j = 0; j < n.ship.size(); j++) 
 		    { 
-                if(get<1>(n.ship.at(j).at(craneCol)) != 0){
+                if(n.ship.at(j).at(craneCol).status != 0){
                     boxPos.push_back({j, craneCol});
                     return boxPos;
                 }
@@ -60,7 +61,7 @@ vector<vector<int>> getContainerDataFromCranePos(Node& n, int craneCol, int zone
         else if(zone == 2){ //crane starts from buffer
             for (int j = 0; j < n.buffer.size(); j++) 
 		    { 
-                if(get<1>(n.buffer.at(j).at(craneCol)) != 0){
+                if(n.buffer.at(j).at(craneCol).status != 0){
                     boxPos.push_back({j, craneCol});
                     return boxPos;
                 }
@@ -75,16 +76,16 @@ vector<vector<int>> getContainerDataFromCranePos(Node& n, int craneCol, int zone
         }
 }
 
-int FindEmptySpotInCol(Node &n, int col, int zone){
+int findTopContainerInCol(Node &n, int col, int zone){
     //returns the row of emtpy spot
 
     if(zone == 0){ //ship
 		for (int j = 0; j < n.ship.size(); j++) 
 		{ 
-		    if(get<1>(n.ship.at(j).at(col)) != 0){
+		    if(n.ship.at(j).at(col).status > 0){
                 
                 if(j != 0){ // not the top row
-                  return j-1;  
+                  return j;  
                 }
                 break;
             } else{
@@ -95,15 +96,14 @@ int FindEmptySpotInCol(Node &n, int col, int zone){
 			
 		}
 
-        return -1; // no empty spots 
     }
     else if( zone == 2){ //buffer
         for (int j = 0; j < n.buffer.size(); j++) 
 		{ 
-		    if(get<1>(n.buffer.at(j).at(col)) != 0){
+		    if(n.buffer.at(j).at(col).status > 0){
                 
                 if(j != 0){ // not the top row
-                  return j-1;  
+                  return j;  
                 }
                 break;
             } else{
@@ -113,8 +113,6 @@ int FindEmptySpotInCol(Node &n, int col, int zone){
             }
 			
 		}
-
-        return -1; // no empty spots 
     }
 		 
 }
@@ -142,11 +140,12 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
                    
                     
                 }
-                else{ // case of not first column, continue left until you find an avaliable spot
-                    int leftColHeight = FindEmptySpotInCol(n, craneCol - 1, 0 );
+                else{ // case of not first column, try left
+                    int leftColHeight = findTopContainerInCol(n, craneCol - 1, 0 );
+
 
                     //check to see if crane has to move up
-                    if(craneRow > leftColHeight ){
+                    if(craneRow > leftColHeight){
                         craneMovement.push_back({leftColHeight, craneCol -1, 0});
                     }
                     else{
@@ -159,15 +158,18 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
 
                  //try right
 
-               int rightColHeight = FindEmptySpotInCol(n, craneCol + 1, 0 );
+                    if(craneCol < n.ship.size() - 1){
+                        int rightColHeight = findTopContainerInCol(n, craneCol + 1, 0 );
 
-                    //check to see if crane has to move up
-                    if(craneRow > rightColHeight ){
-                        craneMovement.push_back({rightColHeight, craneCol + 1, 0});
+                        //check to see if crane has to move up
+                        if(craneRow > rightColHeight ){
+                            craneMovement.push_back({rightColHeight, craneCol + 1, 0});
+                        }
+                        else{
+                            craneMovement.push_back({craneRow, craneCol + 1, 0});
+                        }
                     }
-                    else{
-                         craneMovement.push_back({craneRow, craneCol + 1, 0});
-                    }
+               
     
             }
         
@@ -179,7 +181,7 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
                     //ship - need to move right 
                     int bufferColIndex = 0;
                         if(avaliableColsForShip.at(bufferColIndex) == 0){
-                             craneMovement.push_back({0,bufferColIndex, 2});
+                             craneMovement.push_back({0,bufferColIndex, 0});
                         }
                     
                     
@@ -189,29 +191,32 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
                     
                 }
                 else{ // case of not last column of buffer, move right
-                    int rightColHeight = FindEmptySpotInCol(n, craneCol + 1, 0 );
+                    
+                    int rightColHeight = findTopContainerInCol(n, craneCol + 1, 2 );
 
                     //check to see if crane has to move up
                     if(craneRow > rightColHeight ){
-                        craneMovement.push_back({rightColHeight, craneCol + 1, 0});
+                        craneMovement.push_back({rightColHeight, craneCol + 1, 2});
                     }
                     else{
-                         craneMovement.push_back({craneRow, craneCol + 1, 0});
+                         craneMovement.push_back({craneRow, craneCol + 1, 2});
                     }
 
                 }  
 
                  //try left
+                if(craneCol > 0){
+                    int leftColHeight = findTopContainerInCol(n, craneCol - 1, 2 );
 
-               int leftColHeight = FindEmptySpotInCol(n, craneCol - 1, 0 );
-
-                //check to see if crane has to move up
-                if(craneRow > leftColHeight ){
-                    craneMovement.push_back({leftColHeight, craneCol - 1, 0});
+                    //check to see if crane has to move up
+                    if(craneRow > leftColHeight ){
+                        craneMovement.push_back({leftColHeight, craneCol - 1, 2});
+                    }
+                    else{
+                        craneMovement.push_back({craneRow, craneCol - 1, 2});
+                    }
                 }
-                else{
-                    craneMovement.push_back({craneRow, craneCol - 1, 0});
-                }
+               
 
         }
         else if(n.craneLocation == 1){ // crane starts from truck
@@ -224,62 +229,69 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
         }
 }
 
-void swapContainers(Node &n, int prevX, int prevY, int newX, int newY, int startZone, int endZone){
+bool swapContainers(Node &n, int prevX, int prevY, int newX, int newY, int startZone, int endZone){
     
+    const Container truckContainer = {"", 0.0, 2};
+    const Container emptyContainer = {"", 0.0, 2};
+
     int oldRow = prevY;
     int oldCol = prevX;
     int newRow = newY;
     int newCOl = newX;
     
     Container startContainer;
-    Container endContainer;
 
     
     if(startZone == 0){
-        startContainer = get<0>(n.ship.at(prevY).at(prevX));
+        startContainer = n.ship.at(prevY).at(prevX);
     }
     else if(startZone == 2){
-        startContainer = get<0>(n.buffer.at(prevY).at(prevX));
+        startContainer = n.buffer.at(prevY).at(prevX);
     }
     else if(startZone == 1){
-        //truck
+        startContainer = truckContainer;
     }
 
-     if(endZone == 0){
-        endContainer = get<0>(n.ship.at(newX).at(newY));
-    }
-    else if(endZone == 2){
-        endContainer = get<0>(n.buffer.at(newX).at(newY));
-    }
-    else if(endZone == 1){
-        //truck
-    }
-
-    //place in correct Zones. The boxes swap places!!!
-     if(startZone == 0){
-        get<0>(n.ship.at(prevX).at(prevY)) = endContainer;
-    }
-    else if(startZone == 2){
-        get<0>(n.buffer.at(prevX).at(prevY)) = endContainer;
-    }
-    else if(startZone == 1){
-        //truck
-    }
-
-     if(endZone == 0){
-         get<0>(n.ship.at(newX).at(newY)) = startContainer;
-    }
-    else if(endZone == 2){
-        get<0>(n.buffer.at(newX).at(newY))= startContainer;
-    }
-    else if(endZone == 1){
-        //truck
+   
+    Container endContainer = emptyContainer;
+    if(endZone == 0){
+         endContainer = n.ship.at(newY).at(newX);
+    }else if(endZone == 2){
+         endContainer = n.buffer.at(newY).at(newX);
     }
 
 
+     // if the endzone is truck and start container status != 1
+     if(endZone == 1 && startContainer.status != 1) return false;
+
+    // check to see if the new pos.status != 0 
+    if(endContainer.status != 0){
+         // check for wall
+         if(newY == 0) return false;
+         newY -= 1; // to move the crane up :)
+    }
+   
+   
     
 
 
+    //place in correct Zones. The boxes swap places!!!
+     if(startZone == 0){
+        n.ship.at(prevX).at(prevY) = emptyContainer;
+    }
+    else if(startZone == 2){
+        n.buffer.at(prevX).at(prevY) = emptyContainer;
+    }
+
+
+     if(endZone == 0){
+         n.ship.at(newX).at(newY) = startContainer;
+    }
+    else if(endZone == 2){
+        n.buffer.at(newX).at(newY) = startContainer;
+    }
+
+    return true;
 }
 
 vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos, bool hasBox, vector<vector<int>> craneMoves  ){
@@ -296,16 +308,16 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
         //just crane
         Node newNode = n;
         newNode.cranePos = {craneMoves.at(i).at(0), n.cranePos.second}; //(x,y)
-        newNode.craneLocation = craneMoves.at(i).at(1);
+        newNode.craneLocation = craneMoves.at(i).at(2);
 
         expandedNodesList.push_back(newNode);
 
         // if starting position crane is able to move a box then we should.
-        //Check to see if I am unloading a container that cannot be unloaded
+        //Check to see if I am unloading a container that cannot be unloaded.
         
-        if(hasBox && n.cranePos.first > 0){
-
-            
+        int craneRow = n.cranePos.first;
+        int craneCol = n.cranePos.second;
+        if(hasBox){
             
             Node newNodewithBox = n;
           
@@ -315,10 +327,15 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
                 int oldy = boxPos.at(0).at(1); //row
                 int newx = craneMoves.at(i).at(0); //col
                 int newy = craneMoves.at(i).at(0) - 1; //row
-            
-                swapContainers(newNodewithBox, oldx, oldy, newx, newy, n.craneLocation, craneMoves.at(i).at(1));
 
-                expandedNodesList.push_back(newNodewithBox);
+
+                int endZone = craneMoves.at(i).at(2);
+            
+                if(swapContainers(newNodewithBox, oldx, oldy, newx, newy, n.craneLocation, endZone)){
+                    expandedNodesList.push_back(newNodewithBox);
+                };
+
+                
         }
 
         return expandedNodesList;
@@ -348,14 +365,6 @@ vector<Node> expandNode(Node n){
     if(boxPos.size() > 0){
         hasBox = true;
 
-        if(zone == 0){ //ship
-           box = get<0>(n.ship.at(boxPos.at(0).at(0)).at(boxPos.at(0).at(1)));
-        }
-        else if(zone == 2){ //buffer
-          box = get<0>(n.buffer.at(boxPos.at(0).at(0)).at(boxPos.at(0).at(1)));
-        }
-
-        // Need to check for truck
     }
         
 
