@@ -8,7 +8,7 @@ using namespace std;
 
 
 class Base{
-	private:
+	public:
 		unsigned long expandedNodeCount;
 		unsigned int maxQueueSize;
 
