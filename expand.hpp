@@ -48,32 +48,34 @@ vector<vector<int>> getContainerDataFromCranePos(Node& n, int craneCol, int zone
         if(zone == 0){ //crane starts from ship
             for (int j = 0; j < n.ship.size(); j++) 
 		    { 
-                if(n.ship.at(j).at(craneCol).status != 0){
+                if(n.ship.at(j).at(craneCol).status > 0){
                     boxPos.push_back({j, craneCol});
                     return boxPos;
                 }
 			
 		    }
 
-            //no container in row
-            boxPos.push_back({-1});
+            
         }
         else if(zone == 2){ //crane starts from buffer
             for (int j = 0; j < n.buffer.size(); j++) 
 		    { 
-                if(n.buffer.at(j).at(craneCol).status != 0){
+                if(n.buffer.at(j).at(craneCol).status > 0){
                     boxPos.push_back({j, craneCol});
                     return boxPos;
                 }
 			
 		    }
 
-            //no container in row
-            boxPos.push_back({-1});
+           
+           
         }
         else if(zone == 1){ // crane starts from truck
             // take from loading buffer if there is set hasBox to true
         }
+
+        // returns nothing if - no container in row or its a structural wall
+        return boxPos;
 }
 
 int findTopContainerInCol(Node &n, int col, int zone){
@@ -82,12 +84,9 @@ int findTopContainerInCol(Node &n, int col, int zone){
     if(zone == 0){ //ship
 		for (int j = 0; j < n.ship.size(); j++) 
 		{ 
-		    if(n.ship.at(j).at(col).status > 0){
+		    if(n.ship.at(j).at(col).status != 0){
                 
-                if(j != 0){ // not the top row
-                  return j;  
-                }
-                break;
+                return j;
             } else{
                 if(j == n.ship.size()-1){ // bottom row
                     return j;
@@ -100,12 +99,9 @@ int findTopContainerInCol(Node &n, int col, int zone){
     else if( zone == 2){ //buffer
         for (int j = 0; j < n.buffer.size(); j++) 
 		{ 
-		    if(n.buffer.at(j).at(col).status > 0){
+		    if(n.buffer.at(j).at(col).status != 0){
                 
-                if(j != 0){ // not the top row
-                  return j;  
-                }
-                break;
+              return j;
             } else{
                 if(j == n.buffer.size()-1){ // bottom row
                     return j;
@@ -127,12 +123,12 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
             if(n.craneLocation == 0){ //crane starts from ship
                 
                 if(craneCol == 0){
-
+                    
                     //buffer - need to move left until can find a position that is avaliable
                     int bufferColIndex = n.buffer[0].size() - 1;
-                        if(avaliableColsForBuffer.at(bufferColIndex) == 0){
-                             craneMovement.push_back({0,bufferColIndex, 2});
-                        }
+                        
+                     craneMovement.push_back({0,bufferColIndex, 2});
+                    
                     
                     
                     //truck not sure about the index it should what column number it should have
@@ -174,15 +170,13 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
             }
         
         else if(n.craneLocation == 2){ //crane starts from buffer
-                
                 //try to move right
                 if(craneCol == n.buffer.size() - 1){
 
                     //ship - need to move right 
                     int bufferColIndex = 0;
-                        if(avaliableColsForShip.at(bufferColIndex) == 0){
-                             craneMovement.push_back({0,bufferColIndex, 0});
-                        }
+                        
+                     craneMovement.push_back({0,bufferColIndex, 0});
                     
                     
                     //truck not sure about the index it should what column number it should have
@@ -227,12 +221,14 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
            //try right
            craneMovement.push_back({0, 0, 0}); // go to ship
         }
+
+        return craneMovement;
 }
 
 bool swapContainers(Node &n, int prevX, int prevY, int newX, int newY, int startZone, int endZone){
     
-    const Container truckContainer = {"", 0.0, 2};
-    const Container emptyContainer = {"", 0.0, 2};
+    const Container truckContainer = {"", 0, 2};
+    const Container emptyContainer = {"", 0, 2};
 
     int oldRow = prevY;
     int oldCol = prevX;
@@ -241,6 +237,8 @@ bool swapContainers(Node &n, int prevX, int prevY, int newX, int newY, int start
     
     Container startContainer;
 
+    //checking to see if we start on the truck and there are no containers left to load.
+    if(startZone == 1 && n.numToLoad <= 0) return false;
     
     if(startZone == 0){
         startContainer = n.ship.at(prevY).at(prevX);
@@ -260,6 +258,7 @@ bool swapContainers(Node &n, int prevX, int prevY, int newX, int newY, int start
          endContainer = n.buffer.at(newY).at(newX);
     }
 
+    
 
      // if the endzone is truck and start container status != 1
      if(endZone == 1 && startContainer.status != 1) return false;
@@ -367,7 +366,6 @@ vector<Node> expandNode(Node n){
 
     }
         
-
     //Crane movemnt 
      vector<vector<int>> craneMoves = craneMovement(n, avaliableColsForBuffer, avaliableColsForShip );
 

@@ -16,8 +16,8 @@ const int SINGLEMOVETIME = 1;
 
 struct Container {
     string name;
-    int weight;
-    int status;
+    double weight;
+    int status; //-1 structural wall 0-empty space 1-unloadable 2-do not unload
 };
 
 
