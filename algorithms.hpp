@@ -4,6 +4,7 @@
 using namespace std;
 #include "node.hpp";
 #include <vector>
+#include <algorithm>
 
 void balanceAlgo(){
     vector<Node> st;
@@ -73,7 +74,32 @@ void unloadAndLoadAlgo(){
 }
 
 bool balaceGoalTest(Node& n){
+    Container current;
+    vector<Node> st;
+    if(st.empty()) {
+        return 0; //Is a goal
+    }
+    int mid = SHIPWIDTH / 2;
+    double left = 0.0;
+    double right = 0.0;
 
+    for (int i = 0; i < SHIPWIDTH; i++) {
+        for (int j = 0; j < SHIPHEIGHT; j++) {
+            // Accumulate weights on the left side
+            if (i < mid) {
+                left += current.pos[i].weight;
+            }
+            // Accumulate weights on the right side
+            else {
+                right += current.pos[i].weight;
+            }
+        }
+    }
+
+    if (min(right,left) / max(right,left) > 0.9)
+        return 1; // Not a goal
+    else  
+        return 0; // Is a goal
 }
 
 bool unloadAndLoadGoalTest(Node &n){
