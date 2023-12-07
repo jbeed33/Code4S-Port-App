@@ -39,7 +39,7 @@ struct Node {
 	* 	endRow, endCol, endZone
 	*	justCrane
 	*/	
-	vector<vector<int>> prev;
+	vector<vector<int>> prev = {{0,0,0}, {0,0,0}, {1}};
     vector<vector<vector<int>>> path;
 };
 

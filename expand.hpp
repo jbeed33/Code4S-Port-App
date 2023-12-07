@@ -70,8 +70,10 @@ vector<vector<int>> getContainerDataFromCranePos(Node& n, int craneCol, int zone
            
            
         }
-        else if(zone == 1){ // crane starts from truck
-            // take from loading buffer if there is set hasBox to true
+        else if(zone == 1){ 
+            if(n.numToLoad > 0) {
+                boxPos.push_back({1,0});
+            }
         }
 
         // returns nothing if - no container in row or its a structural wall
@@ -295,16 +297,13 @@ bool swapContainers(Node &n, int prevX, int prevY, int newX, int newY, int start
 
      if(endZone == 0){
          n.ship.at(newRow).at(newCol) = startContainer;
-         n.cranePos = {newRow, newCol}; // update crane position to final position
     }
     else if(endZone == 2){
         n.buffer.at(newRow).at(newCol) = startContainer;
-         n.cranePos = {newRow, newCol}; // update crane position to final position
-    }
-    else{
-        n.cranePos = {newRow, newCol};
     }
 
+     //updating crane position to final position.
+     n.cranePos = {newRow, newCol};
     cout << "made it passed swap containers" << endl;
 
     return true;
@@ -324,9 +323,39 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
 
         //just crane
         Node newNode = n;
-        newNode.cranePos = {craneMoves.at(i).at(0), craneMoves.at(i).at(1)}; //(x,y)
-        newNode.craneLocation = craneMoves.at(i).at(2);
+        
+        
+        //dropping off a container
+        if(newNode.prev.at(2).at(0) == 0){ // previous move had a  container with it
+         
+         int oldRow = n.cranePos.first;
+         int oldCol = n.cranePos.second;
+         int zone = newNode.craneLocation;
+         int newRow = findTopContainerInCol(newNode, oldCol, zone );
+        
+          bool didSwap = swapContainers(newNode, oldRow, oldCol, newRow, oldCol, zone, zone);
 
+          if(zone == craneMoves.at(i).at(2)){
+            newRow = findTopContainerInCol(newNode, craneMoves.at(i).at(1), zone);
+
+            if(newRow < oldRow){
+                newRow = oldRow;
+            }
+          }
+          else{
+            newRow = 0; // going through the portal!!!!! :)
+          }
+
+          newNode.cranePos = {newRow, craneMoves.at(i).at(1)};
+
+        }
+        else{
+            newNode.cranePos = {craneMoves.at(i).at(0), craneMoves.at(i).at(1)}; //(x,y)
+            
+        }
+
+        newNode.craneLocation = craneMoves.at(i).at(2);
+        
         expandedNodesList.push_back(newNode);
 
         // if starting position crane is able to move a box then we should.
@@ -335,10 +364,14 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
         int craneRow = n.cranePos.first;
         int craneCol = n.cranePos.second;
 
+       
+
         if(hasBox){
-            cout << "inisde has box" << endl;
 
             Node newNodewithBox = n;
+            cout << "inisde has box" << endl;
+
+            
             int endZone = craneMoves.at(i).at(2);
 
             //update buffer, ship, or truck
@@ -346,8 +379,13 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
                 int oldx = boxPos.at(0).at(0); //row
                 int oldy = boxPos.at(0).at(1); //col
 
-                int newx =  findTopContainerInCol(newNodewithBox, craneMoves.at(i).at(1), endZone ); //row
+                int newx = craneMoves.at(i).at(0); //row
                 int newy = craneMoves.at(i).at(1); //col
+
+                //picking up container
+                if(newNodewithBox.prev.at(2).at(0) == 1){
+                    oldx = findTopContainerInCol(n, oldy, newNodewithBox.craneLocation);
+                }
 
                 cout << "oldRow: " << oldx << endl;
                 cout << "oldCol: " << oldy << endl;
@@ -355,6 +393,8 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
                 cout << "newCol: " << newy << endl;
 
                 cout << "Container Before: " << newNodewithBox.ship.at(oldx).at(oldy).name << endl;
+
+                
                 
 
 
@@ -371,6 +411,9 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
 
          cout << "" << endl;
     }
+
+    
+    //distance from startCrane
 
      return expandedNodesList;
 }
@@ -413,6 +456,8 @@ vector<Node> expandNode(Node n){
 
 
     //Expand Nodes
+    
+
     return expandNodeBasedOnCraneMovement(n, boxPos, hasBox, craneMoves);
     // vector<Node> dummy;
     // return dummy;

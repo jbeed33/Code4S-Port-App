@@ -2,6 +2,28 @@
 #include <iostream>
 using namespace std;
 
+
+/*
+    operators
+    - move crane left
+    - move cranem right
+    - move crane left with box 
+        -(prev - had a container) prev = 0;
+        -(moving the crane down) prev = 1;
+    - move crane right with box
+        -(prev - had a container)
+        -(moving the crane down)
+
+*/
+
+
+
+
+
+
+
+
+
 /*Test 1 - 6    tests for ship*/
 /*Test 7 - 12   tests for buffer*/
 /*Test 13       test for truck*/
@@ -1044,6 +1066,8 @@ bool expandTest15(){
 
     Node n;
 
+    n.prev.at(2).at(0) = 0; // the crane still has a container
+
     Container i = {"s. wall", 0.0, -1};	//invalid space
     Container e = {"", 0.0, 0};		//empty space
     Container u = {"unload", 0.0, 1};		//container to unload
@@ -1079,10 +1103,10 @@ bool expandTest15(){
 
     //left with box
     Node n3 = n;
-    n3.cranePos = {3,1};
+    n3.cranePos = {0,1};
     n3.craneLocation = 0;
     n3.ship.at(row).at(col) = e;
-    n3.ship.at(row + 3).at(col - 1) = s;
+    n3.ship.at(0).at(1) = s;
 
     //right without a box
     Node n2 = n;
@@ -1091,10 +1115,10 @@ bool expandTest15(){
 
     //right with box
     Node n4 = n;
-    n4.cranePos = {3,3};
+    n4.cranePos = {0,3};
     n4.craneLocation = 0;
     n4.ship.at(row).at(col) = e;
-    n4.ship.at(row + 3).at(col  + 1) = s;
+    n4.ship.at(0).at(3) = s;
     
     vector<Node> expectedNodes;
     expectedNodes.push_back(n1);
@@ -3680,6 +3704,193 @@ bool expandTest29(){
     cout << "Test 29 passed" << endl;
     return true;
 }
+
+/*Test Description: 
+Crane starts in truck (Ship does not have a wall, Buffer does not have wall) */
+
+bool expandTest30(){
+
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 1; //starts on truck
+    int row = 1;
+    int col = 0;
+    n.numToLoad = 1;
+    n.cranePos = {row, col};
+
+    n.buffer ={
+        {e,e,e,e},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,s,s},   
+
+    };
+
+     n.ship ={
+        {e,e,e,e},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+    //nodes to test
+   vector<Node> nodesToTest = expandNode(n);
+
+   //expected nodes
+   vector<Node> expectedNodes;
+
+   //try crane - buffer
+   // try crane - ship
+   // try contaner - ship
+
+   //crane moves left
+   Node n1 = n;
+   n1.cranePos = {0,3};
+   n1.craneLocation = 2;
+
+   // crane moves left with a box
+   Node n2 = n;
+   n2.buffer.at(0).at(3) = s;
+   n2.cranePos = {0,3};
+   n2.craneLocation = 2;
+   n2.numToLoad = 0;
+
+   // crane moves right
+   Node n3 = n;
+   n3.cranePos = {0,0};
+   n3.craneLocation = 0;
+
+   // crane moves right wit a box
+   Node n4 = n;
+   n4.ship.at(0).at(0) = s;
+   n4.cranePos = {0,0};
+   n4.craneLocation = 0;
+   n4.numToLoad = 0;
+
+
+   expectedNodes.push_back(n1);
+   expectedNodes.push_back(n2);
+   expectedNodes.push_back(n3);
+   expectedNodes.push_back(n4);
+
+   
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        cout << "Testing Ship..." << endl;
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: ( row: " << j  << ", col: " << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+          cout << "Testing Buffer..." << endl;
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 30 passed" << endl;
+    return true;
+}
+
+
 int main(){
 cout << "Test suite for ship" << endl;
     craneMovementTest1();
@@ -3731,6 +3942,10 @@ cout << "Test suite for expandNodeTest" << endl;
     expandTest27();
     expandTest28();
     expandTest29();
+
+    //tests for truck
+    expandTest30();
+
 
 
     return 0;
