@@ -82,6 +82,11 @@ void updateManifest(const vector<vector<Container>>& ship, string path) {
     }
 
     file.close();       // close file
+
+    // Creating new filename with "OUTBOUND" appended
+    string newPath = path.substr(0, path.find_last_of('.')) + "OUTBOUND" + path.substr(path.find_last_of('.'));
+    // Renaming the file
+    rename(path.c_str(), newPath.c_str());
 }
 
 // prints the 2D vector upside down to match to actual grid
