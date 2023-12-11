@@ -356,6 +356,7 @@ void justCraneMovesLeftOrRight(Node &n, vector<vector<int>> craneMoves, int inde
     //move crane left or right
     if(isValidMove){
         op4.cranePos = {op4.cranePos.first, craneMoves.at(indexCraneMove).at(1)};
+        op4.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {1} };
         expandedNodesList.push_back(op4);
     }
     
@@ -376,6 +377,7 @@ void justCraneMoveUp(Node &n, vector<vector<int>> craneMoves, int indexCraneMove
             //only move up
             if(newRow  < op6.cranePos.first){
                  op6.cranePos = {newRow, op6.cranePos.second};
+                 op6.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), n.cranePos.second, n.craneLocation}}, {1} };
                  expandedNodesList.push_back(op6);
             }
            
@@ -388,6 +390,7 @@ void justCraneMoveUp(Node &n, vector<vector<int>> craneMoves, int indexCraneMove
              //only move up
             if(newRow > op6.cranePos.first){
                  op6.cranePos = {newRow, op6.cranePos.second};
+                 op6.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), n.cranePos.second, n.craneLocation}}, {1} };
                  expandedNodesList.push_back(op6);
             }
         } 
@@ -405,6 +408,7 @@ void justCraneStartPortalShip(Node &n, vector<vector<int>> craneMoves, int index
         if(craneMoves.at(indexCraneMove).at(2) == 1){
             n1.cranePos = {1, 0};
             n1.craneLocation = craneMoves.at(indexCraneMove).at(2);
+            n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{1, 0, craneMoves.at(indexCraneMove).at(2)}}, {1} };
             expandedNodesList.push_back(n1);
         }
         else{
@@ -414,6 +418,7 @@ void justCraneStartPortalShip(Node &n, vector<vector<int>> craneMoves, int index
              if( craneMoves.at(indexCraneMove).at(2) == 2){
                  n1.cranePos = { 0, n.buffer[0].size() - 1};
                  n1.craneLocation = craneMoves.at(indexCraneMove).at(2);
+                 n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{0, n.buffer[0].size() - 1, craneMoves.at(indexCraneMove).at(2)}}, {1} };
                  expandedNodesList.push_back(n1);
              }
 
@@ -435,6 +440,7 @@ void justCraneStartPortalBuffer(Node &n, vector<vector<int>> craneMoves, int ind
         if(craneMoves.at(indexCraneMove).at(2) == 1){
             n1.cranePos = {1, 0};
             n1.craneLocation = 1;
+            n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{1, 0, craneMoves.at(indexCraneMove).at(2)}}, {1} };
             expandedNodesList.push_back(n1);
         }
         else{
@@ -444,6 +450,7 @@ void justCraneStartPortalBuffer(Node &n, vector<vector<int>> craneMoves, int ind
              if(craneMoves.at(indexCraneMove).at(2) == 0){
                  n1.cranePos = {0, 0};
                  n1.craneLocation = 0;
+                 n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{0, 0, craneMoves.at(indexCraneMove).at(2)}}, {1} };
                  expandedNodesList.push_back(n1);
              }
 
@@ -465,6 +472,7 @@ void justCraneStartPortalTruck(Node &n, vector<vector<int>> craneMoves, int inde
         if(craneMoves.at(indexCraneMove).at(2) == 2 ){
                 n1.cranePos = {0, n1.buffer[0].size() -1 };
                 n1.craneLocation = 2;
+                n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{0, n1.buffer[0].size() -1, craneMoves.at(indexCraneMove).at(2)}}, {1} };
                 expandedNodesList.push_back(n1);
         }
         else{
@@ -473,6 +481,7 @@ void justCraneStartPortalTruck(Node &n, vector<vector<int>> craneMoves, int inde
             if(craneMoves.at(indexCraneMove).at(2) == 0 ){
                 n1.cranePos = {0, 0};
                 n1.craneLocation = 0;
+                n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{0,0, craneMoves.at(indexCraneMove).at(2)}}, {1} };
                 expandedNodesList.push_back(n1);
             }
 
@@ -508,6 +517,7 @@ void craneMovesUpWithBox(Node &n, vector<vector<int>> craneMoves, int indexCrane
 
                 swapContainers(op6, op6.cranePos.first, op6.cranePos.second, newRow, op6.cranePos.second, op6.craneLocation, op6.craneLocation);
                  op6.cranePos = {newRow, op6.cranePos.second};
+                 op6.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{newRow, op6.cranePos.second, n.craneLocation}}, {0} };
                  expandedNodesList.push_back(op6);
             }
            
@@ -516,6 +526,7 @@ void craneMovesUpWithBox(Node &n, vector<vector<int>> craneMoves, int indexCrane
                 int newRow = 0;
                 swapContainers(op6, op6.cranePos.first, op6.cranePos.second, newRow, op6.cranePos.second, op6.craneLocation, op6.craneLocation);
                  op6.cranePos = {newRow, op6.cranePos.second};
+                 op6.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{newRow, op6.cranePos.second, n.craneLocation}}, {0} };
                  expandedNodesList.push_back(op6);
         } 
    }
@@ -534,6 +545,7 @@ void craneMovesUpWithBox(Node &n, vector<vector<int>> craneMoves, int indexCrane
 
             
                 swapContainers(op6, op6.cranePos.first, op6.cranePos.second, newRow, op6.cranePos.second, op6.craneLocation, op6.craneLocation);
+                op6.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{newRow, op6.cranePos.second, n.craneLocation}}, {0} };
                  op6.cranePos = {newRow, op6.cranePos.second};
                  expandedNodesList.push_back(op6);
             }
@@ -543,6 +555,7 @@ void craneMovesUpWithBox(Node &n, vector<vector<int>> craneMoves, int indexCrane
                 int newRow = 0;
                 swapContainers(op6, op6.cranePos.first, op6.cranePos.second, newRow, op6.cranePos.second, op6.craneLocation, op6.craneLocation);
                  op6.cranePos = {newRow, op6.cranePos.second};
+                 op6.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{newRow, op6.cranePos.second, n.craneLocation}}, {0} };
                  expandedNodesList.push_back(op6);
         } 
     }
@@ -567,6 +580,7 @@ void craneMovesLeftOrRightWithBox(Node &n, vector<vector<int>> craneMoves, int i
         if(isValidMove){
             if(n.ship.at(op1.cranePos.first).at(craneMoves.at(indexCraneMove).at(1)).status == 0){
                 swapContainers(op1, n.cranePos.first, n.cranePos.second, craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), n.craneLocation, n.craneLocation);
+                op1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {0} };
                 expandedNodesList.push_back(op1);
             }
         }
@@ -579,6 +593,7 @@ void craneMovesLeftOrRightWithBox(Node &n, vector<vector<int>> craneMoves, int i
          if(isValidMove){
             if(n.buffer.at(op1.cranePos.first).at(craneMoves.at(indexCraneMove).at(1)).status == 0){
                 swapContainers(op1, n.cranePos.first, n.cranePos.second, craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), n.craneLocation, n.craneLocation);
+                op1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {0} };
                 expandedNodesList.push_back(op1);
             }
          } 
@@ -594,7 +609,7 @@ void craneMovesWithBoxStartPortalShip(Node &n, vector<vector<int>> craneMoves, i
             swapContainers(n1, n1.cranePos.first, n1.cranePos.second, 1, 0, n1.craneLocation, craneMoves.at(indexCraneMove).at(2));
             n1.cranePos = {craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1) };
             n1.craneLocation = craneMoves.at(indexCraneMove).at(2);
-
+            n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{1, 0, 1}}, {0} };
             expandedNodesList.push_back(n1);
         }
         else{
@@ -605,6 +620,7 @@ void craneMovesWithBoxStartPortalShip(Node &n, vector<vector<int>> craneMoves, i
                  swapContainers(n1, n1.cranePos.first, n1.cranePos.second, 0,  n.buffer[0].size() - 1, n1.craneLocation, craneMoves.at(indexCraneMove).at(2));
                  n1.cranePos = { 0, n.buffer[0].size() - 1};
                  n1.craneLocation = 2;
+                 n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{ 0, n1.buffer[0].size() - 1, 2}}, {0} };
                  expandedNodesList.push_back(n1);
              }
 
@@ -628,6 +644,7 @@ void craneMovesWithBoxStartPortalBuffer(Node &n, vector<vector<int>> craneMoves,
             swapContainers(n1, n1.cranePos.first, n1.cranePos.second, 0, 0, n1.craneLocation, 0);
             n1.cranePos = {0, 0 };
             n1.craneLocation = 0;
+            n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{ 0, 0, 0}}, {0} };
             expandedNodesList.push_back(n1);
         }
     }
@@ -647,8 +664,10 @@ void craneMovesWithBoxStartPortalTruck(Node &n, vector<vector<int>> craneMoves, 
             swapContainers(n, n1.cranePos.first, n1.cranePos.second, 0, 0, n1.craneLocation, craneMoves.at(indexCraneMove).at(2));
             n1.cranePos = {0, 0};
             n1.craneLocation = 0;
-            expandedNodesList.push_back(n1);
             n1.numToLoad -= 1;
+            n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{ 0, 0, 0}}, {0} };
+            expandedNodesList.push_back(n1);
+            
         }
     }
 
