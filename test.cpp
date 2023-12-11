@@ -915,8 +915,9 @@ bool expandTest14(){
     Container s = {"stay", 0.0, 2};		//container stays on ship
 
     n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
     int row = 0;
-    int col = 2 ;
+    int col = 2;
     n.cranePos = {row, col};
 
     n.ship ={
@@ -1073,6 +1074,7 @@ bool expandTest15(){
     Container u = {"unload", 0.0, 1};		//container to unload
     Container s = {"stay", 0.0, 2};		//container stays on ship
 
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
     n.craneLocation = 0; //starts on ship
     int row = 0;
     int col = 2;
@@ -3890,6 +3892,5442 @@ bool expandTest30(){
     return true;
 }
 
+bool expandTest100(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,1,0}};
+   justCraneMovesLeftOrRight(n, craneMoves, 0, nodesToTest);
+
+
+    //left
+    Node n1 = n;
+    n1.cranePos = {0,1};
+    n1.craneLocation = 0;
+
+    //right
+    Node n2 = n;
+    n2.cranePos = {0,3};
+    n2.craneLocation = 0;
+    
+    vector<Node> expectedNodes;
+
+    expectedNodes.push_back(n1);
+    // expectedNodes.push_back(n2);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 100 passed" << endl;
+    return true;
+
+}
+
+bool expandTest101(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,3,0}};
+   justCraneMovesLeftOrRight(n, craneMoves, 0, nodesToTest);
+
+    //right
+    Node n2 = n;
+    n2.cranePos = {0,3};
+    n2.craneLocation = 0;
+    
+    vector<Node> expectedNodes;
+    expectedNodes.push_back(n2);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 101 passed" << endl;
+    return true;
+}
+
+bool expandTest102(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,-1,0}};
+   justCraneMovesLeftOrRight(n, craneMoves, 0, nodesToTest);
+    
+    vector<Node> expectedNodes;
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 102 passed" << endl;
+    return true;
+}
+
+bool expandTest103(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 3;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,4,0}};
+   justCraneMovesLeftOrRight(n, craneMoves, 0, nodesToTest);
+    
+    vector<Node> expectedNodes;
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 103 passed" << endl;
+    return true;
+}
+
+bool expandTest104(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 0; // crane does already have a container
+    int row = 0;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,1,0}};
+   craneMovesLeftOrRightWithBox(n, craneMoves, 0, nodesToTest);
+
+
+    //left
+    Node n1 = n;
+    n1.cranePos = {0,1};
+    n1.craneLocation = 0;
+    n1.ship.at(row).at(col) = e;
+    n1.ship.at(row).at(col - 1) = s;
+    
+    vector<Node> expectedNodes;
+
+    expectedNodes.push_back(n1);
+    // expectedNodes.push_back(n2);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 104 passed" << endl;
+    return true;
+
+}
+
+bool expandTest105(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 0; // crane does already have a container
+    int row = 0;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,3,0}};
+   craneMovesLeftOrRightWithBox(n, craneMoves, 0, nodesToTest);
+
+
+    //left
+    Node n1 = n;
+    n1.cranePos = {0,3};
+    n1.craneLocation = 0;
+    n1.ship.at(row).at(col) = e;
+    n1.ship.at(row).at(col + 1) = s;
+    
+    vector<Node> expectedNodes;
+
+    expectedNodes.push_back(n1);
+    // expectedNodes.push_back(n2);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 105 passed" << endl;
+    return true;
+
+}
+
+bool expandTest106(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 0; // crane does already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,-1,0}};
+   craneMovesLeftOrRightWithBox(n, craneMoves, 0, nodesToTest);
+    
+    vector<Node> expectedNodes;
+
+   
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 106 passed" << endl;
+    return true;
+
+}
+
+bool expandTest107(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 0; // crane does already have a container
+    int row = 0;
+    int col = 3;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+        {e,e,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,4,0}};
+   craneMovesLeftOrRightWithBox(n, craneMoves, 0, nodesToTest);
+    
+    vector<Node> expectedNodes;
+
+   
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 107 passed" << endl;
+    return true;
+
+}
+
+bool expandTest108(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 0; // crane does already have a container
+    int row = 0;
+    int col = 3;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,s,s,e},
+        {e,s,s,e},
+        {e,s,s,e},
+        {e,s,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,2,0}};
+   craneMovesLeftOrRightWithBox(n, craneMoves, 0, nodesToTest);
+    
+    vector<Node> expectedNodes;
+
+   
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 108 passed" << endl;
+    return true;
+
+}
+
+
+
+bool expandTest109(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 2;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,1,0}};
+   justCraneMoveUp(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    // expectedNodes.push_back(n1);
+    // expectedNodes.push_back(n2);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 109 passed" << endl;
+    return true;
+
+}
+
+bool expandTest110(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 2;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,3,0}};
+   justCraneMoveUp(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.cranePos = {0,2};
+
+    expectedNodes.push_back(n1);
+    // expectedNodes.push_back(n2);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 110 passed" << endl;
+    return true;
+
+}
+
+bool expandTest111(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 2;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,s,e},
+        {e,e,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,3,0}};
+   craneMovesUpWithBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+    Node n1 = n;
+    n1.ship.at(0).at(2) = s;
+    n1.ship.at(2).at(2) = e;
+    n1.cranePos = {0,2};
+
+     expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 111 passed" << endl;
+    return true;
+
+}
+
+bool expandTest112(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 2;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,s,e,e},
+        {e,s,e,e},
+        {e,s,s,e},
+        {e,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,1,0}};
+   craneMovesUpWithBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.cranePos = {0,2};
+    n1.ship.at(row).at(col) = e;
+    n1.ship.at(0).at(col) = s;
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 112 passed" << endl;
+    return true;
+
+}
+
+bool expandTest113(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 2;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,s,e,e},
+        {e,s,s,e},
+        {e,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,1,0}};
+   craneMovesUpWithBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.cranePos = {0,2};
+    n1.ship.at(row).at(col) = e;
+    n1.ship.at(0).at(col) = s;
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 113 passed" << endl;
+    return true;
+
+}
+
+bool expandTest114(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 1;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,s,s,e},
+        {e,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+   vector<vector<int>> craneMoves = {{0,1,0}};
+   craneMovesUpWithBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 114 passed" << endl;
+    return true;
+
+}
+
+bool expandTest115(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,1}};
+   
+   justCraneStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.craneLocation = 1;
+    n1.cranePos = {1,0};
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 115 passed" << endl;
+    return true;
+
+}
+
+bool expandTest116(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+        {e,e,e,e},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,2}};
+   
+   justCraneStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.craneLocation = 2;
+    n1.cranePos = {0,3};
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 116 passed" << endl;
+    return true;
+
+}
+
+bool expandTest117(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,2}};
+   
+   justCraneStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.craneLocation = 2;
+    n1.cranePos = {0,3};
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 117 passed" << endl;
+    return true;
+
+}
+
+bool expandTest118(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 1;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,2}};
+   
+   justCraneStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 118 passed" << endl;
+    return true;
+
+}
+
+bool expandTest119(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {u,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,1}};
+   
+   craneMovesWithBoxStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.ship.at(0).at(0) = e;
+    n1.craneLocation = 1;
+    n1.cranePos = {1,0};
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 119 passed" << endl;
+    return true;
+
+}
+
+bool expandTest120(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,e},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,2}};
+   
+   craneMovesWithBoxStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.ship.at(0).at(0) = e;
+    n1.craneLocation = 2;
+    n1.cranePos = {0,3};
+    n1.buffer.at(0).at(3) = s;
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 120 passed" << endl;
+    return true;
+
+}
+
+bool expandTest121(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,2}};
+   
+   craneMovesWithBoxStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 121 passed" << endl;
+    return true;
+
+}
+
+bool expandTest122(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 1;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,2}};
+   
+   craneMovesWithBoxStartPortalShip(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 122 passed" << endl;
+    return true;
+
+}
+
+bool expandTest123(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 2; //starts on buffer
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 3;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,1}};
+   
+   justCraneStartPortalBuffer(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.craneLocation = 1;
+    n1.cranePos = {1,0};
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 123 passed" << endl;
+    return true;
+
+}
+
+bool expandTest124(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 2; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 3;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,0}};
+   
+   justCraneStartPortalBuffer(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+    n1.craneLocation = 0;
+    n1.cranePos = {0,0};
+
+    expectedNodes.push_back(n1);
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 124 passed" << endl;
+    return true;
+
+}
+
+bool expandTest125(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 2; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 3;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,0}};
+   
+   justCraneStartPortalBuffer(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 125 passed" << endl;
+    return true;
+
+}
+
+bool expandTest126(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 2; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 3;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {e,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,0}};
+   
+    craneMovesWithBoxStartPortalBuffer(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+    Node n1 = n;
+
+    n1.craneLocation = 0;
+    n1.cranePos = {0,0};
+    n1.buffer.at(0).at(3) = e;
+    n1.ship.at(0).at(0) = s;
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 126 passed" << endl;
+    return true;
+
+}
+
+bool expandTest127(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 2; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 3;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,0}};
+   
+    craneMovesWithBoxStartPortalBuffer(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 127 passed" << endl;
+    return true;
+
+}
+
+bool expandTest128(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 1; //starts on truck
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 1;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{1,0,2}};
+   
+    justCraneStartPortalTruck(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.craneLocation = 2;
+    n1.cranePos = {0, 3};
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 128 passed" << endl;
+    return true;
+
+}
+
+bool expandTest129(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 1; //starts on truck
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 1;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{0,0,0}};
+   
+    craneMovesWithBoxStartPortalTruck(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 129 passed" << endl;
+    return true;
+
+}
+
+bool expandTest130(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 1; //starts on truck
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 1;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{0,0,0}};
+   
+    justCraneStartPortalTruck(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.craneLocation = 0;
+    n1.cranePos = {0, 0};
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 130 passed" << endl;
+    return true;
+
+}
+
+bool expandTest131(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 1; //starts on truck
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 1;
+    int col = 0;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,e,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{0,0,0}};
+   
+    justCraneStartPortalTruck(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.craneLocation = 0;
+    n1.cranePos = {0, 0};
+    n1.ship.at(0).at(0) = s;
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 131 passed" << endl;
+    return true;
+
+}
+
+bool expandTest132(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on truck
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 2;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,e,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{0,0,0}};
+   
+    craneDropsOffBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.craneLocation = 0;
+    n1.cranePos = {2, 2};
+    n1.ship.at(2).at(2) = s;
+
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 132 passed" << endl;
+    return true;
+
+}
+
+bool expandTest133(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,s,e},
+        {s,e,e,e},
+        {s,s,s,e},
+        {s,s,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{0,0,0}};
+   
+    craneDropsOffBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.craneLocation = 0;
+    n1.cranePos = {1, 2};
+    n1.ship.at(1).at(2) = s;
+    n1.ship.at(0).at(2) = e;
+
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " dd not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 133 passed" << endl;
+    return true;
+
+}
+
+bool expandTest134(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on truck
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,s,e},
+        {s,e,s,e},
+        {s,s,s,e},
+        {s,s,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{0,0,0}};
+   
+    cranePicksUpBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.craneLocation = 0;
+    n1.cranePos = {0, 2};
+    n1.ship.at(0).at(2) = s;
+
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 134 passed" << endl;
+    return true;
+
+}
+
+bool expandTest135(){
+    Node n;
+
+    Container i = {"s. wall", 0.0, -1};	//invalid space
+    Container e = {"", 0.0, 0};		//empty space
+    Container u = {"unload", 0.0, 1};		//container to unload
+    Container s = {"stay", 0.0, 2};		//container stays on ship
+
+    n.craneLocation = 0; //starts on ship
+    n.prev.at(2).at(0) == 1; // crane does not already have a container
+    int row = 0;
+    int col = 2;
+    n.cranePos = {row, col};
+
+    n.ship ={
+        {s,e,s,e},
+        {s,e,e,e},
+        {s,s,e,e},
+        {s,s,s,e},
+
+    };
+
+     n.buffer ={
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+        {e,e,e,s},
+
+    };
+
+   vector<Node> nodesToTest;
+
+   vector<vector<int>> craneMoves = {{0,0,0}};
+   
+    cranePicksUpBox(n, craneMoves, 0, nodesToTest);
+
+    vector<Node> expectedNodes;
+
+    Node n1 = n;
+
+    n1.craneLocation = 0;
+    n1.cranePos = {2, 2};
+    n1.ship.at(2).at(2) = s;
+    n1.ship.at(0).at(2) = e;
+
+
+    expectedNodes.push_back(n1);
+
+
+    if(nodesToTest.size() != expectedNodes.size()){
+        cout << "nodeToTest size: " << nodesToTest.size() << endl;
+        cout << "expectedNodes size: " << expectedNodes.size() << endl;
+        cout << "nodetToTest size does not equal to expectedNodes size" << endl;
+        return false;
+    }
+
+    //Test all nodes
+    for(int i = 0; i < nodesToTest.size(); i++){
+        Node test = nodesToTest.at(i);
+        Node expected = expectedNodes.at(i);
+        
+        //Test for crane position
+        if(test.cranePos.first != expected.cranePos.first || test.cranePos.second != expected.cranePos.second){
+            cout << "Crane position for node at index " << i << " did not match." << endl;
+            cout << "Crane position for test: ( " << test.cranePos.first << " , " << test.cranePos.second << " )" << endl;
+            cout << "Crane position for expected: ( " << expected.cranePos.first << " , " << expected.cranePos.second << " )" << endl;
+            return false;
+        }
+
+        //Test for current location
+        if(test.craneLocation != expected.craneLocation){
+            cout << "Crane Location for node at index " << i << " did not match." << endl;
+            cout << "Crane Location for test: " << test.craneLocation << endl;
+            cout << "Crane Location for expected: " << expected.craneLocation << endl;
+            return false;
+        }
+
+        //Test for state of ship
+        for(int j = 0; j < test.ship.size(); j++ ){
+
+            for(int k = 0; k < test.ship.at(0).size(); k++){
+
+                if(test.ship.at(j).at(k).name != expected.ship.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.ship.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.ship.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.ship.at(j).at(k).status != expected.ship.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.ship.at(j).at(k).weight != expected.ship.at(j).at(k).weight){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.ship.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.ship.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+
+        //Test for state of buffer
+        for(int j = 0; j < test.buffer.size(); j++ ){
+
+            for(int k = 0; k < test.buffer.at(0).size(); k++){
+
+                if(test.buffer.at(j).at(k).name != expected.buffer.at(j).at(k).name){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container names do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test name: " << test.buffer.at(j).at(k).name << endl;
+                    cout << "Expected name: " << expected.buffer.at(j).at(k).name << endl;
+                    return false;
+                }
+
+                //Testing for status
+                if(test.buffer.at(j).at(k).status != expected.buffer.at(j).at(k).status){
+                    cout << "Node at index " << i << " did not match." << endl;
+                    cout << "Container status do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).status << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).status << endl;
+                    return false;
+                }
+                
+                //Testing for weight
+                 if(test.buffer.at(j).at(k).weight != expected.buffer.at(j).at(k).weight){
+                    cout << "Node at index " << i << " dd not match." << endl;
+                    cout << "Container weight do not match at pos: (" << j  << "," << k <<")" << endl;
+                    cout << "Test status: " << test.buffer.at(j).at(k).weight << endl;
+                    cout << "Expected status: " << expected.buffer.at(j).at(k).weight << endl;
+                    return false;
+                }
+
+                
+            }
+
+
+        }
+    }
+
+    cout << "Test 135 passed" << endl;
+    return true;
+
+}
+
+
+
+
+
+
 
 int main(){
 cout << "Test suite for ship" << endl;
@@ -3926,27 +9364,157 @@ cout << "Test suite for expandNodeTest" << endl;
     //tests for ship
     expandTest14();
     expandTest15();
-    expandTest16();
-    expandTest17();
-    expandTest18();
-    expandTest19();
-    expandTest20();
-    expandTest21();
+    // expandTest16();
+    // expandTest17();
+    // expandTest18();
+    // expandTest19();
+    // expandTest20();
+    // expandTest21();
 
-    //tests for buffer
-    expandTest22();
-    expandTest23();
-    expandTest24();
-    expandTest25();
-    expandTest26();
-    expandTest27();
-    expandTest28();
-    expandTest29();
+    // //tests for buffer
+    // expandTest22();
+    // expandTest23();
+    // expandTest24();
+    // expandTest25();
+    // expandTest26();
+    // expandTest27();
+    // expandTest28();
+    // expandTest29();
 
-    //tests for truck
-    expandTest30();
+    // //tests for truck
+    // expandTest30();
 
 
+    //justCraneMovesLeftOrRight
+        // move left
+        expandTest100();
+
+        //move right
+        expandTest101();
+
+        // cannot move left
+        expandTest102();
+
+         //cannot move right
+         expandTest103();
+
+    //CraneMovesLeftOrRightWithBox
+        //move left
+        expandTest104();
+
+        //move right
+        expandTest105();
+
+        //cannot move left
+        expandTest106();
+
+        //cannot move right
+        expandTest107();
+
+        //check to see if there is a wall (left)
+        expandTest108();
+
+    //Just crane moves up
+
+        //empty col next to it
+        expandTest109();
+
+        //col next to it is full
+        expandTest110();
+
+
+    //Crane with box crane moves up
+
+        //empty col next to it
+        expandTest111();
+
+        //col next to it is full
+        expandTest112();
+
+        //col next to it has some containers
+        expandTest113();
+
+        //col next to it is lower than crane
+        expandTest114();
+
+    //Just Crane start from ship
+
+        //moving to truck
+        expandTest115();
+
+        // moving to buffer
+        expandTest116();
+
+        // buffer portal is occupied
+        expandTest117();
+
+        // not at position (0,0) on ship
+        expandTest118();
+
+    //Crane with box starts from ship
+
+        //moving to truck (unloading)
+        expandTest119();
+
+        //moving to buffer
+        expandTest120();
+
+        //buffer portal is occupied
+        expandTest121();
+
+        //not at right start position
+        expandTest122();
+
+    //Just crane starts from buffer
+
+        //moving to truck
+        expandTest123();
+
+        // moving to ship
+        expandTest124();
+
+        // not in right position
+        expandTest125();
+
+    //crane moves with box starts from buffer
+
+        // move to ship
+        expandTest126();
+
+        // ship portal is occupied
+        expandTest127();
+
+    //Just crane start from truck
+
+        //move to buffer
+        expandTest128();
+
+        //move to ship
+        expandTest129();
+
+    //Crane with box starts on truck
+
+        // crane moves to ship (nothing to load)
+        expandTest130();
+
+        // crane moves to ship (loading)
+        expandTest131();
+
+    //crane drops off box
+
+        //same row as crane
+        expandTest132();
+
+        // diffrent row as crane
+        expandTest133();
+
+    //crane picks up box
+
+        //same row as crane
+        expandTest134();
+
+        // diffrent row as crane
+        expandTest135();
 
     return 0;
 }

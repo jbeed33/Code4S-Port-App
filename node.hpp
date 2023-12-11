@@ -37,7 +37,7 @@ struct Node {
   
 	/*	startRow, startCol, startZone
 	* 	endRow, endCol, endZone
-	*	justCrane
+	*	justCrane (0- not just moving the crane, 1 - just moving the crane )
 	*/	
 	vector<vector<int>> prev = {{0,0,0}, {0,0,0}, {1}};
     vector<vector<vector<int>>> path;
