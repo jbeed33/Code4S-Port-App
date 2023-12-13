@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -316,6 +317,22 @@ namespace WindowsFormsApp1
 			colorStates();
 			displayMove(Program.path[iterator]);
 
+		}
+
+		private void login_Click(object sender, EventArgs e)
+		{
+			Program.user = username.Text;
+			username.Clear();
+		}
+
+		private void textbox_TextChanged(object sender, EventArgs e)
+		{
+			Helper.textBoxValidator(sender, @"^[a-zA-Z\s]+$", Program.MAXUSERLENGTH);
+		}
+
+		private void newWeight_TextChanged(object sender, EventArgs e)
+		{
+			Helper.textBoxValidator(sender, @"^\d{1,5}(\.\d*)?$", 7 + Program.MAXWEIGHTPRECISION);
 		}
 	}
 }

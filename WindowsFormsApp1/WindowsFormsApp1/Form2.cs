@@ -43,5 +43,16 @@ namespace WindowsFormsApp1
 			Program.displayingSteps = false;
 			buttonClicked();
 		}
+
+		private void username_TextChanged(object sender, EventArgs e)
+		{
+			Helper.textBoxValidator(sender, @"^[a-zA-Z\s]+$", Program.MAXUSERLENGTH);
+		}
+
+		private void login_Click(object sender, EventArgs e)
+		{
+			Program.user = username.Text;
+			username.Clear();
+		}
 	}
 }

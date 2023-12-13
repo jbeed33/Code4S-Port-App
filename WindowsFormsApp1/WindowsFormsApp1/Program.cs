@@ -12,6 +12,10 @@ namespace WindowsFormsApp1
 		public static bool displayingSteps = false;
 		public static string manifestFile = "";
 		public static List<Form> windows = new List<Form>();
+		public static string user = "";
+		public const int MAXUSERLENGTH = 256;
+		public const int MAXSHIPLENGTH = 256;
+		public const int MAXWEIGHTPRECISION = 3;
 
 		public static List<List<string>> shipNames = new List<List<string>> {
 			new List<string> { "",		"",		"",			"",	"", "",			"",	"",			"",			"",	"",			"" },
@@ -43,6 +47,7 @@ namespace WindowsFormsApp1
 		* 	endRow, endCol, endZone
 		*	justCrane
 		*/
+		
 		public static List<List<List<int>>> path = new List<List<List<int>>>
 		{
 			new List<List<int>> { 
