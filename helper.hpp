@@ -16,8 +16,8 @@ bool bufferEmpty(Node current) {
 int findTopShip(vector<vector<tuple<Container, int>>> ship, int col) {
 	if(0 > col || SHIPWIDTH <= col)
 		return -2;	//Error
-	for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
-		if (1 <= get<1>(ship[i][col]))
+	for (int i = 0; i < SHIPHEIGHT; i++) {
+		if (0 < get<1>(ship[i][col]))
 			return i;
 	}
 	return -1;	//Empty Column
@@ -26,8 +26,8 @@ int findTopShip(vector<vector<tuple<Container, int>>> ship, int col) {
 int findTopBuffer(vector<vector<tuple<Container, int>>> buffer, int col) {
 	if(0 > col || BUFFERWIDTH <= col)
 		return -2;	//Error
-	for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
-		if (1 <= get<1>(buffer[i][col]))
+	for (int i = 0; i < BUFFERHEIGHT; i++) {
+		if (0 < get<1>(buffer[i][col]))
 			return i;
 	}
 	return -1;	//Empty Column
