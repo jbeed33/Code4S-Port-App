@@ -31,6 +31,8 @@ namespace WindowsFormsApp1
 		{
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
+			this.username = new System.Windows.Forms.TextBox();
+			this.login = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -53,16 +55,37 @@ namespace WindowsFormsApp1
 			this.button2.UseVisualStyleBackColor = true;
 			this.button2.Click += new System.EventHandler(this.button2_Click);
 			// 
+			// username
+			// 
+			this.username.Location = new System.Drawing.Point(98, 14);
+			this.username.Name = "username";
+			this.username.Size = new System.Drawing.Size(163, 20);
+			this.username.TabIndex = 2;
+			this.username.TextChanged += new System.EventHandler(this.username_TextChanged);
+			// 
+			// login
+			// 
+			this.login.Location = new System.Drawing.Point(12, 12);
+			this.login.Name = "login";
+			this.login.Size = new System.Drawing.Size(80, 23);
+			this.login.TabIndex = 101;
+			this.login.Text = "Change User";
+			this.login.UseVisualStyleBackColor = true;
+			this.login.Click += new System.EventHandler(this.login_Click);
+			// 
 			// mainMenu
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.login);
+			this.Controls.Add(this.username);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.button1);
 			this.Name = "mainMenu";
 			this.Text = "Main Menu";
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -70,5 +93,7 @@ namespace WindowsFormsApp1
 
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.TextBox username;
+		private System.Windows.Forms.Button login;
 	}
 }

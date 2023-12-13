@@ -38,16 +38,16 @@ namespace WindowsFormsApp1
 			this.progress = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.newWeight = new System.Windows.Forms.MaskedTextBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.newName = new System.Windows.Forms.MaskedTextBox();
 			this.nextStep = new System.Windows.Forms.Button();
 			this.timeRemaining = new System.Windows.Forms.Label();
 			this.notes = new System.Windows.Forms.GroupBox();
 			this.noteButton = new System.Windows.Forms.Button();
-			this.label5 = new System.Windows.Forms.Label();
-			this.maskedTextBox5 = new System.Windows.Forms.MaskedTextBox();
 			this.nameLabel = new System.Windows.Forms.Label();
+			this.username = new System.Windows.Forms.TextBox();
+			this.newName = new System.Windows.Forms.TextBox();
+			this.newWeight = new System.Windows.Forms.TextBox();
+			this.newNote = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.ship)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.buffer)).BeginInit();
 			this.groupBox1.SuspendLayout();
@@ -142,6 +142,7 @@ namespace WindowsFormsApp1
 			this.login.TabIndex = 100;
 			this.login.Text = "Change User";
 			this.login.UseVisualStyleBackColor = true;
+			this.login.Click += new System.EventHandler(this.login_Click);
 			// 
 			// progress
 			// 
@@ -156,10 +157,10 @@ namespace WindowsFormsApp1
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.newWeight);
-			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.newName);
+			this.groupBox1.Controls.Add(this.label2);
+			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Location = new System.Drawing.Point(12, 65);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(762, 193);
@@ -176,13 +177,6 @@ namespace WindowsFormsApp1
 			this.label2.TabIndex = 106;
 			this.label2.Text = "Container Weight";
 			// 
-			// newWeight
-			// 
-			this.newWeight.Location = new System.Drawing.Point(6, 120);
-			this.newWeight.Name = "newWeight";
-			this.newWeight.Size = new System.Drawing.Size(750, 20);
-			this.newWeight.TabIndex = 105;
-			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
@@ -191,15 +185,6 @@ namespace WindowsFormsApp1
 			this.label1.Size = new System.Drawing.Size(83, 13);
 			this.label1.TabIndex = 104;
 			this.label1.Text = "Container Name";
-			// 
-			// newName
-			// 
-			this.newName.Location = new System.Drawing.Point(6, 43);
-			this.newName.Mask = "00000";
-			this.newName.Name = "newName";
-			this.newName.Size = new System.Drawing.Size(750, 20);
-			this.newName.TabIndex = 103;
-			this.newName.ValidatingType = typeof(int);
 			// 
 			// nextStep
 			// 
@@ -225,9 +210,8 @@ namespace WindowsFormsApp1
 			// 
 			// notes
 			// 
+			this.notes.Controls.Add(this.newNote);
 			this.notes.Controls.Add(this.noteButton);
-			this.notes.Controls.Add(this.label5);
-			this.notes.Controls.Add(this.maskedTextBox5);
 			this.notes.Location = new System.Drawing.Point(12, 330);
 			this.notes.Name = "notes";
 			this.notes.Size = new System.Drawing.Size(762, 141);
@@ -244,22 +228,6 @@ namespace WindowsFormsApp1
 			this.noteButton.Text = "Add Note";
 			this.noteButton.UseVisualStyleBackColor = true;
 			// 
-			// label5
-			// 
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(6, 27);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(83, 13);
-			this.label5.TabIndex = 104;
-			this.label5.Text = "Container Name";
-			// 
-			// maskedTextBox5
-			// 
-			this.maskedTextBox5.Location = new System.Drawing.Point(6, 43);
-			this.maskedTextBox5.Name = "maskedTextBox5";
-			this.maskedTextBox5.Size = new System.Drawing.Size(750, 20);
-			this.maskedTextBox5.TabIndex = 103;
-			// 
 			// nameLabel
 			// 
 			this.nameLabel.BackColor = System.Drawing.Color.White;
@@ -269,12 +237,45 @@ namespace WindowsFormsApp1
 			this.nameLabel.TabIndex = 108;
 			this.nameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
+			// username
+			// 
+			this.username.Location = new System.Drawing.Point(98, 14);
+			this.username.Name = "username";
+			this.username.Size = new System.Drawing.Size(272, 20);
+			this.username.TabIndex = 109;
+			this.username.TextChanged += new System.EventHandler(this.textbox_TextChanged);
+			// 
+			// newName
+			// 
+			this.newName.Location = new System.Drawing.Point(6, 45);
+			this.newName.Name = "newName";
+			this.newName.Size = new System.Drawing.Size(750, 20);
+			this.newName.TabIndex = 110;
+			this.newName.TextChanged += new System.EventHandler(this.textbox_TextChanged);
+			// 
+			// newWeight
+			// 
+			this.newWeight.Location = new System.Drawing.Point(6, 120);
+			this.newWeight.Name = "newWeight";
+			this.newWeight.Size = new System.Drawing.Size(750, 20);
+			this.newWeight.TabIndex = 111;
+			this.newWeight.TextChanged += new System.EventHandler(this.newWeight_TextChanged);
+			// 
+			// newNote
+			// 
+			this.newNote.Location = new System.Drawing.Point(6, 43);
+			this.newNote.Name = "newNote";
+			this.newNote.Size = new System.Drawing.Size(750, 20);
+			this.newNote.TabIndex = 112;
+			this.newNote.TextChanged += new System.EventHandler(this.textbox_TextChanged);
+			// 
 			// moves
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.ClientSize = new System.Drawing.Size(1984, 855);
+			this.Controls.Add(this.username);
 			this.Controls.Add(this.nameLabel);
 			this.Controls.Add(this.notes);
 			this.Controls.Add(this.timeRemaining);
@@ -298,6 +299,7 @@ namespace WindowsFormsApp1
 			this.notes.ResumeLayout(false);
 			this.notes.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
         }
 
@@ -309,16 +311,16 @@ namespace WindowsFormsApp1
 		private System.Windows.Forms.Label progress;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.MaskedTextBox newName;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.MaskedTextBox newWeight;
 		private System.Windows.Forms.Button nextStep;
 		private System.Windows.Forms.Label timeRemaining;
 		private System.Windows.Forms.GroupBox notes;
 		private System.Windows.Forms.Button noteButton;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.MaskedTextBox maskedTextBox5;
 		private System.Windows.Forms.Label nameLabel;
+		private System.Windows.Forms.TextBox username;
+		private System.Windows.Forms.TextBox newName;
+		private System.Windows.Forms.TextBox newWeight;
+		private System.Windows.Forms.TextBox newNote;
 	}
 }
 
