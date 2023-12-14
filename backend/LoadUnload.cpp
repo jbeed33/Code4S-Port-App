@@ -12,6 +12,6 @@ bool LoadUnload::stateExists(Node currentState){
     return true;
 }
 
-double LoadUnload::heuristic(){
+double LoadUnload::heuristic(Node n){
 	
 }

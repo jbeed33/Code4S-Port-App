@@ -1,4 +1,4 @@
-#include "Balance.h"
+#include "Balance.hpp"
 #include <algorithm>
 
 void Balance::setup(){
@@ -6,14 +6,68 @@ void Balance::setup(){
 }
 
 bool Balance::stateExists(Node currentState){
-    for (int i = 0;i < closed.size(); i++) {
-        if (closed[i] != currentState)
-            return false;
+    for (int i = 0; i < closed.size(); i++) {
+        if (closed[i] != currentState )
+            return true;
     }
-    return true;
+
+    for (int i = 0; i < frontier.size(); i++) {
+        if (frontier[i] != currentState )
+            return true;
+    }
+    return false;
 }
 
-double Balance::heuristic(){
+double Balance::heuristic(Node n){
+
+    double h = 0.0;
+
+    if(balanceGoalTest(n) == true){
+        cout << "passed the goal test" << endl;
+        return 0.0;
+    }
+  
+    
+    //check to see if top of the ship is empty
+    for(int i = 0; i < n.ship[0].size(); i++){
+        if(n.ship.at(0).at(i).status > 0){
+            h+= 2;
+        }
+    }
+
+    //check to see if the buffers empty
+    for(int i = 0; i < n.buffer[0].size(); i++){
+        if(n.buffer.at(0).at(i).status > 0){
+            h+=5;
+        }
+    }
+
+    //check for balance
+    int mid = n.ship[0].size() / 2;
+    double left = 0.0;
+    double right = 0.0;
+
+    for (int i = 0; i < n.ship[0].size(); i++) {
+        for (int j = 0; j < n.ship.size(); j++) {
+            // Accumulate weights on the left side
+            if (i < mid) {
+                left += n.ship[j][i].weight;
+            }
+            // Accumulate weights on the right side
+            else {
+                right += n.ship[j][i].weight;
+            }
+        }
+    }
+
+    if( min(right,left) > 0){
+         h += (1  / ( min(right,left) / max(right,left)));
+    }else{
+        (left == 0 && right == 0) ? h += 0 :  h += max(right,left); 
+       
+    };
+    
+    return h;
 
 }
 
@@ -25,7 +79,7 @@ bool requireSift(Node initialState) {
 
     for(int i = 0;i < initialState.ship.size();i++) {
         for(int j = 0;j < initialState.ship[0].size();j++) {
-            weights.push_back(get<0>(initialState.ship[i][j]).weight);
+            weights.push_back(initialState.ship[i][j].weight);
         }
     }
 
@@ -40,31 +94,42 @@ bool requireSift(Node initialState) {
     return max * 0.9 > total;   // compare the max weight with the total weight
 }
 
-int Balance::balanceGoalTest() {
-    Container current;
-    Node myShip;
-    if(shipEmpty(myShip)) {
-        return 0; //Is a goal
+bool Balance::balanceGoalTest(Node n) {
+    
+    //check to see if top of the ship is empty
+    for(int i = 0; i < n.ship[0].size(); i++){
+        if(n.ship.at(0).at(i).status > 0){
+            return false;
+        }
     }
-    int mid = SHIPWIDTH / 2;
+
+    //check to see if the buffers empty
+    for(int i = 0; i < n.buffer[0].size(); i++){
+        if(n.buffer.at(0).at(i).status > 0){
+            return false;
+        }
+    }
+
+    //check for balance
+    int mid = n.ship[0].size() / 2;
     double left = 0.0;
     double right = 0.0;
 
-    for (int i = 0; i < SHIPWIDTH; i++) {
-        for (int j = 0; j < SHIPHEIGHT; j++) {
+    for (int i = 0; i < n.ship[0].size(); i++) {
+        for (int j = 0; j < n.ship.size(); j++) {
             // Accumulate weights on the left side
             if (i < mid) {
-                left += get<0>(myShip.ship[j][i]).weight;
+                left += n.ship[j][i].weight;
             }
             // Accumulate weights on the right side
             else {
-                right += get<0>(myShip.ship[j][i]).weight;
+                right += n.ship[j][i].weight;
             }
         }
     }
 
     if (min(right,left) / max(right,left) > 0.9)
-        return 1; // Not a goal
+        return true; // Is a goal
     else  
-        return 0; // Is a goal
+        return false; // Is not a goal
 }

@@ -2,8 +2,9 @@
 #define BASECLASS_H
 
 using namespace std;
+
+// #include "helper.hpp"
 #include "node.hpp"
-#include "helper.hpp"
 #include <vector>
 
 
@@ -17,11 +18,11 @@ class Base{
 		Node search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
 
 		vector<Node> frontier;
-		void nodeExpand(Node current);
+		void nodeExpand(Node);
 		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone);
 		virtual void setup() = 0;
-		virtual bool stateExists() = 0;
-		virtual double heuristic() = 0;
+		virtual bool stateExists(Node) = 0;
+		virtual double heuristic(Node) = 0;
 };
 
 #endif

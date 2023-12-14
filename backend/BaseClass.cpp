@@ -9,13 +9,26 @@ void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol,
 	first.ship = ship;
 	first.cranePos = {craneRow, craneCol};
 	first.craneLocation = craneZone;
+	
+
+	//create buffer
+	for(int i = 0; i < BUFFERHEIGHT; i++){
+		vector<Container> row;
+		for(int j = 0; j < BUFFERWIDTH; j++){
+			row.push_back(first.e);
+		}
+    	first.buffer.push_back(row);
+	}
+
+
+	first.heuristic = heuristic(first);
 	frontier.push_back(first);
 }
 
 
 Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload) {
 	baseSetup(ship, craneRow, craneCol, craneZone);
-
+	
 	while (true) {
 		if (true == frontier.empty()) {
 			cout << "\n\nFailed\n\n";
@@ -36,7 +49,11 @@ Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, in
 		if (0 == expandedNodeCount++ % 100) {	//Shows the program hasn't gotten stuck
 			cout << ".";
 		}
+		
 		nodeExpand(frontier[0]);
+		closed.push_back(frontier[0]);
+		frontier.erase(frontier.begin());
+
 	}
 }
 
@@ -46,7 +63,7 @@ Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, in
 *	and if the crane is carrying a container for the current move
 */
 int Base::cost(Node current){
-	int cost = 0;
+	int cost = current.cost;
 
 	int startRow = current.prev[0][0];
 	int startCol = current.prev[0][1];
@@ -105,16 +122,34 @@ void Base::nodeExpand(Node n){
 
      cout << "craneMoves size: " << craneMoves.size() << endl;
 
-
+	cout << 1 << endl;
     //Expand Nodes
     vector<Node> returnedNodes = expandNodeBasedOnCraneMovement(n, boxPos, hasBox, craneMoves);
 
     //For each Node - call cost and heurstic
-
+	 
+	 cout << 2 << endl;
     //call state exsists - if does not already state exsist-> push to fronteir
 	for(int i = 0; i < returnedNodes.size(); i++){
-		frontier.push_back(returnedNodes.at(i));
+		
+		
+			if(!stateExists(returnedNodes.at(i))){
+				//update cost
+				returnedNodes.at(i).cost = cost(returnedNodes.at(i));
+			
+
+				//update heuristic
+				returnedNodes.at(i).heuristic = heuristic(returnedNodes.at(i));
+
+			
+				frontier.push_back(returnedNodes.at(i));
+			}
+
+			
+		
 	}
+
+	cout << 3 << endl;
 	
     
 
