@@ -34,6 +34,7 @@ struct Node {
 
     vector<vector<tuple<Container, int>>> ship;
     vector<vector<tuple<Container, int>>> buffer;
+    vector<string> removeList;
   
 	/*	startRow, startCol, startZone
 	* 	endRow, endCol, endZone
@@ -67,6 +68,20 @@ struct Node {
         }
 
         return false;
+    }
+
+    void removeContainerNameFromRemoveList(string name) {
+        for(int i = 0;i < removeList.size();i++) {
+            if(removeList[i] == name) {
+                removeList[i] = removeList.back();
+                removeList.pop_back();
+                break;
+            }
+        }
+    }
+
+    void addContainerNameToRemoveList(string name) {
+        removeList.push_back(name);
     }
 };
 

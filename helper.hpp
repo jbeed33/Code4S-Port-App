@@ -98,4 +98,12 @@ void addNoteToLogFile(string file_path, string input) {
     logFile.close();
 }
 
+Container setLoadedContainerInfo(string name) {
+	Container container;
+	container.name = name;
+	container.weight = 0;
+	container.status = 2;
+	return container;
+}
+
 #endif
