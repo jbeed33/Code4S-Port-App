@@ -19,16 +19,13 @@ namespace WindowsFormsApp1
 
 		private void buttonClicked()
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Filter = "txt files (*.txt)|*.txt";
-			if (ofd.ShowDialog() == DialogResult.OK)
-			{
-				Program.manifestFile = ofd.FileName;
-			}
-			else
+			string path = Helper.getFilePath("txt files (*.txt)|*.txt");
+			if ("" == path)
 				return;
+			Program.manifestFile = path;
 			moves newWindow = new moves();
 			newWindow.Show();
+			Program.windows.Add(newWindow);
 			this.Hide();
 		}
 
@@ -53,6 +50,18 @@ namespace WindowsFormsApp1
 		{
 			Program.user = username.Text;
 			username.Clear();
+		}
+
+		private void exportlog_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Filter = "txt files (*.txt)|*.txt";
+			sfd.Title = "Choose a location to copy log.txt to";
+			sfd.ShowDialog();
+			if("" != sfd.FileName)
+			{
+				Helper.saveToLog(sfd.FileName);
+			}
 		}
 	}
 }

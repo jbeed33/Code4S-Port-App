@@ -12,3 +12,4 @@ C:\Users\phoen\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\System.N
 C:\Users\phoen\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\System.Numerics.Vectors.xml
 C:\Users\phoen\source\repos\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.CopyComplete
 C:\Users\phoen\source\repos\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.mainMenu.resources
+C:\Users\phoen\source\repos\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.reminder.resources
