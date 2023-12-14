@@ -9,6 +9,7 @@ void Base::baseSetup(vector<vector<tuple<Container, int>>> ship, int craneRow, i
 	first.cranePos = {craneRow, craneCol};
 	first.craneLocation = craneZone;
 	frontier.push_back(first);
+	closed.push_back(first);
 }
 
 

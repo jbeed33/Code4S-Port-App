@@ -1,12 +1,15 @@
 #ifndef BALANCE_H
 #define BALANCE_H
 #include "BaseClass.h"
+#include <iostream>
+using namespace std;
 
 class Balance : public Base{
 	void setup();
-	bool stateExists();
+	bool stateExists(Node currentState);
 	double heuristic();
-	int balanceGoalTest();
+  bool requireSift(Node initialState);
+  int balanceGoalTest();
 };
 
 

@@ -62,10 +62,31 @@ vector<vector<Container>> readManifest(string file_path) {
             row_of_containers.push_back(container);
         }
     }
+    ship.push_back(row_of_containers);
 
     // close the file
     manifest.close();
     return ship;
+}
+
+void updateManifest(const vector<vector<Container>>& ship, string path) {
+    ofstream file(path);    // open file
+
+    // iterate through the ship and add each container into the file
+    for(const auto& row : ship) {
+        for(const auto& container: row) {
+            file << "[" << container.pos.first << "," << container.pos.second << "], ";
+            file << "{" << container.weight << "}, ";
+            file << container.name << endl;
+        }
+    }
+
+    file.close();       // close file
+
+    // Creating new filename with "OUTBOUND" appended
+    string newPath = path.substr(0, path.find_last_of('.')) + "OUTBOUND" + path.substr(path.find_last_of('.'));
+    // Renaming the file
+    rename(path.c_str(), newPath.c_str());
 }
 
 // prints the 2D vector upside down to match to actual grid
