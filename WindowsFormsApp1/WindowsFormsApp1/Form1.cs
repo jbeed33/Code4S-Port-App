@@ -305,14 +305,51 @@ namespace WindowsFormsApp1
 
 		private void moves_FormClosed(object sender, FormClosedEventArgs e)
 		{
+			Program.windows.Remove(this);
 			Program.windows[0].Show();
+			iterator = 0;
+		}
+
+		void finishedSteps()
+		{
+			reminder rem = new reminder();
+			rem.ShowDialog();
+		}
+
+		void loadContainer(string name, double weight)
+		{
+			int endRow = Program.path[iterator][1][0];
+			int endCol = Program.path[iterator][1][1];
+
+			shipData.Rows[endRow][endCol] = name;
+			ship.Refresh();
+		}
+
+		void invalidContainerInput()
+		{
+
 		}
 
 		private void nextStep_Click(object sender, EventArgs e)
 		{
 			moveContainer(Program.path[iterator]);
 			if (Program.path.Count <= iterator + 1)
+			{
+				finishedSteps();
 				return;
+			}
+			if (1 == Program.path[iterator][0][2])	//Starting on the truck means loading a container
+			{
+				if(true == Helper.inputValidator(newName.Text, newWeight.Text))
+				{
+					loadContainer(newName.Text, double.Parse(newWeight.Text));
+				}
+				else
+				{
+					invalidContainerInput();
+					return;
+				}
+			}
 			iterator++;
 			colorStates();
 			displayMove(Program.path[iterator]);
@@ -333,6 +370,13 @@ namespace WindowsFormsApp1
 		private void newWeight_TextChanged(object sender, EventArgs e)
 		{
 			Helper.textBoxValidator(sender, @"^\d{1,5}(\.\d*)?$", 7 + Program.MAXWEIGHTPRECISION);
+		}
+
+		private void textBox_Focused(object sender, EventArgs e)
+		{
+			TextBox obj = (TextBox)sender;
+			obj.SelectionStart = 0;
+			obj.SelectionLength = obj.Text.Length;
 		}
 	}
 }
