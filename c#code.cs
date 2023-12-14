@@ -14,16 +14,16 @@ namespace ConsoleApp1
         public int Status { get; set; }
     }
 
-    public class ManifestManager
+    public static class ManifestManager
     {
-        public int CheckName(string name)
+        public static int CheckName(string name)
         {
             if (name == "NAN") return -1;
             if (name == "UNUSED") return 0;
             return 2;
         }
 
-        public List<List<Container>> ReadManifest(string filePath)
+        public static List<List<Container>> ReadManifest(string filePath)
         {
             var ship = new List<List<Container>>();
             using (var manifest = new StreamReader(filePath))
@@ -73,7 +73,7 @@ namespace ConsoleApp1
             return ship;
         }
 
-        public void UpdateManifest(List<List<Container>> ship, string path)
+        public static void UpdateManifest(List<List<Container>> ship, string path)
         {
             using (var file = new StreamWriter(path))
             {
@@ -92,7 +92,7 @@ namespace ConsoleApp1
             File.Move(path, newPath);
         }
 
-        public void Print(List<List<Container>> ship)
+        public static void Print(List<List<Container>> ship)
         {
             for (int i = ship.Count - 1; i >= 0; i--)
             {
@@ -105,9 +105,9 @@ namespace ConsoleApp1
         }
     }
 
-    public class LoadedContainerManager
+    public static class LoadedContainerManager
     {
-        public Container SetLoadedContainerInfo(string name)
+        public static Container SetLoadedContainerInfo(string name)
         {
             Container container = new Container();
             container.Name = name;
@@ -116,9 +116,9 @@ namespace ConsoleApp1
             return container;
         }
 
-        public List<string> removeList = new List<string>();
+        public static List<string> removeList = new List<string>();
 
-        public void RemoveContainerNameFromRemoveList(string name)
+        public static void RemoveContainerNameFromRemoveList(string name)
         {
             for (int i = 0; i < removeList.Count; i++)
             {
@@ -130,15 +130,15 @@ namespace ConsoleApp1
             }
         }
 
-        public void AddContainerNameToRemoveList(string name)
+        public static void AddContainerNameToRemoveList(string name)
         {
             removeList.Add(name);
         }
     }
 
-    public class LogManager
+    public static class LogManager
     {
-        public string GetCurrentTime()
+        public static string GetCurrentTime()
         {
             DateTime now = DateTime.Now;
             int day = now.Day;
@@ -157,13 +157,13 @@ namespace ConsoleApp1
             return now.ToString($"MMMM d'{suffix}' yyyy: HH:mm");
         }
 
-        public void AddNoteToLogFile(string filePath, string input)
+        public static void AddNoteToLogFile(string filePath, string input)
         {
             string note = GetCurrentTime() + " " + input;
             File.AppendAllText(filePath, note + Environment.NewLine);
         }
 
-        public void CheckOrCreateFile(string filePath)
+        public static void CheckOrCreateFile(string filePath)
         {
             // Check if the file exists
             if (!File.Exists(filePath))
@@ -183,58 +183,49 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            LoadedContainerManager manager = new LoadedContainerManager();
-            Container myContainer = manager.SetLoadedContainerInfo("Sample Container");
+
+            Container myContainer = LoadedContainerManager.SetLoadedContainerInfo("Sample Container");
 
             Console.WriteLine("Container Details:");
             Console.WriteLine($"Name: {myContainer.Name}");
             Console.WriteLine($"Weight: {myContainer.Weight}");
             Console.WriteLine($"Status: {myContainer.Status}");
 
-            // Demonstrate adding and removing container names
-            manager.AddContainerNameToRemoveList("Container1");
-            manager.AddContainerNameToRemoveList("Container2");
-            manager.AddContainerNameToRemoveList("Container3");
-            manager.RemoveContainerNameFromRemoveList("Container1");
-            
+            LoadedContainerManager.AddContainerNameToRemoveList("Container1");
+            LoadedContainerManager.AddContainerNameToRemoveList("Container2");
+            LoadedContainerManager.AddContainerNameToRemoveList("Container3");
+            LoadedContainerManager.RemoveContainerNameFromRemoveList("Container1");
+
             Console.WriteLine("Containers in Remove List:");
-            foreach (string name in manager.removeList)
+            foreach (string name in LoadedContainerManager.removeList)
             {
                 Console.WriteLine(name);
             }
-
-            // Create an instance of LogManager
-            LogManager logManager = new LogManager();
 
             // Define a file path for the log file
             // Ensure this path is accessible and writable in your environment
             string logFilePath = @"C:\Users\zhika\OneDrive\Desktop\cs179\readManifest\log.txt"; // Change this path as needed
 
-            // Add a note to the log file
-            logManager.AddNoteToLogFile(logFilePath, "Sample Container added to the list.");
-
-            logManager.CheckOrCreateFile(@"C:\Users\zhika\OneDrive\Desktop\cs179\readManifest\log1.txt");
-
-
-
-            // Create an instance of ManifestManager
-            ManifestManager manifestManager = new ManifestManager();
-
             // Define the path for the manifest file
             string manifestFilePath = @"C:\Users\zhika\OneDrive\Desktop\cs179\readManifest\manifest.txt"; // Change this path as needed
 
-            // Read the manifest from the file
-            List<List<Container>> ship = manifestManager.ReadManifest(manifestFilePath);
+            // Add a note to the log file
+            LogManager.AddNoteToLogFile(logFilePath, "Sample Container added to the list.");
 
-            // Print the ship's manifest
+            LogManager.CheckOrCreateFile(@"C:\Users\zhika\OneDrive\Desktop\cs179\readManifest\log1.txt");
+
+            LogManager.AddNoteToLogFile(logFilePath, "Sample Container added to the list.");
+            LogManager.CheckOrCreateFile(logFilePath);
+
+            List<List<Container>> ship = ManifestManager.ReadManifest(manifestFilePath);
             Console.WriteLine("Ship's Manifest:");
-            manifestManager.Print(ship);
+            ManifestManager.Print(ship);
+
             // Update the manifest file
             ship[6][1].Name = "abc";
             ship[7][2].Name = "qqq";
-            // This will also rename the original file by appending "OUTBOUND" to its name
-            manifestManager.UpdateManifest(ship, manifestFilePath);
-            manifestManager.Print(ship);
+            ManifestManager.UpdateManifest(ship, manifestFilePath);
+            ManifestManager.Print(ship);
         }
     }
 }
