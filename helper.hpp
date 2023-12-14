@@ -13,6 +13,16 @@ bool bufferEmpty(Node current) {
 	return true;
 }
 
+bool shipEmpty(Node current) {
+	for (int i = 0; i < SHIPHEIGHT; i++) {
+		for (int j = 0; j < SHIPWIDTH; j++) {
+			if (0 > get<1>(current.ship[i][j]))
+				return false;
+		}
+	}
+	return true;
+}
+
 int findTopShip(vector<vector<tuple<Container, int>>> ship, int col) {
 	if(0 > col || SHIPWIDTH <= col)
 		return -2;	//Error
