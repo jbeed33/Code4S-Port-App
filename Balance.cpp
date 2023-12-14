@@ -13,7 +13,7 @@ double Balance::heuristic(){
 
 }
 
-int balanceGoalTest() {
+int Balance::balanceGoalTest() {
     Container current;
     Node myShip;
     if(shipEmpty(myShip)) {
