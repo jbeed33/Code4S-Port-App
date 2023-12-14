@@ -7,7 +7,7 @@
 class LoadUnload : public Base{
 	void setup();
 	bool stateExists(Node n);
-	double heuristic();
+	double heuristic(Node current);
 };
 
 #endif

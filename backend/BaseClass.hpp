@@ -11,17 +11,19 @@ class Base{
 	public:
 		unsigned long expandedNodeCount;
 		unsigned int maxQueueSize;
+		int numToLoad = 0;
 		vector<Node> closed;
-
-		int cost(Node current);
-		Node search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
-
 		vector<Node> frontier;
+
+		Node search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
+		int cost(Node current);
 		void nodeExpand(Node current);
 		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone);
+		void addToFrontier(Node toAdd);
+
 		virtual void setup() = 0;
-		virtual bool stateExists() = 0;
-		virtual double heuristic() = 0;
+		virtual bool stateExists(Node) = 0;
+		virtual double heuristic(Node) = 0;
 };
 
 #endif

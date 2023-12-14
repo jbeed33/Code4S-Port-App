@@ -1,6 +1,6 @@
 #ifndef BALANCE_H
 #define BALANCE_H
-#include "BaseClass.h"
+#include "BaseClass.hpp"
 #include <iostream>
 using namespace std;
 
