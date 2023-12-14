@@ -17,8 +17,8 @@ const int SINGLEMOVETIME = 1;
 
 struct Container {
     string name;
-    int weight;
-    int status;
+    double weight;
+    int status; //-1 structural wall 0-empty space 1-unloadable 2-do not unload
 };
 
 
@@ -31,16 +31,18 @@ struct Node {
 
     pair<int, int> cranePos;
     int craneLocation; // 0- ship, 1-truck, 2-buffer
+    
 
-    vector<vector<tuple<Container, int>>> ship;
-    vector<vector<tuple<Container, int>>> buffer;
+
     vector<string> removeList;
+    vector<vector<Container>> ship;
+    vector<vector<Container>> buffer;
   
 	/*	startRow, startCol, startZone
 	* 	endRow, endCol, endZone
-	*	justCrane
+	*	justCrane (0- not just moving the crane, 1 - just moving the crane )
 	*/	
-	vector<vector<int>> prev;
+	vector<vector<int>> prev = {{0,0,0}, {0,0,0}, {1}};
     vector<vector<vector<int>>> path;
 
     bool operator!=(const Node& b) {

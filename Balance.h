@@ -8,7 +8,8 @@ class Balance : public Base{
 	void setup();
 	bool stateExists(Node currentState);
 	double heuristic();
-	bool requireSift(Node initialState);
+  bool requireSift(Node initialState);
+  int balanceGoalTest();
 };
 
 
