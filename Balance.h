@@ -6,6 +6,7 @@ class Balance : public Base{
 	void setup();
 	bool stateExists();
 	double heuristic();
+	int balanceGoalTest();
 };
 
 
