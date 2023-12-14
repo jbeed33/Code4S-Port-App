@@ -25,6 +25,25 @@ void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol,
 	frontier.push_back(first);
 }
 
+void Base::addToFrontier(Node toAdd) {
+	if (frontier.size() + 1 > maxQueueSize)
+		maxQueueSize = frontier.size() + 1;
+	if (true == frontier.empty()) {
+		frontier.push_back(toAdd);
+		return;
+	}
+	for (int i = 0; i < frontier.size(); i++) {
+		int toAddCost = toAdd.cost;
+		int frontierCost = frontier[i].cost;
+		toAddCost += toAdd.heuristic;
+		frontierCost += frontier[i].heuristic;
+		if (toAddCost < frontierCost) {
+			frontier.emplace(frontier.begin() + i, toAdd);
+			return;
+		}
+	}
+	frontier.push_back(toAdd);
+}
 
 Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload) {
 	baseSetup(ship, craneRow, craneCol, craneZone);
