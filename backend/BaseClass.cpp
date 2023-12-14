@@ -8,6 +8,7 @@ void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol,
 	Node first;
 	first.ship = ship;
 	first.cranePos = {craneRow, craneCol};
+	first.prev = {{0,0,0},{craneRow, craneCol, craneZone}, {1}};
 	first.craneLocation = craneZone;
 	
 
@@ -47,6 +48,8 @@ void Base::addToFrontier(Node toAdd) {
 
 Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload) {
 	baseSetup(ship, craneRow, craneCol, craneZone);
+	expandedNodeCount = 1;
+	maxQueueSize = 0;
 	
 	while (true) {
 		if (true == frontier.empty()) {
@@ -65,13 +68,13 @@ Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, in
 			cout << "\n\n";
 			return frontier[0];
 		}
-		if (0 == expandedNodeCount++ % 100) {	//Shows the program hasn't gotten stuck
-			cout << ".";
+		if (0 == expandedNodeCount++ % 1000) {	//Shows the program hasn't gotten stuck
+			cout << "." << endl;
+			break;
 		}
-		
+
 		nodeExpand(frontier[0]);
-		closed.push_back(frontier[0]);
-		frontier.erase(frontier.begin());
+		
 
 	}
 }
@@ -109,6 +112,9 @@ void Base::nodeExpand(Node n){
     // 1 - truck
     // 2 - buffer
 
+	closed.push_back(frontier[0]);
+	frontier.erase(frontier.begin());
+
     vector<int> avaliableColsForBuffer = getWallsForZone(n, 1);
     vector<int> avaliableColsForShip = getWallsForZone(n, 0);
 
@@ -119,7 +125,7 @@ void Base::nodeExpand(Node n){
     vector<vector<int>> boxPos;
     Container box;
     int craneCol = n.cranePos.second;
-    cout << craneCol << endl;
+    // cout << "crane" << craneCol << endl;
     int zone = n.craneLocation;
     boxPos = getContainerDataFromCranePos(n,craneCol, zone );
 
@@ -161,7 +167,7 @@ void Base::nodeExpand(Node n){
 				returnedNodes.at(i).heuristic = heuristic(returnedNodes.at(i));
 
 			
-				frontier.push_back(returnedNodes.at(i));
+				addToFrontier(returnedNodes.at(i));
 			}
 
 			

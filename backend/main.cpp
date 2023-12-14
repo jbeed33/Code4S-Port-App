@@ -15,9 +15,9 @@ bool craneMovementTest1(){
 
     n.craneLocation = 0; //starts on ship
     int row = 0;
-    int col = 2;
+    int col = 0;
     n.cranePos = {row, col};
-    n.prev.at(2).at(0) = 1;
+    n.prev.at(2).at(0) = 0;
 
     n.ship ={
 		{e, e, e, e, e, e, e, e, e, e, e, e},
@@ -27,11 +27,10 @@ bool craneMovementTest1(){
 		{e, e, e, e, e, e, e, e, e, e, e, e},
 		{e, e, e, e, e, e, e, e, e, e, e, e},
 		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, s, e, e, e, e, e, e},
-		{e, e, e, e, e, s, e, e, e, e, e, e}
+		{e, e, e, e, e, e, e, e, e, e, e, s},
+		{e, e, e, e, e, e, e, e, e, e, e, s}
 	};
-
-    b.search(n.ship, 0, 0, 0,0, {});
+    b.search(n.ship, row, col, 0,0, {});
 
     // vector<vector<int>> expectedMoves = {
     //     {0,1,0},

@@ -6,15 +6,38 @@ void Balance::setup(){
 }
 
 bool Balance::stateExists(Node currentState){
+    int currRow = currentState.cranePos.first;
+    int currCol = currentState.cranePos.second;
+    int currZone = currentState.craneLocation;
+    bool currHasContainer = currentState.prev.at(2).at(0);
+
     for (int i = 0; i < closed.size(); i++) {
-        if (closed[i] != currentState )
-            return true;
+        if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
+            if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
+                if (closed[i] != currentState ){}
+                else{
+                    return true;
+                }
+            }
+            
+        }
+        
+           
     }
 
-    for (int i = 0; i < frontier.size(); i++) {
-        if (frontier[i] != currentState )
-            return true;
+     for (int i = 0; i < frontier.size(); i++) {
+        if(currRow == frontier.at(i).cranePos.first && currCol == frontier.at(i).cranePos.second){
+            if(currZone == frontier.at(i).craneLocation && currHasContainer == frontier.at(i).prev.at(2).at(0) ){
+                 if (frontier[i] != currentState ){}
+                else{
+                    return true;
+                }
+            }
+            
+        }
+           
     }
+    
     return false;
 }
 
@@ -95,6 +118,7 @@ bool requireSift(Node initialState) {
 }
 
 bool Balance::balanceGoalTest(Node n) {
+
     
     //check to see if top of the ship is empty
     for(int i = 0; i < n.ship[0].size(); i++){
@@ -109,6 +133,10 @@ bool Balance::balanceGoalTest(Node n) {
             return false;
         }
     }
+
+
+    //check to see if the crane is still holding a box
+    if(n.prev.at(2).at(0) == 0) return false;
 
     //check for balance
     int mid = n.ship[0].size() / 2;

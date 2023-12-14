@@ -51,6 +51,7 @@ struct Node {
     vector<vector<vector<int>>> path;
 
     bool operator!=(const Node& b) {
+        
         // compare heuristic values
         if(heuristic != b.heuristic) return true;
 
