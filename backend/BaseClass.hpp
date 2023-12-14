@@ -8,17 +8,14 @@ using namespace std;
 
 
 class Base{
-	private:
+	public:
 		unsigned long expandedNodeCount;
 		unsigned int maxQueueSize;
-
-		
 		vector<Node> closed;
 
 		int cost(Node current);
 		Node search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
 
-public:
 		vector<Node> frontier;
 		void nodeExpand(Node current);
 		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone);

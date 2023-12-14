@@ -2,10 +2,11 @@
 #define LOADUNLOAD_H
 
 #include "BaseClass.hpp"
+#include "node.hpp"
 
 class LoadUnload : public Base{
 	void setup();
-	bool stateExists();
+	bool stateExists(Node n);
 	double heuristic();
 };
 

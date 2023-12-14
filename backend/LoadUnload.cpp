@@ -4,12 +4,14 @@ void LoadUnload::setup(){
 
 }
 
-bool LoadUnload::stateExists(){
-    return false;
-
+bool LoadUnload::stateExists(Node currentState){
+    for (int i = 0;i < closed.size(); i++) {
+        if (closed[i] != currentState)
+            return false;
+    }
+    return true;
 }
 
 double LoadUnload::heuristic(){
-    return 0.0;
 	
 }
