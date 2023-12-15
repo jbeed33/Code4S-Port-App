@@ -17,7 +17,6 @@ bool craneMovementTest1(){
     int row = 0;
     int col = 0;
     n.cranePos = {row, col};
-    n.prev.at(2).at(0) = 0;
 
     n.ship ={
 		{e, e, e, e, e, e, e, e, e, e, e, e},
@@ -27,8 +26,8 @@ bool craneMovementTest1(){
 		{e, e, e, e, e, e, e, e, e, e, e, e},
 		{e, e, e, e, e, e, e, e, e, e, e, e},
 		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, s},
-		{e, e, e, e, e, e, e, e, e, e, e, s}
+		{e, e, e, e, e, e, e, e, e, e, e, e},
+		{e, e, e, e, e, e, e, e, e, e, e, e}
 	};
     b.search(n.ship, row, col, 0,0, {});
 

@@ -7,6 +7,18 @@
 #include<cmath>
 using namespace std;
 
+void PrintShip(Node n){
+    for(int i = 0; i < n.ship.size(); i++){
+        for(int j = 0; j < n.ship[0].size(); j++){
+            if(n.ship.at(i).at(j).status == 0)  cout << "e ";
+            if(n.ship.at(i).at(j).status > 1)  cout << "b ";
+            if(i == n.cranePos.first && j == n.cranePos.second)  cout << "x";
+           
+        }
+        cout << " " << endl;
+    }
+}
+
 // 0 - ship 1-buffer
 //Get all avaliable columns from buffer and ship
 vector<int> getWallsForZone(Node &n, int zone ){
@@ -351,10 +363,13 @@ void justCraneMovesLeftOrRight(Node &n, vector<vector<int>> craneMoves, int inde
     
 
     //move crane left or right
-    if(isValidMove){
+    if(isValidMove && n.prev.at(2).at(0) != 0 ){
         
         op4.cranePos = {op4.cranePos.first, craneMoves.at(indexCraneMove).at(1)};
         op4.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {1} };
+        PrintShip(op4);
+        cout << "Moving by itself" << endl;
+        cout << " " << endl;
         expandedNodesList.push_back(op4);
     }
 
@@ -581,6 +596,7 @@ void craneMovesLeftOrRightWithBox(Node &n, vector<vector<int>> craneMoves, int i
             if(n.ship.at(op1.cranePos.first).at(craneMoves.at(indexCraneMove).at(1)).status == 0){
                 swapContainers(op1, n.cranePos.first, n.cranePos.second, craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), n.craneLocation, n.craneLocation);
                 op1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {0} };
+                PrintShip(op1);
                 expandedNodesList.push_back(op1);
             }
 
@@ -687,22 +703,27 @@ void craneDropsOffBox(Node &n, vector<vector<int>> craneMoves, int indexCraneMov
     
     if(n.cranePos.first < newRow){
         newRow = findTopContainerInColWithStartingRow(n1, n1.cranePos.second, n1.craneLocation, n1.cranePos.first + 1);
+        newRow -= 1;
     }
+
+    
         
 
     // If row is empty, then do not expand
-    bool isRowEmpty = ( n.craneLocation == 0 && n.ship.at(size - 1).at(n.cranePos.second).status < 1) || ( n.craneLocation == 2 && n.buffer.at(size - 1).at(n.cranePos.second).status < 1);
-    if(isRowEmpty == true ){
-        return;
-    }
+    // bool isRowEmpty = ( n.craneLocation == 0 && n.ship.at(size - 1).at(n.cranePos.second).status < 1) || ( n.craneLocation == 2 && n.buffer.at(size - 1).at(n.cranePos.second).status < 1);
+    // if(isRowEmpty == true ){
+    //     cout << "Row is empty" << endl;
+    //     return;
+    // }
 
-     //cout << "new row: " << newRow << endl;
+     cout << "new row: " << newRow << endl;
     swapContainers(n1, n1.cranePos.first, n1.cranePos.second, newRow, n1.cranePos.second, n1.craneLocation, n1.craneLocation);
     n1.cranePos = {newRow, n1.cranePos.second};
 
     //update prev
     n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{n1.cranePos.first, n1.cranePos.second, n1.craneLocation}}, {1} };
 
+    PrintShip(n1);
     expandedNodesList.push_back(n1);
 
      cout << "Old crane index: "<< n.cranePos.first << " , " << n.cranePos.second << ">" << endl;
@@ -830,6 +851,8 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
 
     return expandedNodesList;
 }
+
+
 
 
 
