@@ -1,5 +1,6 @@
-#include "Balance.hpp"
 #include <iostream>
+#include "Balance.hpp"
+#include "readManifest.hpp"
 
 using namespace std;
 
@@ -67,8 +68,31 @@ bool craneMovementTest1(){
 }
 
 
-int main(){
-    craneMovementTest1();
-    
+int main(int argc, char *argv[]){
+	string manifestPath = argv[1];
+	if(argc > 2){	//Load unload
+		int numToLoad = atoi(argv[2]);
+		vector<string> names;
+		for(int i = 3; i < argc; i++){
+			names.push_back(argv[i]);
+		}
+		
+	}
+	else{		//Balance
+		Balance ai = Balance();
+		vector<vector<Container>> manifest = readManifest(manifestPath);
+		Node result = ai.search(manifest, 0, 0, 0, 0, {});
+		vector<vector<vector<int>>> path = result.path;
+		for(int i = 0; i < path.size(); i++){
+			printf("%d %d\t%d %d\n", path[i][0][0], path[i][0][1], path[i][1][0], path[i][1][1]);
+		}
+	}
+	ofstream test;
+	test.open("D:\\phoen\\Documents\\ship_cases\\test.txt");
+	if(test.is_open()){
+		test << "testing" << endl;
+		test.close();
+	}
+
     return 0;
 }

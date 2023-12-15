@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 
 
-namespace ConsoleApp1
+namespace WindowsFormsApp1
 {
     public class Container
     {
@@ -70,11 +70,14 @@ namespace ConsoleApp1
                     ship.Add(rowOfContainers);
                 }
             }
+
+			Helper.flipShip(ship);
             return ship;
         }
 
         public static void UpdateManifest(List<List<Container>> ship, string path)
         {
+			Helper.flipShip(ship);
             using (var file = new StreamWriter(path))
             {
                 foreach (var row in ship)
@@ -156,9 +159,11 @@ namespace ConsoleApp1
             // Adjusted format string for proper date and time formatting
             return now.ToString($"MMMM d'{suffix}' yyyy: HH:mm");
         }
-
-        public static void AddNoteToLogFile(string filePath, string input)
+		
+        public static void AddNoteToLogFile(string input)
         {
+			string filePath = Helper.getPathToLog();
+			CheckOrCreateFile(filePath);
             string note = GetCurrentTime() + " " + input;
             File.AppendAllText(filePath, note + Environment.NewLine);
         }
@@ -170,62 +175,13 @@ namespace ConsoleApp1
             {
                 // Create the file
                 FileStream fs = File.Create(filePath);
+				fs.Close();
                 Console.WriteLine($"File created: {filePath}");
             }
             else
             {
                 Console.WriteLine($"File already exists: {filePath}");
             }
-        }
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-
-            Container myContainer = LoadedContainerManager.SetLoadedContainerInfo("Sample Container");
-
-            Console.WriteLine("Container Details:");
-            Console.WriteLine($"Name: {myContainer.Name}");
-            Console.WriteLine($"Weight: {myContainer.Weight}");
-            Console.WriteLine($"Status: {myContainer.Status}");
-
-            LoadedContainerManager.AddContainerNameToRemoveList("Container1");
-            LoadedContainerManager.AddContainerNameToRemoveList("Container2");
-            LoadedContainerManager.AddContainerNameToRemoveList("Container3");
-            LoadedContainerManager.RemoveContainerNameFromRemoveList("Container1");
-
-            Console.WriteLine("Containers in Remove List:");
-            foreach (string name in LoadedContainerManager.removeList)
-            {
-                Console.WriteLine(name);
-            }
-
-            // Define a file path for the log file
-            // Ensure this path is accessible and writable in your environment
-            string logFilePath = @"C:\Users\zhika\OneDrive\Desktop\cs179\readManifest\log.txt"; // Change this path as needed
-
-            // Define the path for the manifest file
-            string manifestFilePath = @"C:\Users\zhika\OneDrive\Desktop\cs179\readManifest\manifest.txt"; // Change this path as needed
-
-            // Add a note to the log file
-            LogManager.AddNoteToLogFile(logFilePath, "Sample Container added to the list.");
-
-            LogManager.CheckOrCreateFile(@"C:\Users\zhika\OneDrive\Desktop\cs179\readManifest\log1.txt");
-
-            LogManager.AddNoteToLogFile(logFilePath, "Sample Container added to the list.");
-            LogManager.CheckOrCreateFile(logFilePath);
-
-            List<List<Container>> ship = ManifestManager.ReadManifest(manifestFilePath);
-            Console.WriteLine("Ship's Manifest:");
-            ManifestManager.Print(ship);
-
-            // Update the manifest file
-            ship[6][1].Name = "abc";
-            ship[7][2].Name = "qqq";
-            ManifestManager.UpdateManifest(ship, manifestFilePath);
-            ManifestManager.Print(ship);
         }
     }
 }

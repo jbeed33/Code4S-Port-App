@@ -4,9 +4,10 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "node.hpp"
 using namespace std;
 
-struct Container {
+struct tmp {
     string name;
     int weight;
     pair<int,int> pos;
@@ -20,7 +21,7 @@ int checkName(string name) {
 }
 
 vector<vector<Container>> readManifest(string file_path) {
-    vector<vector<Container>> ship;
+    vector<vector<tmp>> ship;
 
     // read file
     ifstream manifest(file_path);
@@ -29,7 +30,7 @@ vector<vector<Container>> readManifest(string file_path) {
     char bracket, comma;
     int row, col, weight;
     string name;
-    vector<Container> row_of_containers = {};
+    vector<tmp> row_of_containers = {};
 
     // read each line and parse the information
     while (getline(manifest, line)) {
@@ -45,7 +46,7 @@ vector<vector<Container>> readManifest(string file_path) {
         getline(ss >> ws, name);
 
         // create a container with these information
-        Container container;
+        tmp container;
         container.pos.first = row;
         container.pos.second = col;
         container.weight = weight;
@@ -62,10 +63,32 @@ vector<vector<Container>> readManifest(string file_path) {
             row_of_containers.push_back(container);
         }
     }
+	if(false == row_of_containers.empty())	//Add the last row if it's not empty
+		ship.push_back(row_of_containers);
 
     // close the file
     manifest.close();
-    return ship;
+	vector<vector<Container>> finished;
+	if(false == ship.empty()){
+		vector<Container> rowContainer;
+		for(int i = 0; i < ship[0].size(); i++){
+			rowContainer.push_back({"UNUSED", 0, 0});
+		}
+		finished.push_back(rowContainer);
+	}	
+	for(int row = ship.size() - 1; row >= 0; row--){
+		vector<Container> rowContainer;
+		for(int col = 0; col < ship[0].size(); col++){
+			Container cont;
+			tmp old = ship[row][col];
+			cont.name = old.name;
+			cont.status = old.status;
+			cont.weight = old.weight;
+			rowContainer.push_back(cont);
+		}
+		finished.push_back(rowContainer);
+	}
+    return finished;
 }
 
 // prints the 2D vector upside down to match to actual grid

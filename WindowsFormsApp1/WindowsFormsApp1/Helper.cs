@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,6 +13,30 @@ namespace WindowsFormsApp1
 {
 	static class Helper
 	{
+
+		public static string getPathToLog()
+		{
+			string filePath = "log" + DateTime.Now.Year.ToString() + ".txt";
+			return findFileInAppdatad(filePath);
+		}
+
+		public static string findFileInAppdatad(string fileName)
+		{
+			string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "shippingAi");
+			Directory.CreateDirectory(folderPath);
+			return Path.Combine(folderPath, fileName);
+		}
+
+		public static void flipShip(List<List<Container>> ship)
+		{
+			for (int i = 0; i < ship.Count / 2; i++)
+			{
+				List<Container> row = ship[i];
+				ship[i] = ship[ship.Count - 1 - i];
+				ship[ship.Count - 1 - i] = row;
+			}
+		}
+
 		public static void textBoxValidator(object sender, string regex, int MAXLENGTH)
 		{
 			TextBox obj = (TextBox)sender;
@@ -49,6 +76,14 @@ namespace WindowsFormsApp1
 			obj.SelectionLength = 0;
 		}
 
+		public static void changeUser(string newUser)
+		{
+			if ("" != Program.user)
+				LogManager.AddNoteToLogFile(Program.user + " signs out");
+			LogManager.AddNoteToLogFile(newUser + " signs in");
+			Program.user = newUser;
+		}
+
 		public static bool inputValidator(string name, string weight)
 		{
 			if(name == "NULL" || name == "" || name == "UNUSED")
@@ -69,11 +104,6 @@ namespace WindowsFormsApp1
 			return true;
 		}
 
-		public static void saveToLog(string filePath)
-		{
-
-		}
-
 		public static string getFilePath(string filter)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
@@ -84,6 +114,84 @@ namespace WindowsFormsApp1
 			}
 			else
 				return "";
+		}
+
+		public static void saveVariablesToFile()
+		{/*
+			//Ship variable paths
+			string shipPath = findFileInAppdatad("ship.shp");
+			string shipStatePath = findFileInAppdatad("shipState.shp");
+			string shipWeightPath = findFileInAppdatad("shipWeight.shp");
+			string shipDataPath = findFileInAppdatad("shipData.xml");
+
+			//Buffer variable paths
+			string bufferStatePath = findFileInAppdatad("bufferState.shp");
+			string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
+			string bufferDataPath = findFileInAppdatad("BufferData.xml");
+
+			//Other variable paths
+			string pathPath = findFileInAppdatad("path.shp");
+			string iteratorPath = findFileInAppdatad("iterator.shp");
+
+			using (Stream stream = File.Open(shipPath, FileMode.Create))
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, Program.ship);
+			}
+			using (Stream stream = File.Open(shipStatePath, FileMode.Create))
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, Program.shipStates);
+			}
+			using (Stream stream = File.Open(shipWeightPath, FileMode.Create))
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, Program.shipWeights);
+			}
+			using (Stream stream = File.Open(bufferStatePath, FileMode.Create))
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, Program.bufferStates);
+			}
+			using (Stream stream = File.Open(bufferWeightPath, FileMode.Create))
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, Program.bufferWeights);
+			}
+			using (Stream stream = File.Open(pathPath, FileMode.Create))
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, Program.path);
+			}
+			using (Stream stream = File.Open(iteratorPath, FileMode.Create))
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, moves.iterator);
+			}
+
+			using (Stream stream = File.Open(shipDataPath, FileMode.Create))
+			{
+				moves.shipData.WriteXml(stream);
+			}
+			using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
+			{
+				moves.bufferData.WriteXml(stream);
+			}*/
+		}
+
+		public static void runAi()
+		{
+			string path = "D:\\phoen\\Documents\\ship_cases\\a.exe";
+			Process process = new Process()
+			{
+				StartInfo = new ProcessStartInfo(path, Program.manifestFile)
+				{
+					WindowStyle = ProcessWindowStyle.Normal,
+					WorkingDirectory = Path.GetDirectoryName(path)
+				}
+			};
+			
+			process.Start();
 		}
 	}
 }

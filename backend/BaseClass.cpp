@@ -62,24 +62,26 @@ Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, in
 		}
 		if (0 == frontier[0].heuristic) {	//(true == goalTest(frontier[0].ship)) {
 			cout << "\n\nFOUND\n\n" << endl;
-			 cout << "Final Crane location: " << frontier[0].cranePos.first << "    " << frontier[0].cranePos.second << endl;
+			cout << "Final Crane location: " << frontier[0].cranePos.first << "    " << frontier[0].cranePos.second << endl;
 			cout << "To solve this problem the search algorithm expanded a total of " << expandedNodeCount << " nodes." << endl;
 			cout << "The maximum number of nodes in the queue at any one time : " << maxQueueSize << endl;
 			cout << "The depth of the goal node was " << frontier[0].path.size() << endl;
 			cout << "\n\n";
+			trimPath(frontier[0]);
 			return frontier[0];
 		}
 		if (0 == expandedNodeCount++ % 1000) {	//Shows the program hasn't gotten stuck
 			cout << "." << endl;
-			cout << "Expanded a total of " << expandedNodeCount << " nodes." << endl;
-			cout << "The maximum number of nodes: " << maxQueueSize << endl;
-			break;
+			//cout << "Expanded a total of " << expandedNodeCount << " nodes." << endl;
+			//cout << "The maximum number of nodes: " << maxQueueSize << endl;
+			//break;
 		}
 
 		nodeExpand(frontier[0]);
 		
 
 	}
+	return Node();
 }
 
 
@@ -133,7 +135,7 @@ void Base::nodeExpand(Node n){
     boxPos = getContainerDataFromCranePos(n,craneCol, zone );
 
     if(boxPos.size() > 0){
-        cout << "updated hasbox" << endl;
+       // cout << "updated hasbox" << endl;
         hasBox = true;
 
     }
@@ -145,42 +147,27 @@ void Base::nodeExpand(Node n){
      vector<vector<int>> craneMoves = craneMovement(n, avaliableColsForBuffer, avaliableColsForShip );
 
      for(int i = 0; i < craneMoves.size(); i++){
-        cout << "< " << craneMoves.at(i).at(0) << " , " << craneMoves.at(i).at(1) << " >" << endl;
+       // cout << "< " << craneMoves.at(i).at(0) << " , " << craneMoves.at(i).at(1) << " >" << endl;
      }
 
-     cout << "craneMoves size: " << craneMoves.size() << endl;
+     //cout << "craneMoves size: " << craneMoves.size() << endl;
 
-	cout << 1 << endl;
     //Expand Nodes
     vector<Node> returnedNodes = expandNodeBasedOnCraneMovement(n, boxPos, hasBox, craneMoves);
 
     //For each Node - call cost and heurstic
 	 
-	 cout << 2 << endl;
     //call state exsists - if does not already state exsist-> push to fronteir
 	for(int i = 0; i < returnedNodes.size(); i++){
-		
-		
 			if(!stateExists(returnedNodes.at(i))){
 				//update cost
 				returnedNodes.at(i).cost = cost(returnedNodes.at(i));
 			
-
 				//update heuristic
-				 cout << "Position of Crane: " << returnedNodes.at(i).cranePos.first << " , " <<  returnedNodes.at(i).cranePos.second << endl;
+				//cout << "Position of Crane: " << returnedNodes.at(i).cranePos.first << " , " <<  returnedNodes.at(i).cranePos.second << endl;
 				returnedNodes.at(i).heuristic = heuristic(returnedNodes.at(i));
 			
 				addToFrontier(returnedNodes.at(i));
-			}
-
-			
-		
+			}	
 	}
-
-	cout << 3 << endl;
-	
-    
-
-
-
 }
