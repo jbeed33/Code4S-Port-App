@@ -17,37 +17,21 @@ namespace WindowsFormsApp1
 		public const int MAXSHIPLENGTH = 256;
 		public const int MAXWEIGHTPRECISION = 3;
 
-		public static List<List<string>> shipNames = new List<List<string>> {
-			new List<string> { "",		"",		"",			"",	"", "",			"",	"",			"",			"",	"",			"" },
-			new List<string> { "",		"",		"",			"",	"", "",			"",	"",			"",			"",	"",			"" },
-			new List<string> { "",		"",		"",			"",	"", "",			"",	"",			"",			"",	"",			"" },
-			new List<string> { "",		"",		"",			"",	"", "",			"",	"",			"",			"",	"",			"" },
-			new List<string> { "Void",	"",		"",			"",	"", "",			"", "",			"",			"",	"",         "Void" },
-			new List<string> { "Void",	"",		"",			"",	"", "",			"",	"",			"",			"",	"",         "Void" },
-			new List<string> { "Void",	"",		"",			"", "", "",			"", "",			"",			"", "Cranes",   "Void" },
-			new List<string> { "Void",	"Void", "Toys",		"", "", "",			"", "",			"Spiders",	"", "Void",		"Void" },
-			new List<string> { "Void",	"Void", "Storage",	"", "", "Boats",	"", "Traps",	"Cavemen",	"", "Void",		"Void" }
-		};
-		
-		public static List<List<int>> shipStates = new List<List<int>>
-		{
-			new List<int> {  0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-			new List<int> {  0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-			new List<int> {  0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-			new List<int> {  0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0 },
-			new List<int> { -1, 0,	0,	0,	0,	0,	0,	0,	0,	0,	0, -1 },
-			new List<int> { -1, 0,	0,	0,	0,	0,	0,	0,	0,	0,	0, -1 },
-			new List<int> { -1, 0,	0,	0,	0,	0,	0,	0,	0,	0,	2, -1 },
-			new List<int> { -1,-1,	2,	0,	0,	0,	0,	0,	2,	0, -1, -1 },
-			new List<int> { -1,-1,	2,	0,	0,	1,	0,	2,	2,	0, -1, -1 },
-		};
+		public const int BUFFERHEIGHT = 5;
+		public const int BUFFERWIDTH = 24;
+
+		public static List<List<Container>> ship;
+		public static List<List<string>> shipNames = new List<List<string>> ();
+
+		public static List<List<int>> shipWeights = new List<List<int>>();
+		public static List<List<int>> shipStates = new List<List<int>>();
+		public static List<List<int>> bufferWeights = new List<List<int>>();
 		public static List<List<int>> bufferStates = new List<List<int>>();
 
 		/*	startRow, startCol, startZone
 		* 	endRow, endCol, endZone
 		*	justCrane
 		*/
-		
 		public static List<List<List<int>>> path = new List<List<List<int>>>
 		{
 			new List<List<int>> { 

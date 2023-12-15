@@ -23,13 +23,10 @@ namespace WindowsFormsApp1
 		Color start = Color.LimeGreen;
 		Color end = Color.MediumPurple;
 
-		//Constants
-		const int BUFFERWIDTH = 24;
-		const int BUFFERHEIGHT = 5;
 
-		DataTable shipData;
-		DataTable bufferData;
-		int iterator = 0;
+		public static DataTable shipData;
+		public static DataTable bufferData;
+		public static int iterator = 0;
 
 		public moves()
         {
@@ -68,9 +65,9 @@ namespace WindowsFormsApp1
 				}
 			}
 			truck.BackColor = empty;
-			for(int i = 0; i < BUFFERHEIGHT; i++)
+			for(int i = 0; i < Program.BUFFERHEIGHT; i++)
 			{
-				for(int j = 0; j < BUFFERWIDTH; j++)
+				for(int j = 0; j < Program.BUFFERWIDTH; j++)
 				{
 					int state = Program.bufferStates[i][j];
 					Color colorChoice;
@@ -99,13 +96,15 @@ namespace WindowsFormsApp1
         {
             shipData = new DataTable();
 			DataColumn col;
-			for(int i = 0; i < 12; i++)
+			for(int i = 1; i <= 12; i++)
 			{
 				col = new DataColumn();
 				col.DataType = System.Type.GetType("System.String"); ;
 				col.ColumnName = i.ToString();
-				col.Caption = i.ToString();
-				col.Unique = false;
+				if (i < 10)
+				{
+					col.ColumnName = "0" + col.ColumnName;
+				}
 				shipData.Columns.Add(col);
 			}
 
@@ -121,6 +120,7 @@ namespace WindowsFormsApp1
 					shipData.Rows[i][j] = Program.shipNames[i][j];
 				}
 			}
+			ship.RowHeadersWidth = 52;
 			ship.DataSource = shipData;
         }
 
@@ -128,32 +128,35 @@ namespace WindowsFormsApp1
 		{
 			bufferData = new DataTable();
 			DataColumn col;
-			for (int i = 0; i < BUFFERWIDTH; i++)
+			for (int i = 1; i <= Program.BUFFERWIDTH; i++)
 			{
 				col = new DataColumn();
 				col.DataType = System.Type.GetType("System.String"); ;
 				col.ColumnName = i.ToString();
-				col.Caption = i.ToString();
-				col.Unique = false;
+				if (i < 10)
+				{
+					col.ColumnName = "0" + col.ColumnName;
+				}
 				bufferData.Columns.Add(col);
 			}
 
-			for (int i = 0; i < BUFFERHEIGHT; i++)
+			for (int i = 0; i < Program.BUFFERHEIGHT; i++)
 			{
 				DataRow row = bufferData.NewRow();
 				bufferData.Rows.Add(row);
 			}
 
 			//Setup the buffer states
-			for(int i = 0; i < BUFFERHEIGHT; i++)
+			for(int i = 0; i < Program.BUFFERHEIGHT; i++)
 			{
 				List<int> row = new List<int>();
-				for(int j = 0; j < BUFFERWIDTH; j++)
+				for(int j = 0; j < Program.BUFFERWIDTH; j++)
 				{
 					row.Add(0);
 				}
 				Program.bufferStates.Add(row);
 			}
+			buffer.RowHeadersWidth = 48;
 			buffer.DataSource = bufferData;
 		}
 
@@ -192,36 +195,68 @@ namespace WindowsFormsApp1
 			int endZone = move[1][2];
 
 			string name;
-			int state = 2;
-			if (0 == startZone)
+			int weight;
+			int state;
+			if (0 == startZone)	//Ship
 			{
+				//Get data from starting position
 				name = shipData.Rows[startRow][startCol].ToString();
-				shipData.Rows[startRow][startCol] = "";
 				state = Program.shipStates[startRow][startCol];
+				weight = Program.shipWeights[startRow][startCol];
+				
+				//Update local: make starting position empty
+				shipData.Rows[startRow][startCol] = "";
 				Program.shipStates[startRow][startCol] = 0;
+				Program.shipWeights[startRow][startCol] = 0;
+				
+				//Update Containers: make starting position empty
+				Program.ship[startRow][startCol].Name = "UNUSED";
+				Program.ship[startRow][startCol].Weight = 0;
+				Program.ship[startRow][startCol].Status = 0;
 			}
-			else if (1 == startZone)
+			else if (1 == startZone)	//Truck
 			{
+				//Get data from starting position
 				name = newName.Text;
+				weight = int.Parse(newWeight.Text);
+				state = 2;
+
+				//update truck color and inputs
 				truck.BackColor = start;
+				newName.Clear();
+				newWeight.Clear();
 			}
-			else
+			else	//Buffer
 			{
+				//Get data from starting position
+				name = bufferData.Rows[startRow][startCol].ToString();
+				weight = Program.bufferWeights[startRow][startCol];
 				state = Program.bufferStates[startRow][startCol];
+
+				//Update local: make starting position empty
+				bufferData.Rows[startRow][startCol] = "";
 				Program.bufferStates[startRow][startCol] = 0;
 				name = bufferData.Rows[startRow][startCol].ToString();
-				bufferData.Rows[startRow][startCol] = "";
 			}
 
-			if (0 == endZone)
+			if (0 == endZone)	//Ship
 			{
+				//Assign data to position
 				shipData.Rows[endRow][endCol] = name;
+				Program.shipWeights[endRow][endCol] = weight;
 				Program.shipStates[endRow][endCol] = state;
 
+				//Update Containers: Assign data to container at position
+				Program.ship[endRow][endCol].Name = name;
+				Program.ship[endRow][endCol].Weight = weight;
+				Program.ship[endRow][endCol].Status = state;
+
 			}
-			else if (2 == endZone)
+			else if (2 == endZone)	//Buffer
 			{
+				//Assign data to position
 				bufferData.Rows[endRow][endCol] = name;
+				Program.shipWeights[endRow][endCol] = weight;
 				Program.bufferStates[endRow][endCol] = state;
 			}
 			ship.Refresh();
@@ -241,10 +276,17 @@ namespace WindowsFormsApp1
 			Color backColor = ship.Rows[row].Cells[col].Style.BackColor;
 			if (empty == backColor || wall == backColor)
 				return;
-            if (ticked == backColor)
-                backColor = unticked;
-            else
-                backColor = ticked;
+			string name = ship.Rows[row].Cells[col].Value.ToString();
+			if (ticked == backColor)
+			{
+				backColor = unticked;
+				LoadedContainerManager.AddContainerNameToRemoveList(name);
+			}
+			else
+			{
+				backColor = ticked;
+				LoadedContainerManager.RemoveContainerNameFromRemoveList(name);
+			}
 			ship.Rows[row].Cells[col].Style.BackColor = backColor;
 		}
 
@@ -255,6 +297,10 @@ namespace WindowsFormsApp1
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			if(true == Program.displayingSteps)	//Running balance, don't need to wait for user input
+			{
+				Helper.runAi();
+			}
 			int max = ship.Columns.Count;
 			for (int i = 0; i < max; i++)
 			{
@@ -263,17 +309,23 @@ namespace WindowsFormsApp1
 			max = ship.Rows.Count;
 			for (int i = 0; i < max; i++)
 			{
-				ship.Rows[i].HeaderCell.Value = (max - i - 1).ToString();
+				string header = (max - i).ToString();
+				if (max - i < 10)
+					header = "0" + header;
+				ship.Rows[i].HeaderCell.Value = header;
 			}
-			max = BUFFERWIDTH;
+			max = Program.BUFFERWIDTH;
 			for (int i = 0; i < max; i++)
 			{
 				buffer.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
 			}
-			max = BUFFERHEIGHT;
+			max = Program.BUFFERHEIGHT;
 			for (int i = 0; i < max; i++)
 			{
-				buffer.Rows[i].HeaderCell.Value = (max - i - 1).ToString();
+				string header = (max - i).ToString();
+				if (max - i < 10)
+					header = "0" + header;
+				buffer.Rows[i].HeaderCell.Value = header;
 			}
 			colorStates();
 			displayMove(Program.path[iterator]);
@@ -312,16 +364,22 @@ namespace WindowsFormsApp1
 
 		void finishedSteps()
 		{
+			ManifestManager.UpdateManifest(Program.ship, Program.manifestFile);
 			reminder rem = new reminder();
 			rem.ShowDialog();
 		}
 
-		void loadContainer(string name, double weight)
+		void loadContainer(string name, int weight)
 		{
 			int endRow = Program.path[iterator][1][0];
 			int endCol = Program.path[iterator][1][1];
 
 			shipData.Rows[endRow][endCol] = name;
+			Container cont = new Container();
+			cont.Name = name;
+			cont.Weight = weight;
+			cont.Status = 2;
+			Program.ship[endRow][endCol] = cont;
 			ship.Refresh();
 		}
 
@@ -332,6 +390,12 @@ namespace WindowsFormsApp1
 
 		private void nextStep_Click(object sender, EventArgs e)
 		{
+			if (false == Program.displayingSteps)	//Load/unload, still need to get the user input
+			{
+				Helper.runAi();
+				Program.displayingSteps = true;
+				return;
+			}
 			moveContainer(Program.path[iterator]);
 			if (Program.path.Count <= iterator + 1)
 			{
@@ -342,7 +406,7 @@ namespace WindowsFormsApp1
 			{
 				if(true == Helper.inputValidator(newName.Text, newWeight.Text))
 				{
-					loadContainer(newName.Text, double.Parse(newWeight.Text));
+					loadContainer(newName.Text, int.Parse(newWeight.Text));
 				}
 				else
 				{
@@ -353,12 +417,12 @@ namespace WindowsFormsApp1
 			iterator++;
 			colorStates();
 			displayMove(Program.path[iterator]);
-
+			Helper.saveVariablesToFile();
 		}
 
 		private void login_Click(object sender, EventArgs e)
 		{
-			Program.user = username.Text;
+			Helper.changeUser(username.Text);
 			username.Clear();
 		}
 
@@ -369,7 +433,7 @@ namespace WindowsFormsApp1
 
 		private void newWeight_TextChanged(object sender, EventArgs e)
 		{
-			Helper.textBoxValidator(sender, @"^\d{1,5}(\.\d*)?$", 7 + Program.MAXWEIGHTPRECISION);
+			Helper.textBoxValidator(sender, @"^\d{1,5}$", 1000);	//The regex also manages the length
 		}
 
 		private void textBox_Focused(object sender, EventArgs e)

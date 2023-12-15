@@ -10,29 +10,29 @@ bool Balance::stateExists(Node currentState){
     int currRow = currentState.cranePos.first;
     int currCol = currentState.cranePos.second;
     int currZone = currentState.craneLocation;
+	double currHeur = currentState.heuristic;
     bool currHasContainer = currentState.prev.at(2).at(0);
 
-    for (int i = 0; i < closed.size(); i++) {
-        if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
-            if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
-                bool diffFound = false;
-                for(int row = 0; row < currentState.ship.size(); row++){
-                    for(int col = 0; col < currentState.ship[0].size(); col++){
-                        if(currentState.ship.at(row).at(col).weight != closed.at(i).ship.at(row).at(col).weight){
-                            diffFound = true;
-                            break;
-                        }
-                    }
-                    if(diffFound) break;
-                }
-
-                if(!diffFound) return true;
-            }
-            
-        }
-        
-           
-    }
+    if(currZone == 0){ // ship
+		for (int i = 0; i < closed.size(); i++) {
+        	if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
+	            if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
+                	bool diffFound = false;
+                	for(int row = 0; row < currentState.ship.size(); row++){
+	                    for(int col = 0; col < currentState.ship[0].size(); col++){
+                        	if(currentState.ship.at(row).at(col).weight != closed.at(i).ship.at(row).at(col).weight){
+	                            diffFound = true;
+                            	break;
+                        	}
+                    	}
+                    	if(diffFound)
+							break;
+                	}
+                	if(!diffFound)
+						return true;
+            	}
+        	}   
+    	}
 
      for (int i = 0; i < frontier.size(); i++) {
         if(currRow == frontier.at(i).cranePos.first && currCol == frontier.at(i).cranePos.second){
@@ -56,20 +56,72 @@ bool Balance::stateExists(Node currentState){
         
            
     }
+    }
+    else if( currZone == 2){ //buffer
+        for (int i = 0; i < closed.size(); i++) {
+        if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
+            if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
+                bool diffFound = false;
+                for(int row = 0; row < currentState.buffer.size(); row++){
+                    for(int col = 0; col < currentState.buffer[0].size(); col++){
+                        if(currentState.buffer.at(row).at(col).weight != closed.at(i).buffer.at(row).at(col).weight){
+                            diffFound = true;
+                            break;
+                        }
+                    }
+                    if(diffFound) break;
+                }
+
+                if(!diffFound) return true;
+            }
+            
+        }
+        
+           
+    }
+
+     for (int i = 0; i < frontier.size(); i++) {
+        if(currRow == frontier.at(i).cranePos.first && currCol == frontier.at(i).cranePos.second){
+            if(currZone == frontier.at(i).craneLocation && currHasContainer == frontier.at(i).prev.at(2).at(0) ){
+                bool diffFound = false;
+                for(int row = 0; row < currentState.buffer.size(); row++){
+                    for(int col = 0; col < currentState.buffer[0].size(); col++){
+                        if(currentState.buffer.at(row).at(col).weight != frontier.at(i).buffer.at(row).at(col).weight){
+                            diffFound = true;
+                            break;
+                        }
+                    }
+
+                    if(diffFound) break;
+                }
+
+                 if(!diffFound) return true;
+            }
+            
+        }
+        
+           
+    }
+    }
+    else{
+        //truck
+    }
+    
     
     return false;
 }
 
 double Balance::heuristic(Node n){
+	int startRow = n.cranePos.first;
+	int startCol = n.cranePos.second;
+	int startZone = n.craneLocation;
 
     double h = 0.0;
 
     if(balanceGoalTest(n) == true){
-        cout << "passed the goal test" << endl;
-        return 0.0;
+                return 0.0;
     }
-  
-    
+
     //check to see if top of the ship is empty
     for(int i = 0; i < n.ship[0].size(); i++){
         if(n.ship.at(0).at(i).status > 0){
@@ -83,22 +135,23 @@ double Balance::heuristic(Node n){
             h+=5;
         }
     }
-
     //check to see if the crane is still holding a box on ship
-   
-    // cout << "Status at crane: " <<  n.ship.at(n.cranePos.first).at(n.cranePos.second).status << endl;
-    if(n.ship.at(n.cranePos.first).at(n.cranePos.second).status > 0){
-        if(n.cranePos.first + 1 < n.ship.size()){
-            //cout << "Status below crane: " <<  n.ship.at(n.cranePos.first + 1).at(n.cranePos.second).status << endl;
-            if(n.ship.at(n.cranePos.first + 1).at(n.cranePos.second).status < 1){
-                cout << "made it here" << endl;
+    if(startZone == 0 && n.ship.at(startRow).at(startCol).status > 0){
+        if(startRow + 1 < SHIPHEIGHT){
+            if(n.ship.at(startRow + 1).at(startCol).status < 1){
                 h += 2;
             }
         }
     }
-
+    //checking to see if crane is holding a box in the buffer zone.
+    if(startZone == 2 && n.buffer.at(startRow).at(startCol).status > 0){
+        if(startRow + 1 < BUFFERHEIGHT){
+            if(n.buffer.at(startRow + 1).at(startCol).status < 1){
+                h += PORTALTIME;
+            }
+        }
+    }
     if(n.prev.at(2).at(0) == 0) h+= 1;
-
     //check for balance
     int mid = n.ship[0].size() / 2;
     double left = 0.0;
@@ -119,7 +172,7 @@ double Balance::heuristic(Node n){
 
     if( min(right,left) > 0){
          h += (1  / ( min(right,left) / max(right,left)));
-         cout << "huerstic for h: " << h << endl;
+         
     }else{
         (left == 0 && right == 0) ? h += 0 :  h += max(right,left); 
        
@@ -153,36 +206,23 @@ bool requireSift(Node initialState) {
 }
 
 bool Balance::balanceGoalTest(Node n) {
+    int startRow = n.cranePos.first;
+	int startCol = n.cranePos.second;
+	int startZone = n.craneLocation;
 
-    
     //check to see if top of the ship is empty
-    for(int i = 0; i < n.ship[0].size(); i++){
+    for(int i = 0; i < SHIPWIDTH; i++){
         if(n.ship.at(0).at(i).status > 0){
             return false;
         }
     }
-
     //check to see if the buffers empty
-    for(int i = 0; i < n.buffer[0].size(); i++){
-        if(n.buffer.at(0).at(i).status > 0){
-            return false;
-        }
-    }
+    if(false == bufferEmpty(n))
+		return false;
 
-
-    //check to see if the crane is still holding a box on ship
-    cout << "Status at crane: " <<  n.ship.at(n.cranePos.first).at(n.cranePos.second).status << endl;
-    if(n.ship.at(n.cranePos.first).at(n.cranePos.second).status > 0){
-        if(n.cranePos.first + 1 < n.ship.size()){
-            cout << "Status below crane: " <<  n.ship.at(n.cranePos.first + 1).at(n.cranePos.second).status << endl;
-            if(n.ship.at(n.cranePos.first + 1).at(n.cranePos.second).status < 1){
-                cout << "Not passing because floating box" << endl;
-                return false;
-            }
-        }
-        
-    }
-
+    //check to see if the crane is still holding a container
+    if(0 == n.prev[2][0])
+		return false;
     //crane still has a container
     if(n.prev.at(2).at(0) == 0) return false;
 
@@ -191,7 +231,6 @@ bool Balance::balanceGoalTest(Node n) {
     double left = 0.0;
     double right = 0.0;
 
-    cout << "Mid: " << mid << endl;
 
     for (int i = 0; i < n.ship[0].size(); i++) {
         for (int j = 0; j < n.ship.size(); j++) {
@@ -205,16 +244,15 @@ bool Balance::balanceGoalTest(Node n) {
             }
         }
     }
-    cout << "Right: " << right << endl;
-    cout << "Left: " << left << endl;
+    
 
     if (min(right,left) / max(right,left) > 0.9){
          
            return true; // Is a goal
     }  
     else {
-        cout << "Fails goal test" <<  endl;
-        cout << min(right,left) / max(right,left) << endl;
+        
+        
         return false; // Is not a goal
     } 
         
