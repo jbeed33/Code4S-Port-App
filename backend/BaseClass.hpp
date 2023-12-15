@@ -2,8 +2,9 @@
 #define BASECLASS_H
 
 using namespace std;
+
+// #include "helper.hpp"
 #include "node.hpp"
-#include "helper.hpp"
 #include <vector>
 
 
@@ -17,7 +18,7 @@ class Base{
 
 		Node search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
 		int cost(Node current);
-		void nodeExpand(Node current);
+		void nodeExpand(Node);
 		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone);
 		void addToFrontier(Node toAdd);
 

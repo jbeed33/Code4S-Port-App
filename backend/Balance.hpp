@@ -7,9 +7,9 @@ using namespace std;
 class Balance : public Base{
 	void setup();
 	bool stateExists(Node currentState);
-	double heuristic();
-  bool requireSift(Node initialState);
-  int balanceGoalTest();
+	double heuristic(Node);
+  	bool requireSift(Node initialState);
+    bool balanceGoalTest(Node);
 };
 
 
