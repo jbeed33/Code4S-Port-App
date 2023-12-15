@@ -12,7 +12,8 @@ bool Balance::stateExists(Node currentState){
     int currZone = currentState.craneLocation;
     bool currHasContainer = currentState.prev.at(2).at(0);
 
-    for (int i = 0; i < closed.size(); i++) {
+    if(currZone == 0){ // ship
+         for (int i = 0; i < closed.size(); i++) {
         if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
             if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
                 bool diffFound = false;
@@ -56,6 +57,57 @@ bool Balance::stateExists(Node currentState){
         
            
     }
+    }
+    else if( currZone == 2){ //buffer
+        for (int i = 0; i < closed.size(); i++) {
+        if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
+            if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
+                bool diffFound = false;
+                for(int row = 0; row < currentState.buffer.size(); row++){
+                    for(int col = 0; col < currentState.buffer[0].size(); col++){
+                        if(currentState.buffer.at(row).at(col).weight != closed.at(i).buffer.at(row).at(col).weight){
+                            diffFound = true;
+                            break;
+                        }
+                    }
+                    if(diffFound) break;
+                }
+
+                if(!diffFound) return true;
+            }
+            
+        }
+        
+           
+    }
+
+     for (int i = 0; i < frontier.size(); i++) {
+        if(currRow == frontier.at(i).cranePos.first && currCol == frontier.at(i).cranePos.second){
+            if(currZone == frontier.at(i).craneLocation && currHasContainer == frontier.at(i).prev.at(2).at(0) ){
+                bool diffFound = false;
+                for(int row = 0; row < currentState.buffer.size(); row++){
+                    for(int col = 0; col < currentState.buffer[0].size(); col++){
+                        if(currentState.buffer.at(row).at(col).weight != frontier.at(i).buffer.at(row).at(col).weight){
+                            diffFound = true;
+                            break;
+                        }
+                    }
+
+                    if(diffFound) break;
+                }
+
+                 if(!diffFound) return true;
+            }
+            
+        }
+        
+           
+    }
+    }
+    else{
+        //truck
+    }
+    
     
     return false;
 }
@@ -68,7 +120,7 @@ double Balance::heuristic(Node n){
         cout << "passed the goal test" << endl;
         return 0.0;
     }
-  
+
     
     //check to see if top of the ship is empty
     for(int i = 0; i < n.ship[0].size(); i++){
@@ -76,6 +128,7 @@ double Balance::heuristic(Node n){
             h+= 2;
         }
     }
+
 
     //check to see if the buffers empty
     for(int i = 0; i < n.buffer[0].size(); i++){
@@ -86,13 +139,25 @@ double Balance::heuristic(Node n){
 
     //check to see if the crane is still holding a box on ship
    
+
     // cout << "Status at crane: " <<  n.ship.at(n.cranePos.first).at(n.cranePos.second).status << endl;
-    if(n.ship.at(n.cranePos.first).at(n.cranePos.second).status > 0){
+    if(n.craneLocation == 0 && n.ship.at(n.cranePos.first).at(n.cranePos.second).status > 0){
         if(n.cranePos.first + 1 < n.ship.size()){
             //cout << "Status below crane: " <<  n.ship.at(n.cranePos.first + 1).at(n.cranePos.second).status << endl;
             if(n.ship.at(n.cranePos.first + 1).at(n.cranePos.second).status < 1){
                 cout << "made it here" << endl;
                 h += 2;
+            }
+        }
+    }
+
+    //checking to see if crane is holding a box in the buffer zone.
+    if(n.craneLocation == 2 && n.buffer.at(n.cranePos.first).at(n.cranePos.second).status > 0){
+        if(n.cranePos.first + 1 < n.buffer.size()){
+            //cout << "Status below crane: " <<  n.ship.at(n.cranePos.first + 1).at(n.cranePos.second).status << endl;
+            if(n.buffer.at(n.cranePos.first + 1).at(n.cranePos.second).status < 1){
+                cout << "made it here" << endl;
+                h += PORTALTIME;
             }
         }
     }

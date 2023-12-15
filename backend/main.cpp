@@ -19,16 +19,17 @@ bool craneMovementTest1(){
     n.cranePos = {row, col};
 
     n.ship ={
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e},
-		{e, e, e, e, e, e, e, e, e, e, e, e}
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{s, e, e, e, e, e, e, e, e, e, e, e}
 	};
+
     b.search(n.ship, row, col, 0,0, {});
 
     // vector<vector<int>> expectedMoves = {

@@ -169,8 +169,6 @@ void Base::nodeExpand(Node n){
 				//update heuristic
 				 cout << "Position of Crane: " << returnedNodes.at(i).cranePos.first << " , " <<  returnedNodes.at(i).cranePos.second << endl;
 				returnedNodes.at(i).heuristic = heuristic(returnedNodes.at(i));
-				cout << " " << endl;
-
 			
 				addToFrontier(returnedNodes.at(i));
 			}
