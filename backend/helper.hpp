@@ -348,16 +348,20 @@ inline double findDistanceToBalanced(Node current){
 //     return path;
 // }
 
-// // get appdata path
-// inline string getAppDataPath() {
-//     TCHAR szPath[MAX_PATH];
-//     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
-//         return convertWcharToString(szPath);
-//     } else {
-//         cerr << "Failed to retrieve the AppData path." << endl;
-//         return "";
-//     }
-// }
+inline string convertWcharToString(const char* path) {
+    return string(path);
+}
+
+ // get appdata path
+ inline string getAppDataPath() {
+     TCHAR szPath[MAX_PATH];
+     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
+         return convertWcharToString((const char*)szPath);
+     } else {
+         cerr << "Failed to retrieve the AppData path." << endl;
+         return "";
+     }
+ }
 
 // write a given string to the file
 inline void writeToFile(const string& filePath, const string& content) {
