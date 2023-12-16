@@ -3,7 +3,6 @@
 #include "BaseClass.hpp"
 #include <iostream>
 #include <algorithm>
-#include <cmath>
 #include <math.h>
 using namespace std;
 

@@ -1,7 +1,7 @@
 #ifndef BASECLASS_H
 #define BASECLASS_H
 
-using namespace std;
+//using namespace std;
 
 #include "helper.hpp"
 #include "node.hpp"

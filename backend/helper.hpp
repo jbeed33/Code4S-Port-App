@@ -122,7 +122,7 @@ inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, 
 	return dist;
  }
 
-
+/*
 // utility function for getAppDataPath
 inline string convertWcharToString(const wchar_t* wide) {
     int bufferLength = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
@@ -130,13 +130,17 @@ inline string convertWcharToString(const wchar_t* wide) {
     WideCharToMultiByte(CP_UTF8, 0, wide, -1, &path[0], bufferLength, NULL, NULL);
     path.pop_back();
     return path;
+}*/
+
+inline string convertWcharToString(const char* path) {
+    return string(path);
 }
 
 // get appdata path
 inline string getAppDataPath() {
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
-        return convertWcharToString(szPath);
+        return convertWcharToString((const char*)szPath);
     } else {
         cerr << "Failed to retrieve the AppData path." << endl;
         return "";
@@ -146,9 +150,9 @@ inline string getAppDataPath() {
 // write a given string to the file
 inline void writeToFile(const string& fileName, const string& content) {
     string filePath = getAppDataPath();
-    filePath += "\\ShipAi\\" + fileName;
+    filePath += "\\shippingAi\\" + fileName;
 
-    ofstream file(filePath);
+    std::ofstream file(filePath);
 
     if (file.is_open()) {
         file << content;
@@ -158,4 +162,14 @@ inline void writeToFile(const string& fileName, const string& content) {
         cerr << "Unable to open file." << endl;
     }
 }
+
+inline void writePathToFile(vector<vector<vector<int>>> path){
+	string name = "path.txt";
+	for(int i = 0; i < path.size(); i++){
+		string content = to_string(path[i][0][0]) + " " + to_string(path[i][0][1]) + " " + to_string(path[i][0][2]) + " " + to_string(path[i][1][0]) + " " + to_string(path[i][1][1]) + " " + to_string(path[i][1][2]);
+		cout << content << endl;
+		writeToFile(name, content);
+	}
+}
+
  #endif

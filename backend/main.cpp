@@ -93,6 +93,7 @@ int main(int argc, char *argv[]){
 		for(int i = 0; i < path.size(); i++){
 			printf("%d %d\t%d %d\n", path[i][0][0], path[i][0][1], path[i][1][0], path[i][1][1]);
 		}
+		writePathToFile(path);
 	}
 	ofstream test;
 	test.open("D:\\phoen\\Documents\\ship_cases\\test.txt");
