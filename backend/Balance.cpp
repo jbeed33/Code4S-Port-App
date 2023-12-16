@@ -34,120 +34,6 @@ bool Balance::stateExists(Node currentState){
 }
 
 
-// bool Balance::stateExists(Node currentState){
-//     int currRow = currentState.cranePos.first;
-//     int currCol = currentState.cranePos.second;
-//     int currZone = currentState.craneLocation;
-// 	double currHeur = currentState.heuristic;
-//     double currCost = currentState.cost;
-//     bool currHasContainer = currentState.prev.at(2).at(0);
-
-//     if(currZone == 0){ // ship
-//         cout << "trying ship closed..." << endl;
-// 		for (int i = 0; i < closed.size(); i++) {
-//         	if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
-// 	            if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
-//                 	bool diffFound = false;
-//                 	for(int row = 0; row < currentState.ship.size(); row++){
-// 	                    for(int col = 0; col < currentState.ship[0].size(); col++){
-//                         	if(currentState.ship.at(row).at(col).weight != closed.at(i).ship.at(row).at(col).weight){
-// 	                            diffFound = true;
-//                             	break;
-//                         	}
-//                     	}
-                     
-//                     	if(diffFound) break;
-//                 	}
-//                 	if(!diffFound) return true;
-						
-//             	}
-//         	}   
-//     	}
-
-//      for (int i = 0; i < frontier.size(); i++) {
-//          cout << "trying ship fronteir..." << endl;
-//         if( currCost == frontier.at(i).cost && currHeur == frontier.at(i).heuristic && currRow == frontier.at(i).cranePos.first && currCol == frontier.at(i).cranePos.second){
-//             if(currZone == frontier.at(i).craneLocation && currHasContainer == frontier.at(i).prev.at(2).at(0) ){
-//                 bool diffFound = false;
-//                 for(int row = 0; row < currentState.ship.size(); row++){
-//                     for(int col = 0; col < currentState.ship[0].size(); col++){
-//                         if(currentState.ship.at(row).at(col).weight != frontier.at(i).ship.at(row).at(col).weight){
-//                             diffFound = true;
-//                             break;
-//                         }
-//                     }
-                   
-//                     if(diffFound){
-//                          cout << "Broke out here: Diffrence found" << endl;
-//                          break;
-//                     }
-//                 }
-
-//                  if(!diffFound){
-//                     cout << "No diffrences found" << endl;
-//                     return true;
-//                  } 
-//             }
-            
-//         }
-        
-           
-//     }
-//     }
-//     else if( currZone == 2){ //buffer
-//         for (int i = 0; i < closed.size(); i++) {
-//         if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
-//             if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0) ){
-//                 bool diffFound = false;
-//                 for(int row = 0; row < currentState.buffer.size(); row++){
-//                     for(int col = 0; col < currentState.buffer[0].size(); col++){
-//                         if(currentState.buffer.at(row).at(col).weight != closed.at(i).buffer.at(row).at(col).weight){
-//                             diffFound = true;
-//                             break;
-//                         }
-//                     }
-//                     if(diffFound) break;
-//                 }
-
-//                 if(!diffFound) return true;
-//             }
-            
-//         }
-        
-           
-//     }
-
-//      for (int i = 0; i < frontier.size(); i++) {
-//         if(currRow == frontier.at(i).cranePos.first && currCol == frontier.at(i).cranePos.second){
-//             if(currZone == frontier.at(i).craneLocation && currHasContainer == frontier.at(i).prev.at(2).at(0) ){
-//                 bool diffFound = false;
-//                 for(int row = 0; row < currentState.buffer.size(); row++){
-//                     for(int col = 0; col < currentState.buffer[0].size(); col++){
-//                         if(currentState.buffer.at(row).at(col).weight != frontier.at(i).buffer.at(row).at(col).weight){
-//                             diffFound = true;
-//                             break;
-//                         }
-//                     }
-
-//                     if(diffFound) break;
-//                 }
-
-//                  if(!diffFound) return true;
-//             }
-            
-//         }
-        
-           
-//     }
-//     }
-//     else{
-//         //truck
-//     }
-    
-//     cout << "Made it here" << endl;
-//     return false;
-// }
-
 double Balance::siftHeuristic(Node current){
 	double incorrect = 0;
 	vector<vector<Container>> ship = current.ship;
@@ -185,7 +71,6 @@ double Balance::siftHeuristic(Node current){
 	}
 	return incorrect;
 }
-
 double Balance::heuristic(Node n){
 	if(true == useSift){
 		return siftHeuristic(n);
@@ -197,12 +82,12 @@ double Balance::heuristic(Node n){
     double h = 0.0;
 
     if(balanceGoalTest(n) == true){
-                return 0.0;
+        return 0.0;
     }
     else{
          h+=1;
     }
-
+    
     //check to see if top of the ship is empty
     for(int i = 0; i < n.ship[0].size(); i++){
         if(n.ship.at(0).at(i).status > 0){
@@ -211,12 +96,14 @@ double Balance::heuristic(Node n){
     }
 
     //check to see if the buffers empty
-    for(int row = 0; row < BUFFERHEIGHT; row++){
-		for(int col = 0; col < BUFFERWIDTH; col++){
-        	if(n.buffer.at(row).at(col).status > 0){
-        	    h+=5;
-        	}
-		}
+    for(int i = 0; i < n.buffer.size(); i++){
+        for(int j = 0; j < n.buffer[0].size(); j++){
+             if(n.buffer.at(i).at(j).status > 0){
+                h+=5;
+                
+            }
+        }
+       
     }
     //check to see if the crane is still holding a box on ship
     if(startZone == 0 && n.ship.at(startRow).at(startCol).status > 0){
@@ -226,6 +113,7 @@ double Balance::heuristic(Node n){
             }
         }
     }
+
     //checking to see if crane is holding a box in the buffer zone.
     if(startZone == 2 && n.buffer.at(startRow).at(startCol).status > 0){
         if(startRow + 1 < BUFFERHEIGHT){
@@ -234,7 +122,9 @@ double Balance::heuristic(Node n){
             }
         }
     }
+    
     if(n.prev.at(2).at(0) == 0) h+= 1;
+
     //check for balance
     int mid = n.ship[0].size() / 2;
     double left = 0.0;
@@ -361,7 +251,6 @@ bool Balance::balanceGoalTest(Node n) {
     double left = 0.0;
     double right = 0.0;
 
-
     for (int i = 0; i < n.ship[0].size(); i++) {
         for (int j = 0; j < n.ship.size(); j++) {
             // Accumulate weights on the left side
@@ -376,7 +265,7 @@ bool Balance::balanceGoalTest(Node n) {
     }
     
 
-    if (min(right,left) / max(right,left) > 0.9){
+    if (min(right,left) / max(right,left) > 0.9 || left == 0 && right == 0){
          
            return true; // Is a goal
     }  
