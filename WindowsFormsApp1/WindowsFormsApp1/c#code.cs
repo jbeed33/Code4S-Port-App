@@ -80,15 +80,15 @@ namespace WindowsFormsApp1
 			Helper.flipShip(ship);
             using (var file = new StreamWriter(path))
             {
-                foreach (var row in ship)
-                {
-                    foreach (var container in row)
-                    {
-                        //file.WriteLine($"[{container.Pos.Item1},{container.Pos.Item2}], {{{container.Weight}}}, {container.Name}");
-                        string formattedLine = $"[{container.Pos.Item1:D2},{container.Pos.Item2:D2}], {{{container.Weight:D4}}}, {container.Name}";
-                        file.WriteLine(formattedLine);
-                    }
-                }
+				for (int row = 0; row < ship.Count; row++)
+				{
+					for (int col = 0; col < ship[0].Count; col++)
+					{
+						//file.WriteLine($"[{container.Pos.Item1},{container.Pos.Item2}], {{{container.Weight}}}, {container.Name}");
+						string formattedLine = $"[{row:D2},{col:D2}], {{{ship[row][col].Weight:D4}}}, {ship[row][col].Name}";
+						file.WriteLine(formattedLine);
+					}
+				}
             }
 
             string newPath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + "OUTBOUND" + Path.GetExtension(path));
