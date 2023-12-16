@@ -8,6 +8,7 @@
 using namespace std;
 
 class Balance : public Base{
+	public: 
 	vector<vector<int>> siftGoal;
 	void setSiftGoal(vector<int>);
 	void setup(Node&, vector<string>);
