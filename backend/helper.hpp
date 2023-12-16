@@ -37,102 +37,8 @@
 	return diffFound;
  }
 
- inline void trimPath(Node &current){
-	vector<vector<vector<int>>> path = current.path;
-	int start = -1;
-	vector<vector<vector<int>>> newPath;
-	for(int i = 0; i < path.size(); i++){
-		if(-1 == start && 0 == path[i][2][0]){	//Picking up container
-			start = i;
-		}
-		else if(-1 < start && 1 == path[i][2][0]){	//Setting down container
-			vector<vector<int>> move = {
-				path[start][1],
-				path[i][1],
-				{1}
-			};
-			newPath.push_back(move);
-			start = -1;
-		}
-	}
-	if(-1 < start){		//if the last move doesn't set down the container, do so here
-		
-		int row = path[path.size() - 1][1][0];
-		int col = path[path.size() - 1][1][1];
-		int dropZone = path[path.size() - 1][1][2];
-		cout << "DropZone" << dropZone << endl;
-		cout << "Row Before " << row << endl;
-		cout << "Col Before " << col << endl;
-		for(int i = row + 1; i < current.ship.size(); i++){
-			if(0 == current.ship[i][col].status){
-				row = i;
-			}
-		}
+ 
 
-		for(int i = 0; i < path.size(); i++){
-			cout << "Drop zones: "  << path[i][1][2] << endl;
-		}
-		
-		// if(){
-		// 	row = 1;
-		// 	col = 0;
-		// }
-		cout << "Row after " << row << endl;
-		cout << "Col after " << col << endl;
-		vector<vector<int>> move = {
-			path[start][1],
-			{row, col, 0},
-			{1}
-		};
-		newPath.push_back(move);
-	}
-	current.path = newPath;
- }
-
-  inline void trimCost(Node &current){
-	vector<vector<vector<int>>> path = current.path;
-
-	
-	int start = -1;
-	vector<vector<vector<int>>> newPath;
-	for(int i = 0; i < path.size(); i++){
-		if(-1 == start && 0 == path[i][2][0]){	//Picking up container
-			start = i;
-		}
-		else if(-1 < start && 1 == path[i][2][0]){	//Setting down container
-			vector<vector<int>> move = {
-				path[start][1],
-				path[i][1],
-				{1}
-			};
-			newPath.push_back(move);
-			start = -1;
-		}
-	}
-	if(-1 < start){		//if the last move doesn't set down the container, do so here
-		
-		int row = path[path.size() - 1][1][0];
-		int col = path[path.size() - 1][1][1];
-		int dropZone = path[path.size() - 1][1][2];
-		for(int i = row + 1; i < current.ship.size(); i++){
-			if(0 == current.ship[i][col].status){
-				row = i;
-			}
-		}
-
-		// if(){
-		// 	row = 1;
-		// 	col = 0;
-		// }
-		vector<vector<int>> move = {
-			path[start][1],
-			{row, col, 0},
-			{1}
-		};
-		newPath.push_back(move);
-	}
-	current.path = newPath;
- }
 
 inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, int left, int remainingWeight){
 	if(0 == numToChoose){
@@ -186,6 +92,34 @@ inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, 
 	dist += max(tmpRow, endRow) - min(tmpRow, endRow);
 
 	return dist;
+ }
+
+ inline void trimPath(Node &current){
+	vector<vector<vector<int>>> path = current.path;
+	path.push_back(current.prev);
+
+	int start = -1;
+	vector<vector<vector<int>>> newPath;
+	for(int i = 0; i < path.size(); i++){
+		if(-1 == start && 0 == path[i][2][0]){	//Picking up container
+			start = i;
+		}
+		else if(-1 < start && 1 == path[i][2][0]){	//Setting down container
+		   int cost = distBetweenPoints(path[start][1][0], path[start][1][1], path[start][1][2], path[i][1][0], path[i][1][1], path[i][1][2]);
+
+
+			vector<vector<int>> move = {
+				path[start][1],
+				path[i][1],
+				{1},
+				{cost}
+			};
+			newPath.push_back(move);
+			start = -1;
+		}
+	}
+	
+	current.path = newPath;
  }
 
  /*inline double findDistanceToBalanced(Node current){
@@ -405,7 +339,7 @@ inline double findDistanceToBalanced(Node current){
  }
 
 
-// // utility function for getAppDataPath
+// utility function for getAppDataPath
 // inline string convertWcharToString(const wchar_t* wide) {
 //     int bufferLength = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
 //     string path(bufferLength, 0);
@@ -425,7 +359,7 @@ inline double findDistanceToBalanced(Node current){
 //     }
 // }
 
-// write a given string to the file
+//write a given string to the file
 // inline void writeToFile(const string& fileName, const string& content) {
 //     string filePath = getAppDataPath();
 //     filePath += "\\ShipAi\\" + fileName;

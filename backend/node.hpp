@@ -53,6 +53,7 @@ struct Node {
 	*/	
 	vector<vector<int>> prev = {{0,0,0}, {0,0,0}, {1}};
     vector<vector<vector<int>>> path;
+    vector<int> costForPaths;
 
     bool operator!=(const Node& b) {
         
