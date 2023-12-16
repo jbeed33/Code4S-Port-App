@@ -117,7 +117,7 @@ namespace WindowsFormsApp1
 		}
 
 		public static void saveVariablesToFile()
-		{/*
+		{
 			//Ship variable paths
 			string shipPath = findFileInAppdatad("ship.shp");
 			string shipStatePath = findFileInAppdatad("shipState.shp");
@@ -132,7 +132,7 @@ namespace WindowsFormsApp1
 			//Other variable paths
 			string pathPath = findFileInAppdatad("path.shp");
 			string iteratorPath = findFileInAppdatad("iterator.shp");
-
+		/*
 			using (Stream stream = File.Open(shipPath, FileMode.Create))
 			{
 				BinaryFormatter formatter = new BinaryFormatter();

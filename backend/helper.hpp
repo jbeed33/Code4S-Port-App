@@ -43,10 +43,28 @@
 	current.path = newPath;
  }
 
+inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, int left, int remainingWeight){
+	if(0 == numToChoose){
+		if(0 >= max(left, remainingWeight)){
+			return true;
+		}
+		double bal = ((double)min(left, remainingWeight) / (double)max(left, remainingWeight));
+		return (bal > 0.9);
+	}
+	
+	if(numToChoose < weights.size() - startPos){
+		if(true == getPermutations(weights, startPos + 1, numToChoose, left, remainingWeight)){
+			return true;
+		}
+	}
+	bool tmp = getPermutations(weights, startPos + 1, numToChoose - 1, left + weights[startPos], remainingWeight - weights[startPos]);
+	return tmp;
+}
+
  inline bool bufferEmpty(Node current) {
  	for (int i = 0; i < BUFFERHEIGHT; i++) {
  		for (int j = 0; j < BUFFERWIDTH; j++) {
- 			if (0 > current.buffer[i][j].status)
+ 			if (0 < current.buffer[i][j].status)
  				return false;
  		}
  	}
@@ -95,8 +113,18 @@
  	return true;
  }
 
+
+ inline int distToPortal(Node current, int startRow, int startCol){
+	int dist = startCol + startRow;
+	int topOfCol = findTopShip(current.ship, startCol);
+	int movesToUncover = 1;
+	dist += movesToUncover * topOfCol - startRow;	//Distance to unbury the container
+	return dist;
+ }
+
+
 // utility function for getAppDataPath
-string convertWcharToString(const wchar_t* wide) {
+inline string convertWcharToString(const wchar_t* wide) {
     int bufferLength = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
     string path(bufferLength, 0);
     WideCharToMultiByte(CP_UTF8, 0, wide, -1, &path[0], bufferLength, NULL, NULL);
@@ -105,7 +133,7 @@ string convertWcharToString(const wchar_t* wide) {
 }
 
 // get appdata path
-string getAppDataPath() {
+inline string getAppDataPath() {
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
         return convertWcharToString(szPath);
@@ -116,7 +144,7 @@ string getAppDataPath() {
 }
 
 // write a given string to the file
-void writeToFile(const string& fileName, const string& content) {
+inline void writeToFile(const string& fileName, const string& content) {
     string filePath = getAppDataPath();
     filePath += "\\ShipAi\\" + fileName;
 

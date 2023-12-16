@@ -27,12 +27,7 @@ struct Node {
     double cost;
     double heuristic;
     double total;
-	int numToLoad;
-
-    Container i = {"", 0.0, -1};	//invalid space
-    Container e = {"", 0.0, 0};		//empty space
-    Container u = {"", 0.0, 1};		//container to unload
-    Container s = {"", 3.0, 2};		//container stays on ship
+	int numToLoad = 0;
 
     pair<int, int> cranePos;
     int craneLocation; // 0- ship, 1-truck, 2-buffer
