@@ -86,7 +86,7 @@ namespace WindowsFormsApp1
 
 		public static bool inputValidator(string name, string weight)
 		{
-			if(name == "NULL" || name == "" || name == "UNUSED")
+			if(name == "NAN" || name == "" || name == "UNUSED")
 			{
 				return false;
 			}

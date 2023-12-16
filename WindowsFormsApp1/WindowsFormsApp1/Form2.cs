@@ -42,18 +42,6 @@ namespace WindowsFormsApp1
 				Program.bufferStates.Add(filler);
 			}
 
-			List<string> firstNames = new List<string>();
-			List<int> firstStates = new List<int>();
-			List<int> firstWeights = new List<int>();
-			for(int i = 0; i < Program.ship[0].Count(); i++)
-			{
-				firstNames.Add("");
-				firstStates.Add(0);
-				firstWeights.Add(0);
-			}
-			Program.shipStates.Add(firstStates);
-			Program.shipNames.Add(firstNames);
-			Program.shipWeights.Add(firstWeights);
 			for(int row = 0; row < Program.ship.Count(); row++)
 			{
 				List<string> rowNames = new List<string>();
@@ -63,7 +51,7 @@ namespace WindowsFormsApp1
 				for(int col = 0; col < Program.ship[0].Count(); col++)
 				{
 					string name = Program.ship[row][col].Name;
-					if (name == "NULL" || name == "UNUSED")
+					if (name == "NAN" || name == "UNUSED")
 						name = "";
 					rowNames.Add(name);
 					rowStates.Add(Program.ship[row][col].Status);

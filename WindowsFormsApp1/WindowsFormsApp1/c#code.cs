@@ -26,13 +26,12 @@ namespace WindowsFormsApp1
         public static List<List<Container>> ReadManifest(string filePath)
         {
             var ship = new List<List<Container>>();
-			
+						
 			using (var manifest = new StreamReader(filePath))
             {
                 string line;
                 int currentRow = -1;
 				List<Container> rowOfContainers = new List<Container>();
-				rowOfContainers.Clear();
                 while ((line = manifest.ReadLine()) != null)
                 {
                     var Part = line.Substring(0, line.LastIndexOf('}') + 1);
@@ -52,6 +51,7 @@ namespace WindowsFormsApp1
                         Status = CheckName(namePart)
                     };
 
+
                     // Add container to the corresponding row
                     if (row != currentRow)
                     {
@@ -69,21 +69,23 @@ namespace WindowsFormsApp1
                 if (rowOfContainers.Count > 0)
                 {
                     ship.Add(rowOfContainers);
-					rowOfContainers.Clear();
                 }
-				Container empty = new Container()
+			}
+
+			List<Container> firstRow = new List<Container>();
+			for (int i = 0; i < 12; i++)
+			{
+				Container cont = new Container
 				{
 					Pos = Tuple.Create(0, 0),
 					Weight = 0,
 					Name = "UNUSED",
 					Status = 0
 				};
-				for (int i = 0; i < 12; i++)
-				{
-					rowOfContainers.Add(empty);
-				}
-				ship.Add(rowOfContainers);
+				firstRow.Add(cont);
 			}
+			ship.Add(firstRow);
+
 			ship.Reverse();
             return ship;
         }

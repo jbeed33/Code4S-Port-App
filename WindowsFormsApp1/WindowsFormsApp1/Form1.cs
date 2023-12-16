@@ -298,6 +298,7 @@ namespace WindowsFormsApp1
 			createBuffer();
 			if(true == Program.displayingSteps)	//Running balance, don't need to wait for user input
 			{
+				loadForm.Hide();
 				Helper.runAi();
 				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
 			}
@@ -346,8 +347,10 @@ namespace WindowsFormsApp1
 			if (row < 0 || col < 0)
 				return;
 
-			nameLabel.Text = Program.ship[row][col].Name.ToString();
-			weightLabel.Text = Program.ship[row][col].Weight.ToString();
+			String tmp = Program.shipNames[row][col].ToString();
+			nameLabel.Text = tmp;
+			if("" != tmp)
+				weightLabel.Text = Program.ship[row][col].Weight.ToString();
 		}
 
 		private void ship_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
@@ -397,10 +400,12 @@ namespace WindowsFormsApp1
 		{
 			if (false == Program.displayingSteps)	//Load/unload, still need to get the user input
 			{
+				Program.numToLoad = int.Parse(numToLoadField.Text);
 				Helper.runAi();
 				Program.displayingSteps = true;
 				ship.Refresh();
 				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+				loadForm.Hide();
 				colorStates();
 				displayMove(Program.path[Program.iterator]);
 				return;
@@ -455,6 +460,11 @@ namespace WindowsFormsApp1
 			TextBox obj = (TextBox)sender;
 			obj.SelectionStart = 0;
 			obj.SelectionLength = obj.Text.Length;
+		}
+
+		private void numToLoadField_TextChanged(object sender, EventArgs e)
+		{
+			Helper.textBoxValidator(sender, @"^\d{1,2}$", 1000);
 		}
 	}
 }
