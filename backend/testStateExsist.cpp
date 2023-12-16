@@ -163,7 +163,7 @@ bool test4(){
     nodeToAdd2.heuristic = 4;
     
     b.frontier.push_back(nodeToAdd);
-    b.frontier.push_back(nodeToAdd2);
+    b.closed.push_back(nodeToAdd2);
     bool result = b.stateExists(n);
     bool expect = true;
 

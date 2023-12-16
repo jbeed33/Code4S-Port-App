@@ -124,39 +124,42 @@ inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, 
  }
 
 
-// utility function for getAppDataPath
-inline string convertWcharToString(const wchar_t* wide) {
-    int bufferLength = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
-    string path(bufferLength, 0);
-    WideCharToMultiByte(CP_UTF8, 0, wide, -1, &path[0], bufferLength, NULL, NULL);
-    path.pop_back();
-    return path;
-}
+// // utility function for getAppDataPath
+// inline string convertWcharToString(const wchar_t* wide) {
+//     int bufferLength = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
+//     string path(bufferLength, 0);
+//     WideCharToMultiByte(CP_UTF8, 0, wide, -1, &path[0], bufferLength, NULL, NULL);
+//     path.pop_back();
+//     return path;
+// }
 
-// get appdata path
-inline string getAppDataPath() {
-    TCHAR szPath[MAX_PATH];
-    if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
-        return convertWcharToString(szPath);
-    } else {
-        cerr << "Failed to retrieve the AppData path." << endl;
-        return "";
-    }
-}
+// // get appdata path
+// inline string getAppDataPath() {
+//     TCHAR szPath[MAX_PATH];
+//     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
+//         return convertWcharToString(szPath);
+//     } else {
+//         cerr << "Failed to retrieve the AppData path." << endl;
+//         return "";
+//     }
+// }
 
 // write a given string to the file
-inline void writeToFile(const string& fileName, const string& content) {
-    string filePath = getAppDataPath();
-    filePath += "\\ShipAi\\" + fileName;
+// inline void writeToFile(const string& fileName, const string& content) {
+//     string filePath = getAppDataPath();
+//     filePath += "\\ShipAi\\" + fileName;
 
-    ofstream file(filePath);
+//     ofstream file(filePath);
 
-    if (file.is_open()) {
-        file << content;
-        file.close();
-        cout << "File written successfully to " << filePath << endl;
-    } else {
-        cerr << "Unable to open file." << endl;
-    }
-}
+//     if (file.is_open()) {
+//         file << content;
+//         file.close();
+//         cout << "File written successfully to " << filePath << endl;
+//     } else {
+//         cerr << "Unable to open file." << endl;
+//     }
+// }
  #endif
+
+
+
