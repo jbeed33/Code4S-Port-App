@@ -24,10 +24,6 @@ namespace WindowsFormsApp1
 		Color end = Color.MediumPurple;
 
 
-		public static DataTable shipData;
-		public static DataTable bufferData;
-		public static int iterator = 0;
-
 		public moves()
         {
             InitializeComponent();
@@ -94,7 +90,7 @@ namespace WindowsFormsApp1
 
         void createShip()
         {
-            shipData = new DataTable();
+            Program.shipData = new DataTable();
 			DataColumn col;
 			for(int i = 1; i <= 12; i++)
 			{
@@ -105,28 +101,28 @@ namespace WindowsFormsApp1
 				{
 					col.ColumnName = "0" + col.ColumnName;
 				}
-				shipData.Columns.Add(col);
+				Program.shipData.Columns.Add(col);
 			}
 
 			for(int i = 0; i < 9; i++)
 			{
-				DataRow row = shipData.NewRow();
-				shipData.Rows.Add(row);
+				DataRow row = Program.shipData.NewRow();
+				Program.shipData.Rows.Add(row);
 			}
 			for(int i = 0; i < 9; i++)
 			{
 				for (int j = 0; j < 12; j++)
 				{
-					shipData.Rows[i][j] = Program.shipNames[i][j];
+					Program.shipData.Rows[i][j] = Program.shipNames[i][j];
 				}
 			}
 			ship.RowHeadersWidth = 52;
-			ship.DataSource = shipData;
+			ship.DataSource = Program.shipData;
         }
 
 		void createBuffer()
 		{
-			bufferData = new DataTable();
+			Program.bufferData = new DataTable();
 			DataColumn col;
 			for (int i = 1; i <= Program.BUFFERWIDTH; i++)
 			{
@@ -137,13 +133,13 @@ namespace WindowsFormsApp1
 				{
 					col.ColumnName = "0" + col.ColumnName;
 				}
-				bufferData.Columns.Add(col);
+				Program.bufferData.Columns.Add(col);
 			}
 
 			for (int i = 0; i < Program.BUFFERHEIGHT; i++)
 			{
-				DataRow row = bufferData.NewRow();
-				bufferData.Rows.Add(row);
+				DataRow row = Program.bufferData.NewRow();
+				Program.bufferData.Rows.Add(row);
 			}
 
 			//Setup the buffer states
@@ -157,7 +153,7 @@ namespace WindowsFormsApp1
 				Program.bufferStates.Add(row);
 			}
 			buffer.RowHeadersWidth = 48;
-			buffer.DataSource = bufferData;
+			buffer.DataSource = Program.bufferData;
 		}
 
 		void displayMove(List<List<int>> move)
@@ -200,12 +196,12 @@ namespace WindowsFormsApp1
 			if (0 == startZone)	//Ship
 			{
 				//Get data from starting position
-				name = shipData.Rows[startRow][startCol].ToString();
+				name = Program.shipData.Rows[startRow][startCol].ToString();
 				state = Program.shipStates[startRow][startCol];
 				weight = Program.shipWeights[startRow][startCol];
 				
 				//Update local: make starting position empty
-				shipData.Rows[startRow][startCol] = "";
+				Program.shipData.Rows[startRow][startCol] = "";
 				Program.shipStates[startRow][startCol] = 0;
 				Program.shipWeights[startRow][startCol] = 0;
 				
@@ -229,20 +225,20 @@ namespace WindowsFormsApp1
 			else	//Buffer
 			{
 				//Get data from starting position
-				name = bufferData.Rows[startRow][startCol].ToString();
+				name = Program.bufferData.Rows[startRow][startCol].ToString();
 				weight = Program.bufferWeights[startRow][startCol];
 				state = Program.bufferStates[startRow][startCol];
 
 				//Update local: make starting position empty
-				bufferData.Rows[startRow][startCol] = "";
+				Program.bufferData.Rows[startRow][startCol] = "";
 				Program.bufferStates[startRow][startCol] = 0;
-				name = bufferData.Rows[startRow][startCol].ToString();
+				name = Program.bufferData.Rows[startRow][startCol].ToString();
 			}
 
 			if (0 == endZone)	//Ship
 			{
 				//Assign data to position
-				shipData.Rows[endRow][endCol] = name;
+				Program.shipData.Rows[endRow][endCol] = name;
 				Program.shipWeights[endRow][endCol] = weight;
 				Program.shipStates[endRow][endCol] = state;
 
@@ -255,8 +251,8 @@ namespace WindowsFormsApp1
 			else if (2 == endZone)	//Buffer
 			{
 				//Assign data to position
-				bufferData.Rows[endRow][endCol] = name;
-				Program.shipWeights[endRow][endCol] = weight;
+				Program.bufferData.Rows[endRow][endCol] = name;
+				Program.bufferWeights[endRow][endCol] = weight;
 				Program.bufferStates[endRow][endCol] = state;
 			}
 			ship.Refresh();
@@ -328,7 +324,7 @@ namespace WindowsFormsApp1
 				buffer.Rows[i].HeaderCell.Value = header;
 			}
 			colorStates();
-			displayMove(Program.path[iterator]);
+			displayMove(Program.path[Program.iterator]);
 		}
 
 		private void buffer_SelectionChanged(object sender, EventArgs e)
@@ -359,7 +355,7 @@ namespace WindowsFormsApp1
 		{
 			Program.windows.Remove(this);
 			Program.windows[0].Show();
-			iterator = 0;
+			Program.iterator = 0;
 		}
 
 		void finishedSteps()
@@ -371,10 +367,10 @@ namespace WindowsFormsApp1
 
 		void loadContainer(string name, int weight)
 		{
-			int endRow = Program.path[iterator][1][0];
-			int endCol = Program.path[iterator][1][1];
+			int endRow = Program.path[Program.iterator][1][0];
+			int endCol = Program.path[Program.iterator][1][1];
 
-			shipData.Rows[endRow][endCol] = name;
+			Program.shipData.Rows[endRow][endCol] = name;
 			Container cont = new Container();
 			cont.Name = name;
 			cont.Weight = weight;
@@ -396,13 +392,12 @@ namespace WindowsFormsApp1
 				Program.displayingSteps = true;
 				return;
 			}
-			//moveContainer(Program.path[iterator]);
-			if (Program.path.Count <= iterator + 1)
+			if (Program.path.Count <= Program.iterator + 1)
 			{
 				finishedSteps();
 				return;
 			}
-			if (1 == Program.path[iterator][0][2])	//Starting on the truck means loading a container
+			if (1 == Program.path[Program.iterator][0][2])	//Starting on the truck means loading a container
 			{
 				if(true == Helper.inputValidator(newName.Text, newWeight.Text))
 				{
@@ -414,9 +409,10 @@ namespace WindowsFormsApp1
 					return;
 				}
 			}
-			iterator++;
+			moveContainer(Program.path[Program.iterator]);
+			Program.iterator++;
 			colorStates();
-			displayMove(Program.path[iterator]);
+			displayMove(Program.path[Program.iterator]);
 			Helper.saveVariablesToFile();
 		}
 

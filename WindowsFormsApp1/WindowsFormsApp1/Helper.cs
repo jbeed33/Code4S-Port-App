@@ -90,8 +90,10 @@ namespace WindowsFormsApp1
 			{
 				return false;
 			}
-			double tmp;
-			if (true == double.TryParse(weight, out tmp))
+			if ("" == weight)
+				return false;
+			int tmp;
+			if (true == int.TryParse(weight, out tmp))
 			{
 				if (tmp < 0)
 					return false;
@@ -125,6 +127,12 @@ namespace WindowsFormsApp1
 				string shipStatePath = findFileInAppdatad("shipState.shp");
 				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
 				string shipDataPath = findFileInAppdatad("shipData.xml");
+		{
+			//Ship variable paths
+			string shipPath = findFileInAppdatad("ship.shp");
+			string shipStatePath = findFileInAppdatad("shipState.shp");
+			string shipWeightPath = findFileInAppdatad("shipWeight.shp");
+			string shipDataPath = findFileInAppdatad("shipData.xml");
 
 				//Buffer variable paths
 				string bufferStatePath = findFileInAppdatad("bufferState.shp");
@@ -261,8 +269,11 @@ namespace WindowsFormsApp1
 			{
 				Console.WriteLine($"Error loading {filePath}: {ex.Message}");
 			}
+			using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
+			{
+				moves.bufferData.WriteXml(stream);
+			}*/
 		}
-
 
 		public static void runAi()
 		{/*
@@ -276,7 +287,10 @@ namespace WindowsFormsApp1
 				}
 			};
 			
-			process.Start();*/
+			process.Start();
+			process.WaitForExit();
+			process.Close();
+			*/
 		}
 	}
 }

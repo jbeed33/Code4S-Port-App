@@ -55,6 +55,7 @@ namespace WindowsFormsApp1
 			{
 				List<string> rowNames = new List<string>();
 				List<int> rowStates = new List<int>();
+				List<int> rowWeights = new List<int>();
 
 				for(int col = 0; col < Program.ship[0].Count(); col++)
 				{
@@ -63,9 +64,11 @@ namespace WindowsFormsApp1
 						name = "";
 					rowNames.Add(name);
 					rowStates.Add(Program.ship[row][col].Status);
+					rowWeights.Add(Program.ship[row][col].Weight);
 				}
 				Program.shipNames.Add(rowNames);
 				Program.shipStates.Add(rowStates);
+				Program.shipWeights.Add(rowWeights);
 			}
 			moves newWindow = new moves();
 			newWindow.Show();
