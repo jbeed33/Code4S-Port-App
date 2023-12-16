@@ -120,100 +120,150 @@ namespace WindowsFormsApp1
 
 		public static void saveVariablesToFile()
 		{
-			//Ship variable paths
-			string shipPath = findFileInAppData("ship.shp");
-			string shipStatePath = findFileInAppData("shipState.shp");
-			string shipWeightPath = findFileInAppData("shipWeight.shp");
-			string shipDataPath = findFileInAppData("shipData.xml");
+			try
+			{
+				//Ship variable paths
+				//string shipPath = findFileInAppdatad("ship.shp");
+				string shipStatePath = findFileInAppdatad("shipState.shp");
+				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
+				string shipDataPath = findFileInAppdatad("shipData.xml");
 
-			//Buffer variable paths
-			string bufferStatePath = findFileInAppData("bufferState.shp");
-			string bufferWeightPath = findFileInAppData("bufferWeight.shp");
-			string bufferDataPath = findFileInAppData("BufferData.xml");
+				//Buffer variable paths
+				string bufferStatePath = findFileInAppdatad("bufferState.shp");
+				string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
+				string bufferDataPath = findFileInAppdatad("bufferData.xml");
 
-			//Other variable paths
-			string pathPath = findFileInAppData("path.shp");
-			string iteratorPath = findFileInAppData("iterator.shp");
-		/*
-			using (Stream stream = File.Open(shipPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.ship);
-			}
-			using (Stream stream = File.Open(shipStatePath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.shipStates);
-			}
-			using (Stream stream = File.Open(shipWeightPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.shipWeights);
-			}
-			using (Stream stream = File.Open(bufferStatePath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.bufferStates);
-			}
-			using (Stream stream = File.Open(bufferWeightPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.bufferWeights);
-			}
-			using (Stream stream = File.Open(pathPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.path);
-			}
-			using (Stream stream = File.Open(iteratorPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, moves.iterator);
-			}
+				//Other variable paths
+				string pathPath = findFileInAppdatad("path.shp");
+				string iteratorPath = findFileInAppdatad("iterator.shp");
 
-			using (Stream stream = File.Open(shipDataPath, FileMode.Create))
-			{
-				moves.shipData.WriteXml(stream);
+				//Save ship object
+				//saveObjectToFile(shipPath, Program.ship);
+
+				// Save shipStates object
+				saveObjectToFile(shipStatePath, Program.shipStates);
+
+				// Save shipWeights object
+				saveObjectToFile(shipWeightPath, Program.shipWeights);
+
+				// Save bufferStates object
+				saveObjectToFile(bufferStatePath, Program.bufferStates);
+
+				// Save bufferWeights object
+				saveObjectToFile(bufferWeightPath, Program.bufferWeights);
+
+				// Save path object
+				saveObjectToFile(pathPath, Program.path);
+
+				// Save iterator object
+				saveObjectToFile(iteratorPath, Program.iterator);
+
+				Program.shipData.TableName = "ShipData";
+				using (Stream stream = File.Open(shipDataPath, FileMode.Create))
+				{
+					Program.shipData.WriteXml(stream);
+				}
+				Program.bufferData.TableName = "BufferData";
+				using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
+				{
+					Program.bufferData.WriteXml(stream);
+				}
 			}
-			using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
+			catch (Exception ex)
 			{
-				moves.bufferData.WriteXml(stream);
-			}*/
+				// Handle the exception (e.g., log, report, or retry)
+				Console.WriteLine($"Error during save operation: {ex.Message}");
+			}
 		}
 
-		public static List<List<int>> ReadFileInAppData(string filename)
-        {
-			string filePath = findFileInAppData(filename);
-            List<List<int>> data = new List<List<int>>();
+		public static void saveObjectToFile<T>(string filePath, T obj)
+		{
+			string tempFilePath = filePath + ".temp";
 
-            try
-            {
-                foreach (string line in File.ReadAllLines(filePath))
-                {
-                    List<int> innerList = new List<int>();
-                    string[] entries = line.Split(' ');
+			try
+			{
+				using (Stream stream = File.Open(tempFilePath,FileMode.Create))
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.Serialize(stream, obj);
+				}
 
-                    foreach (string entry in entries)
-                    {
-                        if (int.TryParse(entry, out int number))
-                        {
-                            innerList.Add(number);
-                        }
-                    }
+				File.Delete(filePath);
+				File.Move(tempFilePath, filePath);
+			}
+			catch (Exception)
+			{
+				Console.WriteLine($"Error saving {filePath}");
+			}
+		}
 
-                    if (innerList.Count > 0)
-                    {
-                        data.Add(innerList);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error reading file: {ex.Message}");
-            }
+		public static void loadVariablesFromFile()
+		{
+			try
+			{
+				string shipStatePath = findFileInAppdatad("shipState.shp");
+				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
+				string shipDataPath = findFileInAppdatad("shipData.xml");
 
-            return data;
-        }
+				//Buffer variable paths
+				string bufferStatePath = findFileInAppdatad("bufferState.shp");
+				string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
+				string bufferDataPath = findFileInAppdatad("bufferData.xml");
+
+				//Other variable paths
+				string pathPath = findFileInAppdatad("path.shp");
+				string iteratorPath = findFileInAppdatad("iterator.shp");
+
+
+				// Ship variable paths
+				loadObjectFromFile(shipStatePath, out Program.shipStates);
+				loadObjectFromFile(shipWeightPath, out Program.shipWeights);
+
+				// Buffer variable paths
+				loadObjectFromFile(bufferStatePath, out Program.bufferStates);
+				loadObjectFromFile(bufferWeightPath, out Program.bufferWeights);
+
+				// Other variable paths
+				loadObjectFromFile(pathPath, out Program.path);
+				loadObjectFromFile(iteratorPath, out Program.iterator);
+
+				// Ship data
+				using (Stream stream = File.Open(findFileInAppdatad("shipData.xml"), FileMode.Open))
+				{
+					Program.shipData.ReadXml(stream);
+				}
+
+				// Buffer data
+				using (Stream stream = File.Open(findFileInAppdatad("bufferData.xml"), FileMode.Open))
+				{
+					Program.bufferData.ReadXml(stream);
+				}
+			}
+			catch (Exception ex)
+			{
+				// Handle the exception (e.g., log, report, or retry)
+				Console.WriteLine($"Error during load operation: {ex.Message}");
+			}
+		}
+
+
+		public static void loadObjectFromFile<T>(string filePath, out T obj)
+		{
+			obj = default(T); // Initialize obj with default value for type T
+
+			try
+			{
+				using (Stream stream = File.Open(filePath, FileMode.Open))
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					obj = (T)formatter.Deserialize(stream);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error loading {filePath}: {ex.Message}");
+			}
+		}
 
 		public static void setPath(List<List<int>> newPath)
 		{
