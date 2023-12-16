@@ -179,6 +179,41 @@ namespace WindowsFormsApp1
 			}*/
 		}
 
+		public static List<List<int>> ReadFileInAppData(string filename)
+        {
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string filePath = Path.Combine(appDataPath, $"ShipAi\\", filename);
+            List<List<int>> data = new List<List<int>>();
+
+            try
+            {
+                foreach (string line in File.ReadAllLines(filePath))
+                {
+                    List<int> innerList = new List<int>();
+                    string[] entries = line.Split(' ');
+
+                    foreach (string entry in entries)
+                    {
+                        if (int.TryParse(entry, out int number))
+                        {
+                            innerList.Add(number);
+                        }
+                    }
+
+                    if (innerList.Count > 0)
+                    {
+                        data.Add(innerList);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading file: {ex.Message}");
+            }
+
+            return data;
+        }
+
 		public static void runAi()
 		{
 			string path = "D:\\phoen\\Documents\\ship_cases\\a.exe";
