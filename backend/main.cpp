@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Balance.hpp"
+#include "LoadUnload.hpp"
 #include "readManifest.hpp"
 
 using namespace std;
@@ -37,38 +38,6 @@ bool craneMovementTest1(){
 	for(int i = 0; i < path.size(); i++){
 		printf("%d %d\t%d %d\n", path[i][0][0], path[i][0][1], path[i][1][0], path[i][1][1]);
 	}
-
-    // vector<vector<int>> expectedMoves = {
-    //     {0,1,0},
-    //     {0,3,0},
-    //     {1,2,1}
-    // };
-
-    // if(b.frontier.size() != expectedMoves.size()){
-    //     cout << "craneMoves size: " << b.frontier.size() << endl;
-    //     cout << "Expected Moves size: " << expectedMoves.size() << endl;
-    //     cout << "craneMoves size does not equal to expectedMoves size" << endl;
-    //     return false;
-    // }
-    // for(int i = 0; i < b.frontier.size(); i++){
-    //     int expectedEndRow = expectedMoves.at(i).at(0);
-    //     int expectedEndCol = expectedMoves.at(i).at(1);
-    //     int expectedEndZone = expectedMoves.at(i).at(2);
-
-    //     int endRow = b.frontier.at(i).prev.at(1).at(0);
-    //     int endCol = b.frontier.at(i).prev.at(1).at(1);
-    //     int endZone = b.frontier.at(i).prev.at(1).at(2);
-
-    //     if(expectedEndRow != endRow || expectedEndCol != endCol || expectedEndZone != endZone){
-    //         cout << "Test 1 Failed" << endl;
-    //         return false;
-    //     }
-
-    //     cout << "Node cost at index " << i << " : " << b.frontier.at(i).cost << endl;
-    //     cout << "Node hurerstic at index " << i << " : " << b.frontier.at(i).heuristic << endl;
-    // }
-
-    // cout << "Test 1 passed" << endl;
     return true;
 }
 
@@ -77,28 +46,24 @@ int main(int argc, char *argv[]){
 //	craneMovementTest1();
 ///*
 	string manifestPath = argv[1];
+	vector<vector<Container>> manifest = readManifest(manifestPath);
+
 	if(argc > 2){	//Load unload
 		int numToLoad = atoi(argv[2]);
 		vector<string> names;
 		for(int i = 3; i < argc; i++){
 			names.push_back(argv[i]);
 		}
-		
+		LoadUnload ai = LoadUnload();
+		Node result = ai.search(manifest, 8, 1, 0, numToLoad, names);
+		vector<vector<vector<int>>> path = result.path;
+		writePathToFile(path);	
 	}
 	else{		//Balance
 		Balance ai = Balance();
-		vector<vector<Container>> manifest = readManifest(manifestPath);
 		Node result = ai.search(manifest, 0, 0, 0, 0, {});
 		vector<vector<vector<int>>> path = result.path;
-		for(int i = 0; i < path.size(); i++){
-			printf("%d %d\t%d %d\n", path[i][0][0], path[i][0][1], path[i][1][0], path[i][1][1]);
-		}
-	}
-	ofstream test;
-	test.open("D:\\phoen\\Documents\\ship_cases\\test.txt");
-	if(test.is_open()){
-		test << "testing" << endl;
-		test.close();
+		writePathToFile(path);
 	}
 //*/
     return 0;

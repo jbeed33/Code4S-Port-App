@@ -6,7 +6,16 @@
 #include <tuple>
 #include <string>
 
-using namespace std;
+//using namespace std;
+using std::vector;
+using std::cout;
+using std::endl;
+using std::string;
+using std::pair;
+using std::max;
+using std::min;
+using std::cerr;
+using std::to_string;
 
 const int BUFFERWIDTH = 24;
 const int BUFFERHEIGHT = 5;
@@ -24,7 +33,7 @@ struct Container {
 
 struct Node {
 
-    double cost;
+    int cost;
     double heuristic;
     double total;
 	int numToLoad = 0;
