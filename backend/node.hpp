@@ -92,7 +92,7 @@ struct Node {
             }
         }
 
-        return false;
+        return false; 
     }
 
     void removeContainerNameFromRemoveList(string name) {
