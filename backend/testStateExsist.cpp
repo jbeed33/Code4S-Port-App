@@ -71,7 +71,6 @@ bool test2(){
 		{e, e, e, e, e, e, e, e, e, e, e, e}
         
 	};
-
     
     b.frontier.push_back(n);
     bool result = b.stateExists(n);
