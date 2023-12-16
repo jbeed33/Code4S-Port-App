@@ -58,7 +58,7 @@ bool test2(){
     int col = 0;
     n.craneLocation = 0;
 
-     n.ship = { 
+     n.ship = {  
 
 		{e, e, e, e, e, e, e, e, e, e, e, e},
 		{e, e, e, e, e, e, e, e, e, e, e, e},

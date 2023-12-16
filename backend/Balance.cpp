@@ -8,7 +8,7 @@ void Balance::setup(){
 
 bool Balance::stateExists(Node currentState){
 
-   bool isSameState = false;
+   bool isSameState = false; 
  
    //check closed list
    for(int i = 0; i < closed.size(); i++){

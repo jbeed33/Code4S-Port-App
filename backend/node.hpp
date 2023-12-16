@@ -67,7 +67,7 @@ struct Node {
         if(craneLocation != b.craneLocation) return true;
 
         //check numToLoad
-        if(numToLoad != b.numToLoad) return true;
+        if(numToLoad != b.numToLoad) return true; 
 
         //crane already has container
         if(prev.at(2).at(0) != b.prev.at(2).at(0)) return true;
