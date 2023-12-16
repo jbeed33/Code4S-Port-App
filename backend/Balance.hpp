@@ -5,6 +5,7 @@
 using namespace std;
 
 class Balance : public Base{
+	public: 
 	void setup();
 	bool stateExists(Node currentState);
 	double heuristic(Node);

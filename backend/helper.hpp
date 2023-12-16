@@ -43,7 +43,7 @@
  inline bool bufferEmpty(Node current) {
  	for (int i = 0; i < BUFFERHEIGHT; i++) {
  		for (int j = 0; j < BUFFERWIDTH; j++) {
- 			if (0 > current.buffer[i][j].status)
+ 			if (0 < current.buffer[i][j].status)
  				return false;
  		}
  	}
@@ -91,5 +91,6 @@
 
  	return true;
  }
+
 
  #endif
