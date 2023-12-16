@@ -14,6 +14,7 @@ class Balance : public Base{
 	bool stateExists(Node currentState);
 	double heuristic(Node);
 	double siftHeuristic(Node);
+	bool siftGoalTest(Node);
   	bool requireSift(Node initialState);
     bool balanceGoalTest(Node);
 };

@@ -26,109 +26,140 @@ bool Balance::stateExists(Node currentState){
 }
 
 
-/*double Balance::siftHeuristic(Node current){
-	double incorrect = 0;
-	vector<vector<Container>> ship = current.ship;
-	//Loop Through goal state cells
-	for(int goalRow = 0; goalRow < SHIPHEIGHT; goalRow++){	//Start at the bottom of the ship
-		for(int goalCol = 0; goalCol < SHIPWIDTH; goalCol++){
-			int weight = siftGoal[goalRow][goalCol];
-			int best = 256;
-			int foundRow = -1;
-			int foundCol = -1;
-			if(-1 < weight){	//Don't need to find distance to empty cell
-				//loop through ship cells to find shortest move to valid goal cell
-				for(int row = 0; row < SHIPHEIGHT; row++){
-					for(int col = 0; col < SHIPWIDTH; col++){
-						if(2 == ship[row][col].status){	//Not marked yet
-							if(ship[row][col].weight == weight){	//Can be placed in current goal cell
-								int tmp = (row - goalRow) + (col - goalCol);
-								if(tmp < best){
-									foundRow = row;
-									foundCol = col;
-									best = tmp;
-								}
-							}
-						}
-					}
-				}
-				if(-1 == foundRow){	//At least one match was found
-					foundRow = 0;
-					foundCol = 0 - PORTALTIME;
-				}
-				ship[foundRow][foundCol].status = 1;	//Marks the container as used	|	Doesn't change the node's ship
-				incorrect += sqrt(pow(foundRow - goalRow, 2) + pow(foundCol - goalCol, 2));	//euclidean distance
-			}
-		}
-	}
-	return incorrect;
-}*/
+// double Balance::siftHeuristic(Node current){
+
+// 	double incorrect = 0;
+// 	vector<vector<Container>> ship = current.ship;
+// 	//Loop Through goal state cells
+// 	for(int goalRow = 0; goalRow < SHIPHEIGHT; goalRow++){	//Start at the bottom of the ship
+// 		for(int goalCol = 0; goalCol < SHIPWIDTH; goalCol++){
+// 			int weight = siftGoal[goalRow][goalCol];
+// 			int best = 256;
+// 			int foundRow = -1;
+// 			int foundCol = -1;
+// 			if(-1 < weight){	//Don't need to find distance to empty cell
+// 				//loop through ship cells to find shortest move to valid goal cell
+// 				for(int row = 0; row < SHIPHEIGHT; row++){
+// 					for(int col = 0; col < SHIPWIDTH; col++){
+// 						if(2 == ship[row][col].status){	//Not marked yet
+// 							if(ship[row][col].weight == weight){	//Can be placed in current goal cell
+// 								int tmp = (row - goalRow) + (col - goalCol);
+// 								if(tmp < best){
+// 									foundRow = row;
+// 									foundCol = col;
+// 									best = tmp;
+// 								}
+// 							}
+// 						}
+// 					}
+// 				}
+// 				if(-1 == foundRow){	//At least one match was found
+// 					foundRow = 0;
+// 					foundCol = 0 - PORTALTIME;
+// 				}
+// 				ship[foundRow][foundCol].status = 1;	//Marks the container as used	|	Doesn't change the node's ship
+// 				incorrect += sqrt(pow(foundRow - goalRow, 2) + pow(foundCol - goalCol, 2));	//euclidean distance
+// 			}
+// 		}
+// 	}
+// 	return incorrect;
+// }
 
 double Balance::siftHeuristic(Node current){
-	
 	double incorrect = 0;
-	
-	//incorrect += findAverageDistanceToCrane(current);
 	vector<vector<Container>> ship = current.ship;
 	//Loop Through goal state cells
 	for(int goalRow = 0; goalRow < SHIPHEIGHT; goalRow++){	//Start at the bottom of the ship
 		for(int goalCol = 0; goalCol < SHIPWIDTH; goalCol++){
-			int weight = siftGoal[goalRow][goalCol];
-			int best = 256;
-			int foundRow = -1;
-			int foundCol = -1;
-			int foundZone = -1;
-			if(-1 < weight){	//Don't need to find distance to empty cell
-				//loop through ship cells to find shortest move to valid goal cell
-				for (int j = 0; j < SHIPWIDTH; j++) {
-					for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
- 						if (2 == current.ship[i][j].status){
-							if(weight == current.ship[i][j].weight){
-								int tmp = distBetweenPoints(SHIPHEIGHT / 2, SHIPWIDTH / 2, 0, i, j, 0);
-								if(tmp < best){
-									foundRow = i;
-									foundCol = j;
-									foundZone = 0;
-									best = tmp;
-								}
-							}
-						}
-						else if(0 == current.ship[i][j].status){	//No more containers in column
-							break;
-						}
- 					}
- 				}
- 				for (int j = 0; j < BUFFERWIDTH; j++) {
-					for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
- 						if (2 == current.buffer[i][j].status){
-							if(weight == current.buffer[i][j].weight){
-								int tmp = distBetweenPoints(BUFFERHEIGHT / 2, BUFFERWIDTH / 2, 2, i, j, 0);
-								if(tmp < best){
-									foundRow = i;
-									foundCol = j;
-									foundZone = 2;
-									best = tmp;
-								}
-							}
-						}
-						else if(0 == current.buffer[i][j].status){
-							break;
-						}
- 					}
- 				}
-				if(-1 < foundZone){	//At least one match was found
-					if(0 == foundZone)
-						ship[foundRow][foundCol].status = 1;	//Marks the container as used	|	Doesn't change the node's ship
-					else{
-						ship[foundRow][foundCol].status = 1;
-					}
-					incorrect += best;
-				}
-			}
+			 if(current.ship[goalRow][goalCol].weight != siftGoal[goalRow][goalCol]) return incorrect++;
 		}
 	}
+
 	return incorrect;
 }
+
+
+bool Balance::siftGoalTest(Node current){
+	double incorrect = 0;
+	vector<vector<Container>> ship = current.ship;
+	//Loop Through goal state cells
+	for(int goalRow = 0; goalRow < SHIPHEIGHT; goalRow++){	//Start at the bottom of the ship
+		for(int goalCol = 0; goalCol < SHIPWIDTH; goalCol++){
+			 if(current.ship[goalRow][goalCol].weight != siftGoal[goalRow][goalCol]) return false;
+		}
+	}
+
+	return true;
+}
+// double Balance::siftHeuristic(Node current){
+	
+// 	double incorrect = 0;
+
+// 	if(siftGoalTest(current) == true){
+// 		return 0.0;
+// 	}
+	
+// 	incorrect += findAverageDistanceToCrane(current);
+// 	vector<vector<Container>> ship = current.ship;
+// 	//Loop Through goal state cells
+// 	for(int goalRow = 0; goalRow < SHIPHEIGHT; goalRow++){	//Start at the bottom of the ship
+// 		for(int goalCol = 0; goalCol < SHIPWIDTH; goalCol++){
+// 			int weight = siftGoal[goalRow][goalCol];
+// 			int best = 256;
+// 			int foundRow = -1;
+// 			int foundCol = -1;
+// 			int foundZone = -1;
+// 			if(-1 < weight){	//Don't need to find distance to empty cell
+// 				//loop through ship cells to find shortest move to valid goal cell
+// 				for (int j = 0; j < SHIPWIDTH; j++) {
+// 					for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
+//  						if (2 == current.ship[i][j].status){
+// 							if(weight == current.ship[i][j].weight){
+// 								int tmp = distBetweenPoints(SHIPHEIGHT / 2, SHIPWIDTH / 2, 0, i, j, 0);
+// 								if(tmp < best){
+// 									foundRow = i;
+// 									foundCol = j;
+// 									foundZone = 0;
+// 									best = tmp;
+// 								}
+// 							}
+// 						}
+// 						else if(0 == current.ship[i][j].status){	//No more containers in column
+// 							break;
+// 						}
+//  					}
+//  				}
+//  				for (int j = 0; j < BUFFERWIDTH; j++) {
+// 					for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
+//  						if (2 == current.buffer[i][j].status){
+// 							if(weight == current.buffer[i][j].weight){
+// 								int tmp = distBetweenPoints(BUFFERHEIGHT / 2, BUFFERWIDTH / 2, 2, i, j, 0);
+// 								if(tmp < best){
+// 									foundRow = i;
+// 									foundCol = j;
+// 									foundZone = 2;
+// 									best = tmp;
+// 								}
+// 							}
+// 						}
+// 						else if(0 == current.buffer[i][j].status){
+// 							break;
+// 						}
+//  					}
+//  				}
+// 				if(-1 < foundZone){	//At least one match was found
+// 					if(0 == foundZone)
+// 						ship[foundRow][foundCol].status = 1;	//Marks the container as used	|	Doesn't change the node's ship
+// 					else{
+// 						ship[foundRow][foundCol].status = 1;
+// 					}
+// 					incorrect += best;
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return incorrect;
+// }
 
 double Balance::heuristic(Node n){
 	if(true == useSift)

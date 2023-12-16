@@ -175,6 +175,9 @@ void Base::nodeExpand(Node n){
 			if(!stateExists(returnedNodes.at(i))){
 				//update cost
 				returnedNodes.at(i).cost = cost(returnedNodes.at(i));
+
+				//keeping track of the cost per move
+				returnedNodes.at(i).costForPaths.push_back(returnedNodes.at(i).cost);
 				//PrintShip(returnedNodes[i]);
 				//update heuristic
 				//cout << "Position of Crane: " << returnedNodes.at(i).cranePos.first << " , " <<  returnedNodes.at(i).cranePos.second << endl;
