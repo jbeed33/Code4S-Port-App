@@ -59,6 +59,23 @@ struct Node {
         // compare heuristic values
         if(heuristic != b.heuristic) return true;
 
+        //check cost
+        if(cost != b.cost) return true;
+
+        //check crane position
+        if(cranePos.first != b.cranePos.first) return true;
+        if(cranePos.second != b.cranePos.second) return true;
+
+
+        //check zone
+        if(craneLocation != b.craneLocation) return true;
+
+        //check numToLoad
+        if(numToLoad != b.numToLoad) return true; 
+
+        //crane already has container
+        if(prev.at(2).at(0) != b.prev.at(2).at(0)) return true;
+
         // compare ship
         for(int i = 0;i < ship.size();i++) {
             for(int j = 0;j < ship[0].size();j++) {
@@ -79,7 +96,7 @@ struct Node {
             }
         }
 
-        return false;
+        return false; 
     }
 
     void removeContainerNameFromRemoveList(string name) {

@@ -114,6 +114,7 @@ inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, 
  }
 
 
+
  inline int distToPortal(Node current, int startRow, int startCol){
 	int dist = startCol + startRow;
 	int topOfCol = findTopShip(current.ship, startCol);
