@@ -90,8 +90,10 @@ namespace WindowsFormsApp1
 			{
 				return false;
 			}
-			double tmp;
-			if (true == double.TryParse(weight, out tmp))
+			if ("" == weight)
+				return false;
+			int tmp;
+			if (true == int.TryParse(weight, out tmp))
 			{
 				if (tmp < 0)
 					return false;
@@ -227,6 +229,8 @@ namespace WindowsFormsApp1
 			};
 			
 			process.Start();
+			process.WaitForExit();
+			process.Close();
 		}
 	}
 }

@@ -256,7 +256,7 @@ namespace WindowsFormsApp1
 			{
 				//Assign data to position
 				bufferData.Rows[endRow][endCol] = name;
-				Program.shipWeights[endRow][endCol] = weight;
+				Program.bufferWeights[endRow][endCol] = weight;
 				Program.bufferStates[endRow][endCol] = state;
 			}
 			ship.Refresh();
@@ -396,7 +396,6 @@ namespace WindowsFormsApp1
 				Program.displayingSteps = true;
 				return;
 			}
-			moveContainer(Program.path[iterator]);
 			if (Program.path.Count <= iterator + 1)
 			{
 				finishedSteps();
@@ -414,6 +413,7 @@ namespace WindowsFormsApp1
 					return;
 				}
 			}
+			moveContainer(Program.path[iterator]);
 			iterator++;
 			colorStates();
 			displayMove(Program.path[iterator]);
