@@ -15,14 +15,15 @@ class Base{
 		int numToLoad = 0;
 		vector<Node> closed;
 		vector<Node> frontier;
+		bool useSift;
 
 		Node search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
 		int cost(Node current);
 		void nodeExpand(Node);
-		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone);
+		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad);
 		void addToFrontier(Node toAdd);
 
-		virtual void setup() = 0;
+		virtual void setup(Node&, vector<string>) = 0;
 		virtual bool stateExists(Node) = 0;
 		virtual double heuristic(Node) = 0;
 };

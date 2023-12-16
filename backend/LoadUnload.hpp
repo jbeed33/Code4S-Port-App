@@ -5,9 +5,9 @@
 #include "node.hpp"
 
 class LoadUnload : public Base{
-	void setup();
-	bool stateExists(Node n);
-	double heuristic(Node n);
+	void setup(Node&, vector<string>);
+	bool stateExists(Node);
+	double heuristic(Node);
 };
 
 #endif

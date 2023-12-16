@@ -2,25 +2,26 @@
 #include <iostream>
 #include "expand.hpp"
 
-void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone){
+void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad){
 	frontier.clear();
 	closed.clear();
+	useSift = false;
+
 	Node first;
 	first.ship = ship;
 	first.cranePos = {craneRow, craneCol};
 	first.prev = {{0,0,0},{craneRow, craneCol, craneZone}, {1}};
 	first.craneLocation = craneZone;
+	first.numToLoad = numToLoad;
 	
-
 	//create buffer
 	for(int i = 0; i < BUFFERHEIGHT; i++){
 		vector<Container> row;
 		for(int j = 0; j < BUFFERWIDTH; j++){
-			row.push_back(first.e);
+			row.push_back({"", 0.0, 0});
 		}
     	first.buffer.push_back(row);
 	}
-
 
 	first.heuristic = heuristic(first);
 	frontier.push_back(first);
@@ -47,7 +48,9 @@ void Base::addToFrontier(Node toAdd) {
 }
 
 Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload) {
-	baseSetup(ship, craneRow, craneCol, craneZone);
+	baseSetup(ship, craneRow, craneCol, craneZone, numToLoad);
+	setup(frontier[0], toUnload);
+	cout << useSift << endl;
 	expandedNodeCount = 1;
 	maxQueueSize = 0;
 	
@@ -70,8 +73,8 @@ Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, in
 			trimPath(frontier[0]);
 			return frontier[0];
 		}
-		if (0 == expandedNodeCount++ % 1000) {	//Shows the program hasn't gotten stuck
-			cout << "." << endl;
+		if (0 == expandedNodeCount++ % 100) {	//Shows the program hasn't gotten stuck
+			cout << ".";
 			//cout << "Expanded a total of " << expandedNodeCount << " nodes." << endl;
 			//cout << "The maximum number of nodes: " << maxQueueSize << endl;
 			//break;

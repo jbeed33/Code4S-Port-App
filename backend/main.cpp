@@ -20,18 +20,23 @@ bool craneMovementTest1(){
     n.cranePos = {row, col};
 
     n.ship ={
-		{s, e, e, e, e, e, e, e, e, e, e, e},
-		{s, e, e, e, e, e, e, e, e, e, e, e},
-		{s, e, e, e, e, e, e, e, e, e, e, e},
-		{s, e, e, e, e, e, e, e, e, e, e, e},
-		{s, e, e, e, e, e, e, e, e, e, e, e},
-		{s, e, e, e, e, e, e, e, e, e, e, e},
+		{e, e, e, e, e, e, e, e, e, e, e, e},
+		{e, e, e, e, e, e, e, e, e, e, e, e},
+		{e, e, e, e, e, e, e, e, e, e, e, e},
+		{e, e, e, e, e, e, e, e, e, e, e, e},
+		{e, e, e, e, e, e, e, e, e, e, e, e},
+		{e, e, e, e, e, e, e, e, e, e, e, e},
 		{s, e, e, e, e, e, e, e, e, e, e, e},
 		{s, e, e, e, e, e, e, e, e, e, e, e},
 		{s, e, e, e, e, e, e, e, e, e, e, e}
 	};
 
-    b.search(n.ship, row, col, 0,0, {});
+    Node result = b.search(n.ship, row, col, 0,0, {});
+
+	vector<vector<vector<int>>> path = result.path;
+	for(int i = 0; i < path.size(); i++){
+		printf("%d %d\t%d %d\n", path[i][0][0], path[i][0][1], path[i][1][0], path[i][1][1]);
+	}
 
     // vector<vector<int>> expectedMoves = {
     //     {0,1,0},
@@ -69,6 +74,8 @@ bool craneMovementTest1(){
 
 
 int main(int argc, char *argv[]){
+//	craneMovementTest1();
+///*
 	string manifestPath = argv[1];
 	if(argc > 2){	//Load unload
 		int numToLoad = atoi(argv[2]);
@@ -93,6 +100,6 @@ int main(int argc, char *argv[]){
 		test << "testing" << endl;
 		test.close();
 	}
-
+//*/
     return 0;
 }
