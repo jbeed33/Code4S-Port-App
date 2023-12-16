@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -27,6 +28,10 @@ namespace WindowsFormsApp1
 		public static List<List<int>> shipStates = new List<List<int>>();
 		public static List<List<int>> bufferWeights = new List<List<int>>();
 		public static List<List<int>> bufferStates = new List<List<int>>();
+
+		public static DataTable shipData;
+		public static DataTable bufferData;
+		public static int iterator = 0;
 
 		/*	startRow, startCol, startZone
 		* 	endRow, endCol, endZone

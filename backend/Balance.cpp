@@ -1,15 +1,15 @@
 #include "Balance.hpp"
-#include <algorithm>
 
-void Balance::setup(){
-    
+
+void Balance::setup(Node &current, vector<string> unusedInBalance){
+    useSift = requireSift(current);
 }
 
 
 bool Balance::stateExists(Node currentState){
 
-   bool isSameState = false;
-
+   bool isSameState = false; 
+ 
    //check closed list
    for(int i = 0; i < closed.size(); i++){
         if( (currentState != closed.at(i))){
@@ -34,7 +34,47 @@ bool Balance::stateExists(Node currentState){
 }
 
 
+double Balance::siftHeuristic(Node current){
+	double incorrect = 0;
+	vector<vector<Container>> ship = current.ship;
+	//Loop Through goal state cells
+	for(int goalRow = 0; goalRow < SHIPHEIGHT; goalRow++){	//Start at the bottom of the ship
+		for(int goalCol = 0; goalCol < SHIPWIDTH; goalCol++){
+			int weight = siftGoal[goalRow][goalCol];
+			int best = 256;
+			int foundRow = -1;
+			int foundCol = -1;
+			if(-1 < weight){	//Don't need to find distance to empty cell
+				//loop through ship cells to find shortest move to valid goal cell
+				for(int row = 0; row < SHIPHEIGHT; row++){
+					for(int col = 0; col < SHIPWIDTH; col++){
+						if(2 == ship[row][col].status){	//Not marked yet
+							if(ship[row][col].weight == weight){	//Can be placed in current goal cell
+								int tmp = (row - goalRow) + (col - goalCol);
+								if(tmp < best){
+									foundRow = row;
+									foundCol = col;
+									best = tmp;
+								}
+							}
+						}
+					}
+				}
+				if(-1 == foundRow){	//At least one match was found
+					foundRow = 0;
+					foundCol = 0 - PORTALTIME;
+				}
+				ship[foundRow][foundCol].status = 1;	//Marks the container as used	|	Doesn't change the node's ship
+				incorrect += sqrt(pow(foundRow - goalRow, 2) + pow(foundCol - goalCol, 2));	//euclidean distance
+			}
+		}
+	}
+	return incorrect;
+}
 double Balance::heuristic(Node n){
+	if(true == useSift){
+		return siftHeuristic(n);
+	}
 	int startRow = n.cranePos.first;
 	int startCol = n.cranePos.second;
 	int startZone = n.craneLocation;
@@ -115,27 +155,74 @@ double Balance::heuristic(Node n){
 
 }
 
+void Balance::setSiftGoal(vector<int> weights){
+	int left = 5;
+	int right = 6;
+	int row = SHIPHEIGHT - 1;
+	bool placeLeft = true;
+	vector<vector<int>> goal;
+	vector<int> tmpRow;
+	for(int i = 0; i < SHIPWIDTH; i++){
+		tmpRow.push_back(-1);	//Initialize all spaces to -1
+	}
+	for(int i = 0; i < SHIPHEIGHT; i++){
+		goal.push_back(tmpRow);
+	}
+	for(int i = weights.size() - 1; i >= 0; i--){
+		if(0 > left)
+			left = 5;
+		if(SHIPWIDTH <= right){
+			right = 6;
+			row--;
+		}
+		if(true == placeLeft){
+			goal[row][left--] = weights[i];
+		}
+		else{
+			goal[row][right++] = weights[i];
+		}
+		placeLeft = !placeLeft;
+	}
+
+	siftGoal = goal;
+	for(int i = 0; i < weights.size(); i++){
+		cout << weights[i] << '\t';
+	}
+	cout << "\n\n";
+	for(int i = 0; i < SHIPHEIGHT; i++){
+		for(int j = 0; j < SHIPWIDTH; j++){
+			cout << siftGoal[i][j] << '\t';
+		}
+		cout << '\n';
+	}
+}
 
 // check if the total weight of all containers except the 
 // one with max weight is 90% of the max weight
-bool requireSift(Node initialState) {
+bool Balance::requireSift(Node n) {
     vector<int> weights; 
 
-    for(int i = 0;i < initialState.ship.size();i++) {
-        for(int j = 0;j < initialState.ship[0].size();j++) {
-            weights.push_back(initialState.ship[i][j].weight);
+	int totalWeight = 0;
+    for(int i = 0;i < n.ship.size();i++) {
+        for(int j = 0;j < n.ship[0].size();j++) {
+			if(2 == n.ship[i][j].status){
+	            weights.push_back(n.ship[i][j].weight);
+				totalWeight += n.ship[i][j].weight;
+			}
         }
     }
 
     sort(weights.begin(),weights.end());
+	setSiftGoal(weights);
 
-    int max = weights[0];   // get the max weight 
-    int total = 0;          // get the total weight exclude the max weight
-    for(int weight : weights) {
-        total += weight;
-    }
 
-    return max * 0.9 > total;   // compare the max weight with the total weight
+
+	for(int i = 0; i < weights.size(); i++){
+		if(true == getPermutations(weights, 0, i + 1, 0, totalWeight))
+			return false;
+	}
+	
+    return true; 
 }
 
 bool Balance::balanceGoalTest(Node n) {

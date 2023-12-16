@@ -90,8 +90,10 @@ namespace WindowsFormsApp1
 			{
 				return false;
 			}
-			double tmp;
-			if (true == double.TryParse(weight, out tmp))
+			if ("" == weight)
+				return false;
+			int tmp;
+			if (true == int.TryParse(weight, out tmp))
 			{
 				if (tmp < 0)
 					return false;
@@ -117,7 +119,7 @@ namespace WindowsFormsApp1
 		}
 
 		public static void saveVariablesToFile()
-		{/*
+		{
 			//Ship variable paths
 			string shipPath = findFileInAppdatad("ship.shp");
 			string shipStatePath = findFileInAppdatad("shipState.shp");
@@ -132,7 +134,7 @@ namespace WindowsFormsApp1
 			//Other variable paths
 			string pathPath = findFileInAppdatad("path.shp");
 			string iteratorPath = findFileInAppdatad("iterator.shp");
-
+		/*
 			using (Stream stream = File.Open(shipPath, FileMode.Create))
 			{
 				BinaryFormatter formatter = new BinaryFormatter();
@@ -179,6 +181,41 @@ namespace WindowsFormsApp1
 			}*/
 		}
 
+		public static List<List<int>> ReadFileInAppData(string filename)
+        {
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string filePath = Path.Combine(appDataPath, $"ShipAi\\", filename);
+            List<List<int>> data = new List<List<int>>();
+
+            try
+            {
+                foreach (string line in File.ReadAllLines(filePath))
+                {
+                    List<int> innerList = new List<int>();
+                    string[] entries = line.Split(' ');
+
+                    foreach (string entry in entries)
+                    {
+                        if (int.TryParse(entry, out int number))
+                        {
+                            innerList.Add(number);
+                        }
+                    }
+
+                    if (innerList.Count > 0)
+                    {
+                        data.Add(innerList);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading file: {ex.Message}");
+            }
+
+            return data;
+        }
+
 		public static void runAi()
 		{
 			string path = "D:\\phoen\\Documents\\ship_cases\\a.exe";
@@ -192,6 +229,8 @@ namespace WindowsFormsApp1
 			};
 			
 			process.Start();
+			process.WaitForExit();
+			process.Close();
 		}
 	}
 }

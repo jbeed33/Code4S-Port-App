@@ -1,7 +1,31 @@
 #include "LoadUnload.hpp"
 
-void LoadUnload::setup(){
+void LoadUnload::setup(Node &current, vector<string> unloadNames){
+	const vector<vector<Container>> ship = current.ship;
 
+	int foundRow = -1;
+	int foundCol = -1;
+	int best = 256;	//Arbitrary large number
+
+	for(unsigned int i = 0; i < unloadNames.size(); i++){
+		string name = unloadNames[i];
+		for(int row = 0; row < SHIPHEIGHT; row++){
+			for(int col = 0; col < SHIPWIDTH; col++){
+				if(2 == ship[row][col].status){	//Not marked yet
+					if(ship[row][col].name == name){	//Can be unloaded
+						int tmp = distToPortal(current, row, col);
+						if(tmp < best){
+							foundRow = row;
+							foundCol = col;
+							best = tmp;
+						}
+					}
+				}
+			}
+		}
+		if(-1 < foundRow)	//At least one match was found
+			current.ship[foundRow][foundCol].status = 1;
+	}
 }
 
 bool LoadUnload::stateExists(Node currentState){
