@@ -17,10 +17,10 @@ namespace WindowsFormsApp1
 		public static string getPathToLog()
 		{
 			string filePath = "log" + DateTime.Now.Year.ToString() + ".txt";
-			return findFileInAppdatad(filePath);
+			return findFileInAppData(filePath);
 		}
 
-		public static string findFileInAppdatad(string fileName)
+		public static string findFileInAppData(string fileName)
 		{
 			string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "shippingAi");
 			Directory.CreateDirectory(folderPath);
@@ -121,19 +121,19 @@ namespace WindowsFormsApp1
 		public static void saveVariablesToFile()
 		{
 			//Ship variable paths
-			string shipPath = findFileInAppdatad("ship.shp");
-			string shipStatePath = findFileInAppdatad("shipState.shp");
-			string shipWeightPath = findFileInAppdatad("shipWeight.shp");
-			string shipDataPath = findFileInAppdatad("shipData.xml");
+			string shipPath = findFileInAppData("ship.shp");
+			string shipStatePath = findFileInAppData("shipState.shp");
+			string shipWeightPath = findFileInAppData("shipWeight.shp");
+			string shipDataPath = findFileInAppData("shipData.xml");
 
 			//Buffer variable paths
-			string bufferStatePath = findFileInAppdatad("bufferState.shp");
-			string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
-			string bufferDataPath = findFileInAppdatad("BufferData.xml");
+			string bufferStatePath = findFileInAppData("bufferState.shp");
+			string bufferWeightPath = findFileInAppData("bufferWeight.shp");
+			string bufferDataPath = findFileInAppData("BufferData.xml");
 
 			//Other variable paths
-			string pathPath = findFileInAppdatad("path.shp");
-			string iteratorPath = findFileInAppdatad("iterator.shp");
+			string pathPath = findFileInAppData("path.shp");
+			string iteratorPath = findFileInAppData("iterator.shp");
 		/*
 			using (Stream stream = File.Open(shipPath, FileMode.Create))
 			{
@@ -183,8 +183,7 @@ namespace WindowsFormsApp1
 
 		public static List<List<int>> ReadFileInAppData(string filename)
         {
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string filePath = Path.Combine(appDataPath, $"ShipAi\\", filename);
+			string filePath = findFileInAppData(filename);
             List<List<int>> data = new List<List<int>>();
 
             try
@@ -216,14 +215,43 @@ namespace WindowsFormsApp1
             return data;
         }
 
+		public static void setPath(List<List<int>> newPath)
+		{
+			Program.path = new List<List<List<int>>>();
+			for(int i = 0; i < newPath.Count; i++)
+			{
+				List<List<int>> row = new List<List<int>>();
+				List<int> start = new List<int>();
+				List<int> end = new List<int>();
+				start.Add(newPath[i][0]);
+				start.Add(newPath[i][1]);
+				start.Add(newPath[i][2]);
+				end.Add(newPath[i][3]);
+				end.Add(newPath[i][4]);
+				end.Add(newPath[i][5]);
+				row.Add(start);
+				row.Add(end);
+				Program.path.Add(row);
+			}
+		}
+
+
 		public static void runAi()
 		{
-			string path = "D:\\phoen\\Documents\\ship_cases\\a.exe";
+			string path = findFileInAppData("shippingAi.exe");
+			string args = Program.manifestFile;
+			if(0 < Program.removeList.Count)
+			{
+				args += " ";
+				args += Program.removeList.Count.ToString();
+				args += " ";
+				args += string.Join(" ", Program.removeList);
+			}
 			Process process = new Process()
 			{
-				StartInfo = new ProcessStartInfo(path, Program.manifestFile)
+				StartInfo = new ProcessStartInfo(path, args)
 				{
-					WindowStyle = ProcessWindowStyle.Normal,
+					WindowStyle = ProcessWindowStyle.Hidden,
 					WorkingDirectory = Path.GetDirectoryName(path)
 				}
 			};
@@ -231,6 +259,7 @@ namespace WindowsFormsApp1
 			process.Start();
 			process.WaitForExit();
 			process.Close();
+			setPath(ReadFileInAppData("path.txt"));
 		}
 	}
 }

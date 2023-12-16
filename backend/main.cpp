@@ -57,13 +57,19 @@ int main(int argc, char *argv[]){
 		LoadUnload ai = LoadUnload();
 		Node result = ai.search(manifest, 8, 1, 0, numToLoad, names);
 		vector<vector<vector<int>>> path = result.path;
-		writePathToFile(path);	
+		writePathToFile(path);
+		for(int i = 0; i < path.size(); i++){
+			printf("%d %d\t%d %d\n", path[i][0][0], path[i][0][1], path[i][1][0], path[i][1][1]);
+		}
 	}
 	else{		//Balance
 		Balance ai = Balance();
 		Node result = ai.search(manifest, 0, 0, 0, 0, {});
 		vector<vector<vector<int>>> path = result.path;
 		writePathToFile(path);
+		for(int i = 0; i < path.size(); i++){
+			printf("%d %d\t%d %d\n", path[i][0][0], path[i][0][1], path[i][1][0], path[i][1][1]);
+		}
 	}
 //*/
     return 0;

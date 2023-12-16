@@ -26,12 +26,13 @@ namespace WindowsFormsApp1
         public static List<List<Container>> ReadManifest(string filePath)
         {
             var ship = new List<List<Container>>();
-            using (var manifest = new StreamReader(filePath))
+			
+			using (var manifest = new StreamReader(filePath))
             {
                 string line;
                 int currentRow = -1;
-                List<Container> rowOfContainers = new List<Container>();
-
+				List<Container> rowOfContainers = new List<Container>();
+				rowOfContainers.Clear();
                 while ((line = manifest.ReadLine()) != null)
                 {
                     var Part = line.Substring(0, line.LastIndexOf('}') + 1);
@@ -68,16 +69,34 @@ namespace WindowsFormsApp1
                 if (rowOfContainers.Count > 0)
                 {
                     ship.Add(rowOfContainers);
+					rowOfContainers.Clear();
                 }
-            }
-
-			Helper.flipShip(ship);
+				Container empty = new Container()
+				{
+					Pos = Tuple.Create(0, 0),
+					Weight = 0,
+					Name = "UNUSED",
+					Status = 0
+				};
+				for (int i = 0; i < 12; i++)
+				{
+					rowOfContainers.Add(empty);
+				}
+				ship.Add(rowOfContainers);
+			}
+			ship.Reverse();
             return ship;
         }
 
-        public static void UpdateManifest(List<List<Container>> ship, string path)
+        public static void UpdateManifest(List<List<Container>> bigShip, string path)
         {
-			Helper.flipShip(ship);
+			List<List<Container>> ship = new List<List<Container>>();
+			for(int i = 1; i < bigShip.Count; i++)
+			{
+				ship.Add(bigShip[i]);
+			}
+			ship.Reverse();
+
             using (var file = new StreamWriter(path))
             {
 				for (int row = 0; row < ship.Count; row++)
@@ -85,7 +104,7 @@ namespace WindowsFormsApp1
 					for (int col = 0; col < ship[0].Count; col++)
 					{
 						//file.WriteLine($"[{container.Pos.Item1},{container.Pos.Item2}], {{{container.Weight}}}, {container.Name}");
-						string formattedLine = $"[{row:D2},{col:D2}], {{{ship[row][col].Weight:D4}}}, {ship[row][col].Name}";
+						string formattedLine = $"[{row:D2},{col:D2}], {{{ship[row][col].Weight.ToString("D5")}}}, {ship[row][col].Name}";
 						file.WriteLine(formattedLine);
 					}
 				}
@@ -119,15 +138,13 @@ namespace WindowsFormsApp1
             return container;
         }
 
-        public static List<string> removeList = new List<string>();
-
         public static void RemoveContainerNameFromRemoveList(string name)
         {
-            for (int i = 0; i < removeList.Count; i++)
+            for (int i = 0; i < Program.removeList.Count; i++)
             {
-                if (removeList[i] == name)
+                if (Program.removeList[i] == name)
                 {
-                    removeList.RemoveAt(i);
+                    Program.removeList.RemoveAt(i);
                     break;
                 }
             }
@@ -135,7 +152,7 @@ namespace WindowsFormsApp1
 
         public static void AddContainerNameToRemoveList(string name)
         {
-            removeList.Add(name);
+            Program.removeList.Add(name);
         }
     }
 

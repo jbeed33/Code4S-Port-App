@@ -51,7 +51,7 @@ namespace WindowsFormsApp1
 					}
 					else if (1 == state)
 					{
-						colorChoice = ticked;
+						colorChoice = unticked;
 					}
 					else
 					{
@@ -77,7 +77,7 @@ namespace WindowsFormsApp1
 					}
 					else if (1 == state)
 					{
-						colorChoice = ticked;
+						colorChoice = unticked;
 					}
 					else
 					{
@@ -118,6 +118,7 @@ namespace WindowsFormsApp1
 			}
 			ship.RowHeadersWidth = 52;
 			ship.DataSource = Program.shipData;
+			ship.Refresh();
         }
 
 		void createBuffer()
@@ -276,12 +277,12 @@ namespace WindowsFormsApp1
 			if (ticked == backColor)
 			{
 				backColor = unticked;
-				LoadedContainerManager.AddContainerNameToRemoveList(name);
+				LoadedContainerManager.RemoveContainerNameFromRemoveList(name);
 			}
 			else
 			{
 				backColor = ticked;
-				LoadedContainerManager.RemoveContainerNameFromRemoveList(name);
+				LoadedContainerManager.AddContainerNameToRemoveList(name);
 			}
 			ship.Rows[row].Cells[col].Style.BackColor = backColor;
 		}
@@ -293,10 +294,15 @@ namespace WindowsFormsApp1
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			createShip();
+			createBuffer();
 			if(true == Program.displayingSteps)	//Running balance, don't need to wait for user input
 			{
 				Helper.runAi();
+				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
 			}
+			ship.Refresh();
+			buffer.Refresh();
 			int max = ship.Columns.Count;
 			for (int i = 0; i < max; i++)
 			{
@@ -324,7 +330,8 @@ namespace WindowsFormsApp1
 				buffer.Rows[i].HeaderCell.Value = header;
 			}
 			colorStates();
-			displayMove(Program.path[Program.iterator]);
+			if(true == Program.displayingSteps)
+				displayMove(Program.path[Program.iterator]);
 		}
 
 		private void buffer_SelectionChanged(object sender, EventArgs e)
@@ -338,8 +345,9 @@ namespace WindowsFormsApp1
 			int col = e.ColumnIndex;
 			if (row < 0 || col < 0)
 				return;
-			String tmp = ship.Rows[row].Cells[col].Value.ToString();
-			nameLabel.Text = tmp;
+
+			nameLabel.Text = Program.ship[row][col].Name.ToString();
+			weightLabel.Text = Program.ship[row][col].Weight.ToString();
 		}
 
 		private void ship_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
@@ -349,6 +357,7 @@ namespace WindowsFormsApp1
 			if (row < 0 || col < 0)
 				return;
 			nameLabel.Text = "";
+			weightLabel.Text = "";
 		}
 
 		private void moves_FormClosed(object sender, FormClosedEventArgs e)
@@ -390,11 +399,10 @@ namespace WindowsFormsApp1
 			{
 				Helper.runAi();
 				Program.displayingSteps = true;
-				return;
-			}
-			if (Program.path.Count <= Program.iterator + 1)
-			{
-				finishedSteps();
+				ship.Refresh();
+				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+				colorStates();
+				displayMove(Program.path[Program.iterator]);
 				return;
 			}
 			if (1 == Program.path[Program.iterator][0][2])	//Starting on the truck means loading a container
@@ -411,6 +419,16 @@ namespace WindowsFormsApp1
 			}
 			moveContainer(Program.path[Program.iterator]);
 			Program.iterator++;
+			progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+			if (Program.iterator >= Program.path.Count)
+			{
+				progress.Text = "Complete";
+				ship.Refresh();
+				buffer.Refresh();
+				colorStates();
+				finishedSteps();
+				return;
+			}
 			colorStates();
 			displayMove(Program.path[Program.iterator]);
 			Helper.saveVariablesToFile();

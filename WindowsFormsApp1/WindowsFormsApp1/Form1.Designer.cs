@@ -51,6 +51,7 @@ namespace WindowsFormsApp1
 			this.noteButton = new System.Windows.Forms.Button();
 			this.nameLabel = new System.Windows.Forms.Label();
 			this.username = new System.Windows.Forms.TextBox();
+			this.weightLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.ship)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.buffer)).BeginInit();
 			this.groupBox1.SuspendLayout();
@@ -292,7 +293,7 @@ namespace WindowsFormsApp1
 			this.nameLabel.BackColor = System.Drawing.Color.White;
 			this.nameLabel.Location = new System.Drawing.Point(1278, 9);
 			this.nameLabel.Name = "nameLabel";
-			this.nameLabel.Size = new System.Drawing.Size(694, 22);
+			this.nameLabel.Size = new System.Drawing.Size(347, 22);
 			this.nameLabel.TabIndex = 108;
 			this.nameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
@@ -305,12 +306,22 @@ namespace WindowsFormsApp1
 			this.username.TextChanged += new System.EventHandler(this.textbox_TextChanged);
 			this.username.Enter += new System.EventHandler(this.textBox_Focused);
 			// 
+			// weightLabel
+			// 
+			this.weightLabel.BackColor = System.Drawing.Color.White;
+			this.weightLabel.Location = new System.Drawing.Point(1625, 9);
+			this.weightLabel.Name = "weightLabel";
+			this.weightLabel.Size = new System.Drawing.Size(347, 22);
+			this.weightLabel.TabIndex = 110;
+			this.weightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
 			// moves
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.ClientSize = new System.Drawing.Size(1984, 855);
+			this.Controls.Add(this.weightLabel);
 			this.Controls.Add(this.username);
 			this.Controls.Add(this.nameLabel);
 			this.Controls.Add(this.notes);
@@ -357,6 +368,7 @@ namespace WindowsFormsApp1
 		private System.Windows.Forms.TextBox newName;
 		private System.Windows.Forms.TextBox newWeight;
 		private System.Windows.Forms.TextBox newNote;
+		private System.Windows.Forms.Label weightLabel;
 	}
 }
 

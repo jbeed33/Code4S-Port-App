@@ -39,6 +39,7 @@
 
  inline void trimPath(Node &current){
 	vector<vector<vector<int>>> path = current.path;
+	path.push_back(current.prev);
 	int start = -1;
 	vector<vector<vector<int>>> newPath;
 	for(int i = 0; i < path.size(); i++){
@@ -54,21 +55,6 @@
 			newPath.push_back(move);
 			start = -1;
 		}
-	}
-	if(-1 < start){		//if the last move doesn't set down the container, do so here
-		int row = path[path.size() - 1][1][0];
-		int col = path[path.size() - 1][1][1];
-		for(int i = row + 1; i < current.ship.size(); i++){
-			if(0 == current.ship[i][col].status){
-				row = i;
-			}
-		}
-		vector<vector<int>> move = {
-			path[start][1],
-			{row, col, 0},
-			{1}
-		};
-		newPath.push_back(move);
 	}
 	current.path = newPath;
  }
@@ -369,14 +355,11 @@ inline string getAppDataPath() {
 }
 
 // write a given string to the file
-inline void writeToFile(const string& fileName, const string& content) {
-    string filePath = getAppDataPath();
-    filePath += "\\shippingAi\\" + fileName;
-
-    std::ofstream file(filePath);
+inline void writeToFile(const string& filePath, const string& content) {
+    std::ofstream file(filePath, std::ios_base::app);
 
     if (file.is_open()) {
-        file << content;
+        file << content << '\n';
         file.close();
         cout << "File written successfully to " << filePath << endl;
     } else {
@@ -385,11 +368,14 @@ inline void writeToFile(const string& fileName, const string& content) {
 }
 
 inline void writePathToFile(vector<vector<vector<int>>> path){
-	string name = "path.txt";
+	string filePath = getAppDataPath();
+    filePath += "\\shippingAi\\path.txt";
+	std::ofstream file(filePath);
+	file.close();
 	for(int i = 0; i < path.size(); i++){
 		string content = to_string(path[i][0][0]) + " " + to_string(path[i][0][1]) + " " + to_string(path[i][0][2]) + " " + to_string(path[i][1][0]) + " " + to_string(path[i][1][1]) + " " + to_string(path[i][1][2]);
 		cout << content << endl;
-		writeToFile(name, content);
+		writeToFile(filePath, content);
 	}
 }
 

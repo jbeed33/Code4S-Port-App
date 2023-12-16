@@ -23,6 +23,7 @@ namespace WindowsFormsApp1
 
 		public static List<List<Container>> ship;
 		public static List<List<string>> shipNames = new List<List<string>> ();
+		public static List<string> removeList = new List<string>();
 
 		public static List<List<int>> shipWeights = new List<List<int>>();
 		public static List<List<int>> shipStates = new List<List<int>>();

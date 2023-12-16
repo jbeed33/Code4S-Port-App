@@ -44,13 +44,16 @@ namespace WindowsFormsApp1
 
 			List<string> firstNames = new List<string>();
 			List<int> firstStates = new List<int>();
+			List<int> firstWeights = new List<int>();
 			for(int i = 0; i < Program.ship[0].Count(); i++)
 			{
 				firstNames.Add("");
 				firstStates.Add(0);
+				firstWeights.Add(0);
 			}
 			Program.shipStates.Add(firstStates);
 			Program.shipNames.Add(firstNames);
+			Program.shipWeights.Add(firstWeights);
 			for(int row = 0; row < Program.ship.Count(); row++)
 			{
 				List<string> rowNames = new List<string>();
