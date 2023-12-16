@@ -117,70 +117,155 @@ namespace WindowsFormsApp1
 		}
 
 		public static void saveVariablesToFile()
-		{/*
-			//Ship variable paths
-			string shipPath = findFileInAppdatad("ship.shp");
-			string shipStatePath = findFileInAppdatad("shipState.shp");
-			string shipWeightPath = findFileInAppdatad("shipWeight.shp");
-			string shipDataPath = findFileInAppdatad("shipData.xml");
+		{
+			try
+			{
+				//Ship variable paths
+				//string shipPath = findFileInAppdatad("ship.shp");
+				string shipStatePath = findFileInAppdatad("shipState.shp");
+				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
+				string shipDataPath = findFileInAppdatad("shipData.xml");
 
-			//Buffer variable paths
-			string bufferStatePath = findFileInAppdatad("bufferState.shp");
-			string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
-			string bufferDataPath = findFileInAppdatad("BufferData.xml");
+				//Buffer variable paths
+				string bufferStatePath = findFileInAppdatad("bufferState.shp");
+				string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
+				string bufferDataPath = findFileInAppdatad("bufferData.xml");
 
-			//Other variable paths
-			string pathPath = findFileInAppdatad("path.shp");
-			string iteratorPath = findFileInAppdatad("iterator.shp");
+				//Other variable paths
+				string pathPath = findFileInAppdatad("path.shp");
+				string iteratorPath = findFileInAppdatad("iterator.shp");
 
-			using (Stream stream = File.Open(shipPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.ship);
-			}
-			using (Stream stream = File.Open(shipStatePath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.shipStates);
-			}
-			using (Stream stream = File.Open(shipWeightPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.shipWeights);
-			}
-			using (Stream stream = File.Open(bufferStatePath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.bufferStates);
-			}
-			using (Stream stream = File.Open(bufferWeightPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.bufferWeights);
-			}
-			using (Stream stream = File.Open(pathPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, Program.path);
-			}
-			using (Stream stream = File.Open(iteratorPath, FileMode.Create))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(stream, moves.iterator);
-			}
+				//Save ship object
+				//saveObjectToFile(shipPath, Program.ship);
 
-			using (Stream stream = File.Open(shipDataPath, FileMode.Create))
-			{
-				moves.shipData.WriteXml(stream);
+				// Save shipStates object
+				saveObjectToFile(shipStatePath, Program.shipStates);
+
+				// Save shipWeights object
+				saveObjectToFile(shipWeightPath, Program.shipWeights);
+
+				// Save bufferStates object
+				saveObjectToFile(bufferStatePath, Program.bufferStates);
+
+				// Save bufferWeights object
+				saveObjectToFile(bufferWeightPath, Program.bufferWeights);
+
+				// Save path object
+				saveObjectToFile(pathPath, Program.path);
+
+				// Save iterator object
+				saveObjectToFile(iteratorPath, moves.iterator);
+
+				moves.shipData.TableName = "ShipData";
+				using (Stream stream = File.Open(shipDataPath, FileMode.Create))
+				{
+					moves.shipData.WriteXml(stream);
+				}
+				moves.bufferData.TableName = "BufferData";
+				using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
+				{
+					moves.bufferData.WriteXml(stream);
+				}
 			}
-			using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
+			catch (Exception ex)
 			{
-				moves.bufferData.WriteXml(stream);
-			}*/
+				// Handle the exception (e.g., log, report, or retry)
+				Console.WriteLine($"Error during save operation: {ex.Message}");
+			}
 		}
 
-		public static void runAi()
+		public static void saveObjectToFile<T>(string filePath, T obj)
 		{
+			string tempFilePath = filePath + ".temp";
+
+			try
+			{
+				using (Stream stream = File.Open(tempFilePath,FileMode.Create))
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.Serialize(stream, obj);
+				}
+
+				File.Delete(filePath);
+				File.Move(tempFilePath, filePath);
+			}
+			catch (Exception)
+			{
+				Console.WriteLine($"Error saving {filePath}");
+			}
+		}
+
+		public static void loadVariablesFromFile()
+		{
+			try
+			{
+				string shipStatePath = findFileInAppdatad("shipState.shp");
+				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
+				string shipDataPath = findFileInAppdatad("shipData.xml");
+
+				//Buffer variable paths
+				string bufferStatePath = findFileInAppdatad("bufferState.shp");
+				string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
+				string bufferDataPath = findFileInAppdatad("bufferData.xml");
+
+				//Other variable paths
+				string pathPath = findFileInAppdatad("path.shp");
+				string iteratorPath = findFileInAppdatad("iterator.shp");
+
+
+				// Ship variable paths
+				loadObjectFromFile(shipStatePath, out Program.shipStates);
+				loadObjectFromFile(shipWeightPath, out Program.shipWeights);
+
+				// Buffer variable paths
+				loadObjectFromFile(bufferStatePath, out Program.bufferStates);
+				loadObjectFromFile(bufferWeightPath, out Program.bufferWeights);
+
+				// Other variable paths
+				loadObjectFromFile(pathPath, out Program.path);
+				loadObjectFromFile(iteratorPath, out moves.iterator);
+
+				// Ship data
+				using (Stream stream = File.Open(findFileInAppdatad("shipData.xml"), FileMode.Open))
+				{
+					moves.shipData.ReadXml(stream);
+				}
+
+				// Buffer data
+				using (Stream stream = File.Open(findFileInAppdatad("bufferData.xml"), FileMode.Open))
+				{
+					moves.bufferData.ReadXml(stream);
+				}
+			}
+			catch (Exception ex)
+			{
+				// Handle the exception (e.g., log, report, or retry)
+				Console.WriteLine($"Error during load operation: {ex.Message}");
+			}
+		}
+
+
+		public static void loadObjectFromFile<T>(string filePath, out T obj)
+		{
+			obj = default(T); // Initialize obj with default value for type T
+
+			try
+			{
+				using (Stream stream = File.Open(filePath, FileMode.Open))
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					obj = (T)formatter.Deserialize(stream);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error loading {filePath}: {ex.Message}");
+			}
+		}
+
+
+		public static void runAi()
+		{/*
 			string path = "D:\\phoen\\Documents\\ship_cases\\a.exe";
 			Process process = new Process()
 			{
@@ -191,7 +276,7 @@ namespace WindowsFormsApp1
 				}
 			};
 			
-			process.Start();
+			process.Start();*/
 		}
 	}
 }

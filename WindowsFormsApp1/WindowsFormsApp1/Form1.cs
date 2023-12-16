@@ -396,7 +396,7 @@ namespace WindowsFormsApp1
 				Program.displayingSteps = true;
 				return;
 			}
-			moveContainer(Program.path[iterator]);
+			//moveContainer(Program.path[iterator]);
 			if (Program.path.Count <= iterator + 1)
 			{
 				finishedSteps();
