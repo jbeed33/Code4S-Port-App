@@ -23,6 +23,7 @@ namespace WindowsFormsApp1
 		Color start = Color.LimeGreen;
 		Color end = Color.MediumPurple;
 
+		int ExpectedTime;
 
 		public moves()
         {
@@ -287,6 +288,15 @@ namespace WindowsFormsApp1
 			ship.Rows[row].Cells[col].Style.BackColor = backColor;
 		}
 
+		private void sumTime()
+		{
+			ExpectedTime = 0;
+			for(int i = 0; i < Program.path.Count; i++)
+			{
+				ExpectedTime += Program.path[i][2][0];
+			}
+		}
+
 		private void ship_SelectionChanged(object sender, EventArgs e)
 		{
 			ship.ClearSelection();
@@ -301,6 +311,8 @@ namespace WindowsFormsApp1
 				loadForm.Hide();
 				Helper.runAi();
 				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+				sumTime();
+				timeRemaining.Text = ExpectedTime.ToString() +" minutes remaining";
 			}
 			ship.Refresh();
 			buffer.Refresh();
@@ -405,6 +417,7 @@ namespace WindowsFormsApp1
 				Program.displayingSteps = true;
 				ship.Refresh();
 				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+				timeRemaining.Text = ExpectedTime.ToString() + " minutes remaining";
 				loadForm.Hide();
 				colorStates();
 				displayMove(Program.path[Program.iterator]);
@@ -423,11 +436,14 @@ namespace WindowsFormsApp1
 				}
 			}
 			moveContainer(Program.path[Program.iterator]);
+			ExpectedTime -= Program.path[Program.iterator][2][0];
 			Program.iterator++;
 			progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+			timeRemaining.Text = ExpectedTime.ToString() + " minutes remaining";
 			if (Program.iterator >= Program.path.Count)
 			{
 				progress.Text = "Complete";
+				timeRemaining.Text = "";
 				ship.Refresh();
 				buffer.Refresh();
 				colorStates();

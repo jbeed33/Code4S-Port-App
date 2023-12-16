@@ -231,6 +231,7 @@ namespace WindowsFormsApp1
 				end.Add(newPath[i][5]);
 				row.Add(start);
 				row.Add(end);
+				row.Add(new List<int> {newPath[i][6]});
 				Program.path.Add(row);
 			}
 		}

@@ -382,7 +382,7 @@ inline void writePathToFile(vector<vector<vector<int>>> path){
 	std::ofstream file(filePath);
 	file.close();
 	for(int i = 0; i < path.size(); i++){
-		string content = to_string(path[i][0][0]) + " " + to_string(path[i][0][1]) + " " + to_string(path[i][0][2]) + " " + to_string(path[i][1][0]) + " " + to_string(path[i][1][1]) + " " + to_string(path[i][1][2]);
+		string content = to_string(path[i][0][0]) + " " + to_string(path[i][0][1]) + " " + to_string(path[i][0][2]) + " " + to_string(path[i][1][0]) + " " + to_string(path[i][1][1]) + " " + to_string(path[i][1][2]) + " " + to_string(path[i][3][0]);
 		cout << content << endl;
 		writeToFile(filePath, content);
 	}
