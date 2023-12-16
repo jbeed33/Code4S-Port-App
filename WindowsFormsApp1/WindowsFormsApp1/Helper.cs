@@ -127,12 +127,6 @@ namespace WindowsFormsApp1
 				string shipStatePath = findFileInAppdatad("shipState.shp");
 				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
 				string shipDataPath = findFileInAppdatad("shipData.xml");
-		{
-			//Ship variable paths
-			string shipPath = findFileInAppdatad("ship.shp");
-			string shipStatePath = findFileInAppdatad("shipState.shp");
-			string shipWeightPath = findFileInAppdatad("shipWeight.shp");
-			string shipDataPath = findFileInAppdatad("shipData.xml");
 
 				//Buffer variable paths
 				string bufferStatePath = findFileInAppdatad("bufferState.shp");
@@ -162,17 +156,17 @@ namespace WindowsFormsApp1
 				saveObjectToFile(pathPath, Program.path);
 
 				// Save iterator object
-				saveObjectToFile(iteratorPath, moves.iterator);
+				saveObjectToFile(iteratorPath, Program.iterator);
 
-				moves.shipData.TableName = "ShipData";
+				Program.shipData.TableName = "ShipData";
 				using (Stream stream = File.Open(shipDataPath, FileMode.Create))
 				{
-					moves.shipData.WriteXml(stream);
+					Program.shipData.WriteXml(stream);
 				}
-				moves.bufferData.TableName = "BufferData";
+				Program.bufferData.TableName = "BufferData";
 				using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
 				{
-					moves.bufferData.WriteXml(stream);
+					Program.bufferData.WriteXml(stream);
 				}
 			}
 			catch (Exception ex)
@@ -231,18 +225,18 @@ namespace WindowsFormsApp1
 
 				// Other variable paths
 				loadObjectFromFile(pathPath, out Program.path);
-				loadObjectFromFile(iteratorPath, out moves.iterator);
+				loadObjectFromFile(iteratorPath, out Program.iterator);
 
 				// Ship data
 				using (Stream stream = File.Open(findFileInAppdatad("shipData.xml"), FileMode.Open))
 				{
-					moves.shipData.ReadXml(stream);
+					Program.shipData.ReadXml(stream);
 				}
 
 				// Buffer data
 				using (Stream stream = File.Open(findFileInAppdatad("bufferData.xml"), FileMode.Open))
 				{
-					moves.bufferData.ReadXml(stream);
+					Program.bufferData.ReadXml(stream);
 				}
 			}
 			catch (Exception ex)
@@ -269,10 +263,6 @@ namespace WindowsFormsApp1
 			{
 				Console.WriteLine($"Error loading {filePath}: {ex.Message}");
 			}
-			using (Stream stream = File.Open(bufferDataPath, FileMode.Create))
-			{
-				moves.bufferData.WriteXml(stream);
-			}*/
 		}
 
 		public static void runAi()
