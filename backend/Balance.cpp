@@ -7,34 +7,26 @@ void Balance::setup(Node &current, vector<string> unusedInBalance){
 
 
 bool Balance::stateExists(Node currentState){
+    int currRow = currentState.cranePos.first;
+    int currCol = currentState.cranePos.second;
+    int currZone = currentState.craneLocation;
+	double currHeur = currentState.heuristic;
+    bool currHasContainer = currentState.prev.at(2).at(0);
 
-   bool isSameState = false; 
- 
-   //check closed list
-   for(int i = 0; i < closed.size(); i++){
-        if( (currentState != closed.at(i))){
-            //isSameState == false;
-        }else{
-            isSameState = true;
-        }
-   }
-
-   //check frontier
-   for(int i = 0; i < frontier.size(); i++){
-        if( (currentState != frontier.at(i))){
-            //isSameState == false;
-        }
-        else{
-            isSameState = true;
-        }
-   }
-
-
-   return isSameState;
+    
+	for (int i = 0; i < closed.size(); i++) {
+		if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
+			if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0)){
+				if(false == compareStateWeights(currentState.ship, closed[i].ship) && false == compareStateWeights(currentState.buffer, closed[i].buffer))
+					return true;
+			}
+		}
+	}
+    return false;
 }
 
 
-double Balance::siftHeuristic(Node current){
+/*double Balance::siftHeuristic(Node current){
 	double incorrect = 0;
 	vector<vector<Container>> ship = current.ship;
 	//Loop Through goal state cells
@@ -70,8 +62,88 @@ double Balance::siftHeuristic(Node current){
 		}
 	}
 	return incorrect;
+}*/
+
+double Balance::siftHeuristic(Node current){
+	
+	double incorrect = 0;
+	
+	//incorrect += findAverageDistanceToCrane(current);
+	vector<vector<Container>> ship = current.ship;
+	//Loop Through goal state cells
+	for(int goalRow = 0; goalRow < SHIPHEIGHT; goalRow++){	//Start at the bottom of the ship
+		for(int goalCol = 0; goalCol < SHIPWIDTH; goalCol++){
+			int weight = siftGoal[goalRow][goalCol];
+			int best = 256;
+			int foundRow = -1;
+			int foundCol = -1;
+			int foundZone = -1;
+			if(-1 < weight){	//Don't need to find distance to empty cell
+				//loop through ship cells to find shortest move to valid goal cell
+				for (int j = 0; j < SHIPWIDTH; j++) {
+					for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
+ 						if (2 == current.ship[i][j].status){
+							if(weight == current.ship[i][j].weight){
+								int tmp = distBetweenPoints(SHIPHEIGHT / 2, SHIPWIDTH / 2, 0, i, j, 0);
+								if(tmp < best){
+									foundRow = i;
+									foundCol = j;
+									foundZone = 0;
+									best = tmp;
+								}
+							}
+						}
+						else if(0 == current.ship[i][j].status){	//No more containers in column
+							break;
+						}
+ 					}
+ 				}
+ 				for (int j = 0; j < BUFFERWIDTH; j++) {
+					for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
+ 						if (2 == current.buffer[i][j].status){
+							if(weight == current.buffer[i][j].weight){
+								int tmp = distBetweenPoints(BUFFERHEIGHT / 2, BUFFERWIDTH / 2, 2, i, j, 0);
+								if(tmp < best){
+									foundRow = i;
+									foundCol = j;
+									foundZone = 2;
+									best = tmp;
+								}
+							}
+						}
+						else if(0 == current.buffer[i][j].status){
+							break;
+						}
+ 					}
+ 				}
+				if(-1 < foundZone){	//At least one match was found
+					if(0 == foundZone)
+						ship[foundRow][foundCol].status = 1;	//Marks the container as used	|	Doesn't change the node's ship
+					else{
+						ship[foundRow][foundCol].status = 1;
+					}
+					incorrect += best;
+				}
+			}
+		}
+	}
+	return incorrect;
 }
+
 double Balance::heuristic(Node n){
+	if(true == useSift)
+		return siftHeuristic(n);
+
+	if(true == balanceGoalTest(n))
+		return 0.0;
+
+	double heur = 0.0;
+	heur += findAverageDistanceToCrane(n);
+	heur += findDistanceToBalanced(n);
+	return heur;
+}
+
+/*double Balance::heuristic(Node n){
 	if(true == useSift){
 		return siftHeuristic(n);
 	}
@@ -118,7 +190,7 @@ double Balance::heuristic(Node n){
     if(startZone == 2 && n.buffer.at(startRow).at(startCol).status > 0){
         if(startRow + 1 < BUFFERHEIGHT){
             if(n.buffer.at(startRow + 1).at(startCol).status < 1){
-                h += PORTALTIME;
+                h += PORTALTIME * 100;
             }
         }
     }
@@ -153,7 +225,7 @@ double Balance::heuristic(Node n){
     
     return h;
 
-}
+}*/
 
 void Balance::setSiftGoal(vector<int> weights){
 	int left = 5;
@@ -185,16 +257,6 @@ void Balance::setSiftGoal(vector<int> weights){
 	}
 
 	siftGoal = goal;
-	for(int i = 0; i < weights.size(); i++){
-		cout << weights[i] << '\t';
-	}
-	cout << "\n\n";
-	for(int i = 0; i < SHIPHEIGHT; i++){
-		for(int j = 0; j < SHIPWIDTH; j++){
-			cout << siftGoal[i][j] << '\t';
-		}
-		cout << '\n';
-	}
 }
 
 // check if the total weight of all containers except the 

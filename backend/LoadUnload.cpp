@@ -3,11 +3,12 @@
 void LoadUnload::setup(Node &current, vector<string> unloadNames){
 	const vector<vector<Container>> ship = current.ship;
 
-	int foundRow = -1;
-	int foundCol = -1;
-	int best = 256;	//Arbitrary large number
 
 	for(unsigned int i = 0; i < unloadNames.size(); i++){
+		int foundRow = -1;
+		int foundCol = -1;
+		int best = 256;	//Arbitrary large number
+		
 		string name = unloadNames[i];
 		for(int row = 0; row < SHIPHEIGHT; row++){
 			for(int col = 0; col < SHIPWIDTH; col++){
@@ -23,17 +24,29 @@ void LoadUnload::setup(Node &current, vector<string> unloadNames){
 				}
 			}
 		}
-		if(-1 < foundRow)	//At least one match was found
+		if(-1 < foundRow){	//At least one match was found
 			current.ship[foundRow][foundCol].status = 1;
+		}
 	}
 }
 
 bool LoadUnload::stateExists(Node currentState){
-    for (int i = 0;i < closed.size(); i++) {
-        if (closed[i] != currentState)
-            return false;
-    }
-    return true;
+    int currRow = currentState.cranePos.first;
+    int currCol = currentState.cranePos.second;
+    int currZone = currentState.craneLocation;
+	double currHeur = currentState.heuristic;
+    bool currHasContainer = currentState.prev.at(2).at(0);
+
+    
+	for (int i = 0; i < closed.size(); i++) {
+		if(currRow == closed.at(i).cranePos.first && currCol == closed.at(i).cranePos.second){
+			if(currZone == closed.at(i).craneLocation && currHasContainer == closed.at(i).prev.at(2).at(0)){
+				if(false == compareStateStatus(currentState.ship, closed[i].ship) && false == compareStateStatus(currentState.buffer, closed[i].buffer))
+					return true;
+			}
+		}
+	}
+    return false;
 }
 
 double LoadUnload::heuristic(Node current){
@@ -47,8 +60,9 @@ double LoadUnload::heuristic(Node current){
 	for(int row = 0; row < ship.size(); row++){
 		for(int col = 0; col < ship[0].size(); col++){
 			if(1 == ship[row][col].status){	//Is removable
-				heur += findTopShip(ship, col) - row;
+				heur += col + findTopShip(ship, col) - row;
 				heur += PORTALTIME;
+				heur += max(current.cranePos.second, col) - min(current.cranePos.second, col);
 			}
 		}
 	}
@@ -61,6 +75,7 @@ double LoadUnload::heuristic(Node current){
 				heur += PORTALTIME;
 			}
 		}
-
+	//if(1 == current.craneLocation)
+		//printf("cost %d\theur %f\trow %d\tcol %d\tzone %d\tjustCrane %d\n", current.cost, heur, current.cranePos.first, current.cranePos.second, current.craneLocation, current.prev[2][0]);
 	return heur;
 }

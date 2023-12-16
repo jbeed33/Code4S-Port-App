@@ -14,15 +14,15 @@ const vector<int> truckPortal = {1, 0, 1};
 void PrintShip(Node n){
     for(int i = 0; i < n.ship.size(); i++){
         for(int j = 0; j < n.ship[0].size(); j++){
+                cout << n.ship[i][j].status << '\t';
             if(n.ship.at(i).at(j).status > 1)  ;
             if(i == n.cranePos.first && j == n.cranePos.second){
-                ;
             } 
             
             if(n.ship.at(i).at(j).status == 0)  ;
            
         }
-        ;
+        cout << endl;
     }
 }
 
@@ -195,19 +195,19 @@ vector<vector<int>> craneMovement(Node &n, vector<int> avaliableColsForBuffer, v
             //try left
             if(n.craneLocation == 0){ //crane starts from ship
                 
-                if(craneCol == 0){
-                    
-                    // //buffer - need to move left until can find a position that is avaliable
-                    // int bufferColIndex = n.buffer[0].size() - 1;
-                        
-                    //  craneMovement.push_back({0,bufferColIndex, 2});
-                    
-                    //truck not sure about the index it should what column number it should have
-                     craneMovement.push_back({1,0, 1});
-                   
-                    
-                }
-                else{ // case of not first column, try left
+                //if(craneCol == 0){
+                //    
+                //    // //buffer - need to move left until can find a position that is avaliable
+                //    // int bufferColIndex = n.buffer[0].size() - 1;
+                //        
+                //    //  craneMovement.push_back({0,bufferColIndex, 2});
+                //    
+                //    //truck not sure about the index it should what column number it should have
+                //    // craneMovement.push_back({1,0, 1});
+                //   
+                //    
+                //}
+                if(craneCol != 0){ // case of not first column, try left
                     int leftColHeight = findTopContainerInCol(n, craneCol - 1, 0 );
 
 
@@ -319,36 +319,8 @@ bool swapContainers(Node &n, int oldrow, int oldcol, int newrow, int newcol, int
         startContainer = truckContainer;
     }
 
-    //;
-
-   
-    //;
-    Container endContainer = emptyContainer;
-    if(endZone == 0){
-        endContainer = n.ship.at(newRow).at(newCol);
-    }else if(endZone == 2){
-         endContainer = n.buffer.at(newRow).at(newCol);
-    }
-
-    //;
-
-    // //////;
-
      // if the endzone is truck and start container status != 1
      if(endZone == 1 && startContainer.status != 1) return false;
-
-    // // check to see if the new pos.status != 0 
-    // if(endContainer.status > 0){
-    //     //////;
-    //      // check for wall
-    //      if(newRow == 0){
-    //          return false;
-    //      }
-    //      newRow -= 1; // to move the crane up :)
-    //      ////;
-    // }
-
-    // //;
    
     //place in correct Zones. The boxes swap places!!!
      if(startZone == 0){
@@ -378,29 +350,38 @@ bool swapContainers(Node &n, int oldrow, int oldcol, int newrow, int newcol, int
 void justCraneMovesLeftOrRight(Node &n, vector<vector<int>> craneMoves, int indexCraneMove, vector<Node> &expandedNodesList ){
      Node op4 = n;
     
-     int sizeToCheck = (n.craneLocation == 0) ? n.ship[0].size() : n.buffer[0].size();
+	int startRow = n.cranePos.first;
+	int startCol = n.cranePos.second;
+	int startZone = n.craneLocation;
+
+	int endRow = craneMoves[indexCraneMove][0];
+	int endCol = craneMoves[indexCraneMove][1];
+	int endZone = craneMoves[indexCraneMove][2];
+	vector<int> farthest = findFarthest(n);
+	//printf("left %d, \tlZone %d,\tright %d,\trZone %d,\tendCol %d,\tendZone %d\n", farthest[0], farthest[1], farthest[2], farthest[3], endCol, endZone);
+	if(startCol > farthest[0] && endCol < farthest[0] && endZone == farthest[1])
+		return;
+	if(startCol > farthest[3] && endCol > farthest[2] && endZone == farthest[3])
+		return;
+
+     int sizeToCheck = (startZone == 0) ? n.ship[0].size() : n.buffer[0].size();
        
-     bool isValidMove = (craneMoves.at(indexCraneMove).at(1) > 0 && n.cranePos.second > craneMoves.at(indexCraneMove).at(1)) || (craneMoves.at(indexCraneMove).at(1) < sizeToCheck && n.cranePos.second  < craneMoves.at(indexCraneMove).at(1));
+     bool isValidMove = (endCol > -1 && endCol < sizeToCheck);
      
-     int newRow = findTopContainerInCol(n, craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2));
+     int newRow = findTopContainerInCol(n, endCol, endZone);
      
-     if(newRow > n.cranePos.first){
-        newRow = n.cranePos.first;
+     if(newRow > startRow){
+        newRow = startRow;
      }
 
     //move crane left or right
     if(isValidMove && n.prev.at(2).at(0) != 0 ){
         
-        op4.cranePos = {newRow, craneMoves.at(indexCraneMove).at(1)};
-        op4.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{newRow, craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {1} };
-        PrintShip(op4);
-        ;
-        ;
+        op4.cranePos = {newRow, endCol};
+        op4.prev = {{startRow, startCol, startZone}, {{newRow, endCol, endZone}}, {1} };
+
         expandedNodesList.push_back(op4);
     }
-
-    //  ;
-    
 }
 
 
@@ -416,14 +397,16 @@ void justCraneStartPortalShip(Node &n, vector<Node> &expandedNodesList){
 		n1.cranePos = {1, 0};
         n1.craneLocation = 1;
         n1.prev = {{startRow, startCol, startZone}, truckPortal, {1} };
-        expandedNodesList.push_back(n1);
+		if(0 < n.numToLoad)
+        	expandedNodesList.push_back(n1);
     	
 		//Move to move to buffer portal
 		n1.cranePos = {0, BUFFERWIDTH - 1};
     	n1.craneLocation = 2;
     	n1.prev = {{startRow, startCol, startZone}, bufferPortal, {1}};
     	PrintBuffer(n1);
-    	expandedNodesList.push_back(n1);
+		if(false == bufferEmpty(n))
+    		expandedNodesList.push_back(n1);
 	}
 }
 
@@ -439,12 +422,14 @@ void justCraneStartPortalBuffer(Node &n, vector<Node> &expandedNodesList){
         n1.cranePos = {0, 0};
         n1.craneLocation = 0;
         n1.prev = {{startRow, startCol, startZone}, shipPortal, {1} };
-        expandedNodesList.push_back(n1);
+		if(false == shipEmpty(n))
+        	expandedNodesList.push_back(n1);
 
 		n1.cranePos = {1, 0};
         n1.craneLocation = 1;
         n1.prev = {{startRow, startCol, startZone}, truckPortal, {1} };
-        expandedNodesList.push_back(n1);
+		if(0 < n.numToLoad)
+        	expandedNodesList.push_back(n1);
     }
 }
 
@@ -460,51 +445,64 @@ void justCraneStartPortalTruck(Node &n, vector<Node> &expandedNodesList){
 		n1.cranePos = {0, BUFFERWIDTH - 1};
 		n1.craneLocation = 2;
 		n1.prev = {{startRow, startCol, startZone}, bufferPortal, {1}};
-		expandedNodesList.push_back(n1);
+		if(false == bufferEmpty(n))
+			expandedNodesList.push_back(n1);
 
 		//Move to ship
         n1.cranePos = {0, 0};
         n1.craneLocation = 0;
         n1.prev = {{startRow, startCol, startZone}, shipPortal, {1} };
-        expandedNodesList.push_back(n1);
+		if(false == shipEmpty(n))
+        	expandedNodesList.push_back(n1);
 	}
 }
 
 
 void craneMovesLeftOrRightWithBox(Node &n, vector<vector<int>> craneMoves, int indexCraneMove, vector<Node> &expandedNodesList){
     Node op1 = n;
-    int sizeToCheck = (n.craneLocation == 0) ? n.ship[0].size() : n.buffer[0].size();
-    bool canMove = (craneMoves.at(indexCraneMove).at(1) > 0 && n.cranePos.second > craneMoves.at(indexCraneMove).at(1)) || (craneMoves.at(indexCraneMove).at(1) < sizeToCheck && n.cranePos.second  < craneMoves.at(indexCraneMove).at(1));
-    //;
+	int startRow = n.cranePos.first;
+	int startCol = n.cranePos.second;
+	int startZone = n.craneLocation;
 
-    //checking for wall only checking one to the left and right of crane (Within ship and buffer only test)
-     bool isValidMove = (
-        canMove &&
-        (n.craneLocation == 0 && n.cranePos.second > craneMoves.at(indexCraneMove).at(1) && n.ship.at(n.cranePos.first).at(n.cranePos.second - 1).status == 0   || // on ship crane moves left
-        n.craneLocation == 0 &&  n.cranePos.second < craneMoves.at(indexCraneMove).at(1) && n.ship.at(n.cranePos.first).at(n.cranePos.second + 1).status == 0   ||
-        n.craneLocation == 2 && n.cranePos.second > craneMoves.at(indexCraneMove).at(1)  && n.buffer.at(n.cranePos.first).at(n.cranePos.second - 1).status == 0 ||
-        n.craneLocation == 2 && n.cranePos.second < craneMoves.at(indexCraneMove).at(1)  && n.buffer.at(n.cranePos.first).at(n.cranePos.second + 1).status == 0  )
-    );
+	int endRow = craneMoves[indexCraneMove][0];
+	int endCol = craneMoves[indexCraneMove][1];
+	int endZone = craneMoves[indexCraneMove][2];
+
+    int sizeToCheck = (n.craneLocation == 0) ? n.ship[0].size() : n.buffer[0].size();
+    bool isValidMove = (endCol > -1 && endCol < sizeToCheck);
     
-    if( n.craneLocation == 0){
+
+    if( startZone == 0){
+		if(0 != n.ship[endRow][endCol].status){	//Moving into an occupied space
+			if(0 < endRow){	//can we go up
+				endRow--;
+			}
+			else{
+				return;
+			}
+		}
         if(isValidMove){
-            if(n.ship.at(op1.cranePos.first).at(craneMoves.at(indexCraneMove).at(1)).status == 0){
-                swapContainers(op1, n.cranePos.first, n.cranePos.second, craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), n.craneLocation, n.craneLocation);
-                op1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {0} };
-                PrintShip(op1);
-                expandedNodesList.push_back(op1);
-            }
+            swapContainers(op1, startRow, startCol, endRow, endCol, startZone, endZone);
+            op1.prev = {{startRow, startCol, startZone}, {{endRow, endCol, endZone}}, {0} };
+            //PrintShip(op1);
+            expandedNodesList.push_back(op1);
         }     
     }
                 
     //buffer
-    if( n.craneLocation == 2){
+    if( startZone == 2){
+		if(0 != n.buffer[endRow][endCol].status){	//Moving into an occupied space
+			if(0 < endRow){	//can we go up
+				endRow--;
+			}
+			else{
+				return;
+			}
+		}
          if(isValidMove){
-            if(n.buffer.at(op1.cranePos.first).at(craneMoves.at(indexCraneMove).at(1)).status == 0){
-                swapContainers(op1, n.cranePos.first, n.cranePos.second, craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), n.craneLocation, n.craneLocation);
-                op1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, {{craneMoves.at(indexCraneMove).at(0), craneMoves.at(indexCraneMove).at(1), craneMoves.at(indexCraneMove).at(2)}}, {0} };
-                expandedNodesList.push_back(op1);
-            }
+            swapContainers(op1, startRow, startCol, endRow, endCol, startZone, endZone);
+            op1.prev = {{startRow, startCol, startZone}, {{endRow, endCol, endZone}}, {0} };
+            expandedNodesList.push_back(op1);
          } 
     }
 }
@@ -522,7 +520,7 @@ void craneMovesWithBoxStartPortalShip(Node &n, vector<Node> &expandedNodesList){
             swapContainers(n1, startRow, startCol, 1, 0, startZone, 1);
             n1.cranePos = {1, 0};
             n1.craneLocation = 1;
-            n1.prev = {{startRow, startCol, startZone}, truckPortal, {0}};
+            n1.prev = {{startRow, startCol, startZone}, truckPortal, {1}};
             expandedNodesList.push_back(n1);
         }
 		//Move to buffer if portal is clear
@@ -551,7 +549,7 @@ void craneMovesWithBoxStartPortalBuffer(Node &n, vector<Node> &expandedNodesList
             swapContainers(n1, startRow, startCol, 0, 0, startZone, 0);
             n1.cranePos = {0, 0};
             n1.craneLocation = 0;
-            n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, shipPortal, {0}};
+            n1.prev = {{startRow, startCol, n.craneLocation}, shipPortal, {0}};
             expandedNodesList.push_back(n1);
         }
     }
@@ -571,7 +569,7 @@ void craneMovesWithBoxStartPortalTruck(Node &n, vector<Node> &expandedNodesList)
             n1.cranePos = {0, 0};
             n1.craneLocation = 0;
             n1.numToLoad -= 1;
-            n1.prev = {{n.cranePos.first, n.cranePos.second, n.craneLocation}, shipPortal, {0} };
+            n1.prev = {{startRow, startCol, n.craneLocation}, shipPortal, {0} };
             expandedNodesList.push_back(n1);
         }
     }
@@ -597,7 +595,7 @@ void craneDropsOffBox(Node &n, vector<Node> &expandedNodesList){
     //update prev
     n1.prev = {{startRow, startCol, startZone}, {newRow, startCol, startZone}, {1}};
 
-    PrintShip(n1);
+    //PrintShip(n1);
     expandedNodesList.push_back(n1);
 }
 
@@ -613,8 +611,11 @@ void cranePicksUpBox(Node &n, vector<Node> &expandedNodesList){
 
 	if(1 != startZone){	//not in truck
 		newRow = findTopContainerInColWithStartingRow(n, startCol, startZone, startRow);
-		if(0 == startZone && newRow < SHIPHEIGHT)
+		if(0 == startZone && newRow < SHIPHEIGHT){
 			isRowEmpty = false;
+			if(0 > n.ship[newRow][startCol].status)	//Trying to move ship wall
+				return;
+		}
 		else if(newRow < BUFFERHEIGHT)
 			isRowEmpty = false;
 	}
@@ -626,10 +627,11 @@ void cranePicksUpBox(Node &n, vector<Node> &expandedNodesList){
     n1.cranePos = {newRow, startCol};
 	
     //update prev
-    n1.prev = {{startRow, startCol, startZone}, {newRow, startCol, startCol}, {0}};
+    n1.prev = {{startRow, startCol, startZone}, {newRow, startCol, startZone}, {0}};
 
     expandedNodesList.push_back(n1);
 }
+
 vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos, bool hasBox, vector<vector<int>> craneMoves  ){
 
     /*
@@ -656,11 +658,16 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
     
     vector<Node> expandedNodesList;
 
+	int startRow = n.prev[0][0];
+	int startCol = n.prev[0][1];
+	int startZone = n.prev[0][2];
+	int startState = n.prev[2][0];
+
     //Creating nodes (expand)
     for(int i = 0;  i < craneMoves.size(); i++){
 
         //operators where crane already has a container
-        if(n.prev.at(2).at(0) == 0){
+        if(startState == 0){
             //move crane left or right with container (Check walls and within ship or buffer)
             craneMovesLeftOrRightWithBox(n, craneMoves, i, expandedNodesList);
         }
@@ -671,13 +678,10 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
 		//move crane by itself to left or right by one ( Stays Within ship or buffer and check walls)
             justCraneMovesLeftOrRight(n, craneMoves, i, expandedNodesList);
         }
-    
-    
     }
-
 	
-        // //portal operators
-    if(n.prev.at(2).at(0) == 0){
+        //portal operators
+    if(startState == 0){
 
 		//start from ship
     	craneMovesWithBoxStartPortalShip(n, expandedNodesList);	//go to buffer
@@ -701,7 +705,7 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
 
     }
 
-    if(n.prev.at(2).at(0) == 0){
+    if(startState == 0){
            //Drop off container in column (automatically move crane down)
             craneDropsOffBox(n, expandedNodesList); 
     }else{
@@ -709,7 +713,23 @@ vector<Node> expandNodeBasedOnCraneMovement(Node &n, vector<vector<int>> boxPos,
             cranePicksUpBox(n, expandedNodesList);
           
     }
+	/*
+	vector<int> toRemove;
+	for(int i = 0; i < expandedNodesList.size(); i++){
+		Node tmp = expandedNodesList[i];
+		int endRow = tmp.prev[0][0];
+		int endCol = tmp.prev[0][1];
+		int endZone = tmp.prev[0][2];
+		int endState = tmp.prev[2][0];
 
+		if(startRow == endRow && startCol == endCol && startZone == endZone && startState == endState){
+			toRemove.push_back(i);
+		}
+	}
+	for(int i = toRemove.size() - 1; i >= 0; i--){
+		expandedNodesList.erase(expandedNodesList.begin() + i);
+	}
+	//*/
     return expandedNodesList;
 }
 

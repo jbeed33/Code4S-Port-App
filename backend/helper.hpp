@@ -7,6 +7,36 @@
  #include <shlobj.h>
  #include "node.hpp"
 
+ inline bool compareStateWeights(vector<vector<Container>> currentState, vector<vector<Container>> closed){
+	bool diffFound = false;
+    for(int row = 0; row < currentState.size(); row++){
+	    for(int col = 0; col < currentState[0].size(); col++){
+        	if(currentState.at(row).at(col).weight != closed.at(row).at(col).weight){
+	            diffFound = true;
+            	break;
+        	}
+    	}
+    	if(diffFound)
+			break;
+    }
+	return diffFound;
+ }
+ 
+ inline bool compareStateStatus(vector<vector<Container>> currentState, vector<vector<Container>> closed){
+	bool diffFound = false;
+    for(int row = 0; row < currentState.size(); row++){
+	    for(int col = 0; col < currentState[0].size(); col++){
+        	if(currentState.at(row).at(col).status != closed.at(row).at(col).status){
+	            diffFound = true;
+            	break;
+        	}
+    	}
+    	if(diffFound)
+			break;
+    }
+	return diffFound;
+ }
+
  inline void trimPath(Node &current){
 	vector<vector<vector<int>>> path = current.path;
 	int start = -1;
@@ -65,6 +95,196 @@ inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, 
  	for (int i = 0; i < BUFFERHEIGHT; i++) {
  		for (int j = 0; j < BUFFERWIDTH; j++) {
  			if (0 < current.buffer[i][j].status)
+ 				return false;
+ 		}
+ 	}
+ 	return true;
+ }
+
+ inline int distBetweenPoints(int startRow, int startCol, int startZone, int endRow, int endCol, int endZone){
+	int tmpRow = startRow;
+	int tmpCol = startCol;
+
+	int dist = 0;
+	
+	if(startZone != endZone){
+		dist += PORTALTIME;
+		dist += tmpRow;
+		tmpRow = 0;
+		if(0 == endZone){
+			dist += tmpCol;
+			tmpCol = 0;
+		}
+		if(2 == endZone){
+			dist += (BUFFERWIDTH - 1) - tmpCol;
+			tmpCol = BUFFERWIDTH - 1;
+		}
+	}
+
+	dist += max(tmpCol, endCol) - min(tmpCol, endCol);
+	dist += max(tmpRow, endRow) - min(tmpRow, endRow);
+
+	return dist;
+ }
+
+ /*inline double findDistanceToBalanced(Node current){
+	int numContainers = 0;
+	int totalWeight = 0;
+	int numInBuffer = 0;
+	int bufferWeight = 0;
+	int leftWeight = 0;
+	int numInLeft = 0;
+
+	for (int j = 0; j < SHIPWIDTH; j++) {
+		for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.ship[i][j].status){
+				totalWeight += current.ship[i][j].weight;
+				numContainers++;
+			}
+			else if(0 == current.ship[i][j].status){	//No more containers in column
+				break;
+			}
+ 		}
+ 	}
+ 	for (int j = 0; j < BUFFERWIDTH; j++) {
+		for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.buffer[i][j].status){	//No more containers in column
+				totalWeight += current.buffer[i][j].weight;
+				numContainers++;
+				numInBuffer++;
+				bufferWeight += current.buffer[i][j].weight;
+			}
+			else if(0 == current.buffer[i][j].status){
+				break;
+			}
+ 		}
+ 	}
+	for (int j = 0; j < SHIPWIDTH / 2; j++) {
+		for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.ship[i][j].status){
+				leftWeight += current.ship[i][j].weight;
+				numInLeft++;
+			}
+			else if(0 == current.ship[i][j].status){	//No more containers in column
+				break;
+			}
+ 		}
+ 	}
+	int numInShip = numContainers - numInBuffer;
+	int shipWeight = totalWeight - (leftWeight + bufferWeight);
+	int rightWeight = shipWeight - leftWeight;
+	int numInRight = numInShip - numInLeft;
+
+	double bufferAvg = (double)bufferWeight / (double)numInBuffer;
+	double totalAvg = 
+	double leftAvg = (double)leftWeight / (double)numInLeft;
+
+	if(0 == numContainers)
+		return 0.0;
+	return ((double)totalDist / (double)numContainers);
+ }*/
+
+inline double findDistanceToBalanced(Node current){
+	double dist = 0.0;
+	for (int j = 0; j < SHIPWIDTH; j++) {
+		for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.ship[i][j].status){
+				dist += distBetweenPoints(SHIPHEIGHT / 2, SHIPWIDTH / 2, 0, i, j, 0);
+			}
+			else if(0 == current.ship[i][j].status){	//No more containers in column
+				break;
+			}
+ 		}
+ 	}
+ 	for (int j = 0; j < BUFFERWIDTH; j++) {
+		for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.buffer[i][j].status){	//No more containers in column
+				dist += distBetweenPoints(BUFFERHEIGHT / 2, BUFFERWIDTH / 2, 0, i, j, 2);
+			}
+			else if(0 == current.buffer[i][j].status){
+				break;
+			}
+ 		}
+ 	}
+
+	return dist;
+ }
+
+ inline double findAverageDistanceToCrane(Node current){
+	int numContainers = 0;
+	int totalDist = 0;
+
+	int craneRow = current.cranePos.first;
+	int craneCol = current.cranePos.second;
+	int craneZone = current.craneLocation;
+
+	for (int j = 0; j < SHIPWIDTH; j++) {
+		for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.ship[i][j].status){
+				int tmp = distBetweenPoints(i, j, 0, craneRow, craneCol, craneZone);
+				totalDist += tmp;
+				numContainers++;
+			}
+			else if(0 == current.ship[i][j].status){	//No more containers in column
+				break;
+			}
+ 		}
+ 	}
+ 	for (int j = 0; j < BUFFERWIDTH; j++) {
+		for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.buffer[i][j].status){	//No more containers in column
+				int tmp = distBetweenPoints(i, j, 2, craneRow, craneCol, craneZone);
+				totalDist += tmp;
+				numContainers++;
+			}
+			else if(0 == current.buffer[i][j].status){
+				break;
+			}
+ 		}
+ 	}
+	if(0 == numContainers)
+		return 0.0;
+	return ((double)totalDist / (double)numContainers);
+ }
+
+ inline vector<int> findFarthest(Node current){
+	int left = -1;
+	int lZone = -1;
+	int right = -1;
+	int rZone = -1;
+ 	for (int j = 0; j < SHIPWIDTH; j++) {
+		for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.ship[i][j].status){
+				if(-1 == left){
+					left = j;
+					lZone = 0;
+				}
+				right = j;
+				rZone = 0;
+				break;
+			}
+ 		}
+ 	}
+ 	for (int j = 0; j < BUFFERWIDTH; j++) {
+		for (int i = BUFFERHEIGHT - 1; i >= 0; i--) {
+ 			if (0 < current.buffer[i][j].status){
+				if(-1 == right){
+					right = j;
+					rZone = 2;
+				}
+				left = j;
+				lZone = 0;
+				break;
+			}
+ 		}
+ 	}
+	return {left, lZone, right, rZone};
+ }
+
+ inline bool shipEmpty(Node current) {
+	for (int i = 0; i < SHIPHEIGHT; i++) {
+ 		for (int j = 0; j < SHIPWIDTH; j++) {
+ 			if (0 < current.ship[i][j].status)
  				return false;
  		}
  	}

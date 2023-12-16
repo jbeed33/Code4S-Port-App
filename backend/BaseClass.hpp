@@ -20,7 +20,7 @@ class Base{
 		Node search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
 		int cost(Node current);
 		void nodeExpand(Node);
-		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad);
+		void baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload);
 		void addToFrontier(Node toAdd);
 
 		virtual void setup(Node&, vector<string>) = 0;

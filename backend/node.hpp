@@ -33,7 +33,7 @@ struct Container {
 
 struct Node {
 
-    double cost;
+    int cost;
     double heuristic;
     double total;
 	int numToLoad = 0;

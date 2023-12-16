@@ -1,8 +1,9 @@
 #include "BaseClass.hpp"
 #include <iostream>
+#include <future>
 #include "expand.hpp"
 
-void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad){
+void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload){
 	frontier.clear();
 	closed.clear();
 	useSift = false;
@@ -13,6 +14,7 @@ void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol,
 	first.prev = {{0,0,0},{craneRow, craneCol, craneZone}, {1}};
 	first.craneLocation = craneZone;
 	first.numToLoad = numToLoad;
+	first.cost = 0;
 	
 	//create buffer
 	for(int i = 0; i < BUFFERHEIGHT; i++){
@@ -23,6 +25,7 @@ void Base::baseSetup(vector<vector<Container>> ship, int craneRow, int craneCol,
     	first.buffer.push_back(row);
 	}
 
+	setup(first, toUnload);
 	first.heuristic = heuristic(first);
 	frontier.push_back(first);
 }
@@ -48,12 +51,10 @@ void Base::addToFrontier(Node toAdd) {
 }
 
 Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, int craneZone, int numToLoad, vector<string> toUnload) {
-	baseSetup(ship, craneRow, craneCol, craneZone, numToLoad);
-	setup(frontier[0], toUnload);
-	cout << useSift << endl;
+	baseSetup(ship, craneRow, craneCol, craneZone, numToLoad, toUnload);
 	expandedNodeCount = 1;
 	maxQueueSize = 0;
-	
+
 	while (true) {
 		if (true == frontier.empty()) {
 			cout << "\n\nFailed\n\n";
@@ -73,15 +74,18 @@ Node Base::search(vector<vector<Container>> ship, int craneRow, int craneCol, in
 			trimPath(frontier[0]);
 			return frontier[0];
 		}
-		if (0 == expandedNodeCount++ % 100) {	//Shows the program hasn't gotten stuck
+		if (0 == expandedNodeCount++ % 1000) {	//Shows the program hasn't gotten stuck
 			cout << ".";
 			//cout << "Expanded a total of " << expandedNodeCount << " nodes." << endl;
 			//cout << "The maximum number of nodes: " << maxQueueSize << endl;
 			//break;
 		}
-
+		//if(5 < frontier[0].cranePos.second && frontier[0].craneLocation == 0){
+			//printf("cost %d\theur %f\trow %d\tcol %d\tzone %d\tjustCrane %d\n", frontier[0].cost, frontier[0].heuristic, frontier[0].cranePos.first, frontier[0].cranePos.second, frontier[0].craneLocation, frontier[0].prev[2][0]);
+			//PrintShip(frontier[0]);
+			//cout << "\n\n";
+		//}
 		nodeExpand(frontier[0]);
-		
 
 	}
 	return Node();
@@ -160,12 +164,18 @@ void Base::nodeExpand(Node n){
 
     //For each Node - call cost and heurstic
 	 
+	vector<bool> stateFound;
+	vector<future<bool>> futures;
+	for(int i = 0; i < returnedNodes.size(); i++){
+		//std::async(std::launch::async, stateExists,);
+	}
+
     //call state exsists - if does not already state exsist-> push to fronteir
 	for(int i = 0; i < returnedNodes.size(); i++){
 			if(!stateExists(returnedNodes.at(i))){
 				//update cost
 				returnedNodes.at(i).cost = cost(returnedNodes.at(i));
-			
+				//PrintShip(returnedNodes[i]);
 				//update heuristic
 				//cout << "Position of Crane: " << returnedNodes.at(i).cranePos.first << " , " <<  returnedNodes.at(i).cranePos.second << endl;
 				returnedNodes.at(i).heuristic = heuristic(returnedNodes.at(i));
