@@ -51,8 +51,6 @@ namespace WindowsFormsApp1
 				for(int col = 0; col < Program.ship[0].Count(); col++)
 				{
 					string name = Program.ship[row][col].Name;
-					if (name == "NAN" || name == "UNUSED")
-						name = "";
 					rowNames.Add(name);
 					rowStates.Add(Program.ship[row][col].Status);
 					rowWeights.Add(Program.ship[row][col].Weight);

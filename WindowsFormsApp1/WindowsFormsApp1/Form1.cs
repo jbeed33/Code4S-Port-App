@@ -113,7 +113,10 @@ namespace WindowsFormsApp1
 			{
 				for (int j = 0; j < 12; j++)
 				{
-					Program.shipData.Rows[i][j] = Program.shipNames[i][j];
+					string name = Program.shipNames[i][j];
+					if ("UNUSED" == name)
+						name = "";
+					Program.shipData.Rows[i][j] = "";
 				}
 			}
 			ship.RowHeadersWidth = 52;
@@ -197,7 +200,7 @@ namespace WindowsFormsApp1
 			if (0 == startZone)	//Ship
 			{
 				//Get data from starting position
-				name = Program.shipData.Rows[startRow][startCol].ToString();
+				name = Program.ship[startRow][startCol].Name;
 				state = Program.shipStates[startRow][startCol];
 				weight = Program.shipWeights[startRow][startCol];
 				
@@ -229,6 +232,8 @@ namespace WindowsFormsApp1
 			{
 				//Get data from starting position
 				name = Program.bufferData.Rows[startRow][startCol].ToString();
+				if ("" == name)
+					name = "UNUSED";
 				weight = Program.bufferWeights[startRow][startCol];
 				state = Program.bufferStates[startRow][startCol];
 
@@ -354,7 +359,7 @@ namespace WindowsFormsApp1
 				buffer.Rows[i].HeaderCell.Value = header;
 			}
 			colorStates();
-			if(true == Program.displayingSteps)
+			if (true == Program.displayingSteps)
 				displayMove(Program.path[Program.iterator]);
 		}
 
