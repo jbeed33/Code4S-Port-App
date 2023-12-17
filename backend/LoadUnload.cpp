@@ -54,7 +54,7 @@ double LoadUnload::heuristic(Node current){
 	vector<vector<int>> pos;
 
 	//Shortest time to load containers
-	double heur = distBetweenPoints(0, 0, 1, current.cranePos.first, current.cranePos.second, current.craneLocation) * current.numToLoad;
+	double heur = max(distBetweenPoints(0, 0, 1, current.cranePos.first, current.cranePos.second, current.craneLocation), 1) * current.numToLoad;
 
 	//Shortest time to unload containers
 	for(int row = 0; row < ship.size(); row++){

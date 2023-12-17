@@ -203,6 +203,7 @@ namespace WindowsFormsApp1
 				
 				//Update local: make starting position empty
 				Program.shipData.Rows[startRow][startCol] = "";
+				Program.shipNames[startRow][startCol] = "UNUSED";
 				Program.shipStates[startRow][startCol] = 0;
 				Program.shipWeights[startRow][startCol] = 0;
 				
@@ -210,6 +211,7 @@ namespace WindowsFormsApp1
 				Program.ship[startRow][startCol].Name = "UNUSED";
 				Program.ship[startRow][startCol].Weight = 0;
 				Program.ship[startRow][startCol].Status = 0;
+
 			}
 			else if (1 == startZone)	//Truck
 			{
@@ -233,7 +235,7 @@ namespace WindowsFormsApp1
 				//Update local: make starting position empty
 				Program.bufferData.Rows[startRow][startCol] = "";
 				Program.bufferStates[startRow][startCol] = 0;
-				name = Program.bufferData.Rows[startRow][startCol].ToString();
+				Program.bufferWeights[startRow][startCol] = 0;
 			}
 
 			if (0 == endZone)	//Ship
@@ -242,6 +244,7 @@ namespace WindowsFormsApp1
 				Program.shipData.Rows[endRow][endCol] = name;
 				Program.shipWeights[endRow][endCol] = weight;
 				Program.shipStates[endRow][endCol] = state;
+				Program.shipNames[endRow][endCol] = name;
 
 				//Update Containers: Assign data to container at position
 				Program.ship[endRow][endCol].Name = name;
@@ -412,6 +415,9 @@ namespace WindowsFormsApp1
 			cont.Weight = weight;
 			cont.Status = 2;
 			Program.ship[endRow][endCol] = cont;
+			Program.shipNames[endRow][endCol] = name;
+			Program.shipWeights[endRow][endCol] = weight;
+			Program.shipStates[endRow][endCol] = 2;
 			ship.Refresh();
 		}
 

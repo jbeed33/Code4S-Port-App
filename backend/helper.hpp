@@ -97,15 +97,20 @@ inline bool getPermutations(vector<int> weights, int startPos, int numToChoose, 
  inline void trimPath(Node &current){
 	vector<vector<vector<int>>> path = current.path;
 	path.push_back(current.prev);
-
+	int cost = 0;
+	int cr = 0, cc = 0, cz = 0;
 	int start = -1;
 	vector<vector<vector<int>>> newPath;
 	for(int i = 0; i < path.size(); i++){
 		if(-1 == start && 0 == path[i][2][0]){	//Picking up container
 			start = i;
+			cost = distBetweenPoints(cr, cc, cz, path[i][1][0], path[i][1][1], path[i][1][2]);
 		}
 		else if(-1 < start && 1 == path[i][2][0]){	//Setting down container
-		   int cost = distBetweenPoints(path[start][1][0], path[start][1][1], path[start][1][2], path[i][1][0], path[i][1][1], path[i][1][2]);
+		   cost += distBetweenPoints(path[start][1][0], path[start][1][1], path[start][1][2], path[i][1][0], path[i][1][1], path[i][1][2]);
+		   cr = path[i][1][0];
+		   cc = path[i][1][1];
+		   cz = path[i][1][2];
 
 
 			vector<vector<int>> move = {
