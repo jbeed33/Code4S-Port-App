@@ -116,7 +116,7 @@ namespace WindowsFormsApp1
 					string name = Program.shipNames[i][j];
 					if ("UNUSED" == name)
 						name = "";
-					Program.shipData.Rows[i][j] = "";
+					Program.shipData.Rows[i][j] = name;
 				}
 			}
 			ship.RowHeadersWidth = 52;
