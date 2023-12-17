@@ -47,7 +47,9 @@ int main(int argc, char *argv[]){
 ///*
 	string manifestPath = argv[1];
 	vector<vector<Container>> manifest = readManifest(manifestPath);
-
+	for(int i = 0; i < argc; i++){
+		cout << argv[i] << endl;
+	}
 	if(argc > 2){	//Load unload
 		int numToLoad = atoi(argv[2]);
 		vector<string> names;

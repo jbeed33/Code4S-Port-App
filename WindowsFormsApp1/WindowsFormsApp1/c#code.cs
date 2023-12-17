@@ -106,7 +106,7 @@ namespace WindowsFormsApp1
 					for (int col = 0; col < ship[0].Count; col++)
 					{
 						//file.WriteLine($"[{container.Pos.Item1},{container.Pos.Item2}], {{{container.Weight}}}, {container.Name}");
-						string formattedLine = $"[{row:D2},{col:D2}], {{{ship[row][col].Weight.ToString("D5")}}}, {ship[row][col].Name}";
+						string formattedLine = $"[{(row+1):D2},{(col+1):D2}], {{{ship[row][col].Weight.ToString("D5")}}}, {Program.shipNames[row][col]}";
 						file.WriteLine(formattedLine);
 					}
 				}

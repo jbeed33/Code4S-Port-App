@@ -108,7 +108,16 @@ namespace WindowsFormsApp1
 
 		private void mainMenu_Load(object sender, EventArgs e)
 		{
-
+			string shipStatePath = Helper.findFileInAppData("shipState.shp");
+			if (false == File.Exists(shipStatePath))
+				return;
+			Program.resumeMoves = true;
+			Program.displayingSteps = true;
+			Helper.loadVariablesFromFile();
+			moves newWindow = new moves();
+			newWindow.Show();
+			Program.windows.Add(newWindow);
+			this.Hide();
 		}
 	}
 }

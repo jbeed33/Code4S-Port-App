@@ -33,6 +33,7 @@ namespace WindowsFormsApp1
 		public static DataTable shipData;
 		public static DataTable bufferData;
 		public static int iterator = 0;
+		public static bool resumeMoves = false;
 
 		/*	startRow, startCol, startZone
 		* 	endRow, endCol, endZone

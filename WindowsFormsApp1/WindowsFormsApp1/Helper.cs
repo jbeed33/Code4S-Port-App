@@ -238,12 +238,52 @@ namespace WindowsFormsApp1
 				{
 					Program.bufferData.ReadXml(stream);
 				}
+
+				Program.ship = new List<List<Container>>();
+				for (int i = 0; i < Program.shipNames.Count; i++)
+				{
+					List<Container> contRow = new List<Container>();
+					for (int j = 0; j < Program.shipNames[0].Count; j++)
+					{
+						Container cont = new Container();
+						cont.Name = Program.shipNames[i][j];
+						cont.Weight = Program.shipWeights[i][j];
+						cont.Status = Program.shipStates[i][j];
+					}
+					Program.ship.Add(contRow);
+					contRow.Clear();
+				}
 			}
 			catch (Exception ex)
 			{
 				// Handle the exception (e.g., log, report, or retry)
 				Console.WriteLine($"Error during load operation: {ex.Message}");
 			}
+		}
+
+		public static void deleteFiles()
+		{
+			string shipStatePath = findFileInAppData("shipState.shp");
+			string shipWeightPath = findFileInAppData("shipWeight.shp");
+			string shipDataPath = findFileInAppData("shipData.xml");
+
+			//Buffer variable paths
+			string bufferStatePath = findFileInAppData("bufferState.shp");
+			string bufferWeightPath = findFileInAppData("bufferWeight.shp");
+			string bufferDataPath = findFileInAppData("bufferData.xml");
+
+			//Other variable paths
+			string pathPath = findFileInAppData("path.shp");
+			string iteratorPath = findFileInAppData("iterator.shp");
+
+			File.Delete(shipStatePath);
+			File.Delete(shipWeightPath);
+			File.Delete(shipDataPath);
+			File.Delete(bufferStatePath);
+			File.Delete(bufferWeightPath);
+			File.Delete(bufferDataPath);
+			File.Delete(pathPath);
+			File.Delete(iteratorPath);
 		}
 
 
@@ -263,6 +303,40 @@ namespace WindowsFormsApp1
 			{
 				Console.WriteLine($"Error loading {filePath}: {ex.Message}");
 			}
+		}
+
+		public static List<List<int>> ReadFileInAppData(string filename)
+		{
+			string filePath = findFileInAppData(filename);
+			List<List<int>> data = new List<List<int>>();
+
+			try
+			{
+				foreach (string line in File.ReadAllLines(filePath))
+				{
+					List<int> innerList = new List<int>();
+					string[] entries = line.Split(' ');
+
+					foreach (string entry in entries)
+					{
+						if (int.TryParse(entry, out int number))
+						{
+							innerList.Add(number);
+						}
+					}
+
+					if (innerList.Count > 0)
+					{
+						data.Add(innerList);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error reading file: {ex.Message}");
+			}
+
+			return data;
 		}
 
 		public static void setPath(List<List<int>> newPath)
@@ -294,7 +368,7 @@ namespace WindowsFormsApp1
 			if(0 < Program.removeList.Count)
 			{
 				args += " ";
-				args += Program.removeList.Count.ToString();
+				args += Program.numToLoad.ToString();
 				args += " ";
 				args += string.Join(" ", Program.removeList);
 			}
@@ -302,7 +376,7 @@ namespace WindowsFormsApp1
 			{
 				StartInfo = new ProcessStartInfo(path, args)
 				{
-					WindowStyle = ProcessWindowStyle.Hidden,
+					WindowStyle = ProcessWindowStyle.Normal,
 					WorkingDirectory = Path.GetDirectoryName(path)
 				}
 			};

@@ -32,3 +32,7 @@ D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsA
 D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.CoreCompileInputs.cache
 D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.exe
 D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.pdb
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.exe
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.pdb
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\System.Numerics.Vectors.dll
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.CopyComplete

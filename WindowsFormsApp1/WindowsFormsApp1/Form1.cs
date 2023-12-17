@@ -28,8 +28,6 @@ namespace WindowsFormsApp1
 		public moves()
         {
             InitializeComponent();
-			createShip();
-			createBuffer();
 			buffer.BackgroundColor = unticked;
 			ship.BackgroundColor = unticked;
         }
@@ -291,7 +289,7 @@ namespace WindowsFormsApp1
 		private void sumTime()
 		{
 			ExpectedTime = 0;
-			for(int i = 0; i < Program.path.Count; i++)
+			for(int i = Program.iterator; i < Program.path.Count; i++)
 			{
 				ExpectedTime += Program.path[i][2][0];
 			}
@@ -304,6 +302,15 @@ namespace WindowsFormsApp1
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			if (true == Program.resumeMoves)
+			{
+				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+				sumTime();
+				timeRemaining.Text = ExpectedTime.ToString() + " minutes remaining";
+				colorStates();
+				displayMove(Program.path[Program.iterator]);
+				return;
+			}
 			createShip();
 			createBuffer();
 			if(true == Program.displayingSteps)	//Running balance, don't need to wait for user input
@@ -380,6 +387,7 @@ namespace WindowsFormsApp1
 			Program.windows.Remove(this);
 			Program.windows[0].Show();
 			Program.iterator = 0;
+			Helper.deleteFiles();
 		}
 
 		void finishedSteps()
@@ -412,6 +420,8 @@ namespace WindowsFormsApp1
 		{
 			if (false == Program.displayingSteps)	//Load/unload, still need to get the user input
 			{
+				if ("" == numToLoadField.Text)
+					return;
 				Program.numToLoad = int.Parse(numToLoadField.Text);
 				Helper.runAi();
 				Program.displayingSteps = true;
