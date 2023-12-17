@@ -5,6 +5,7 @@
 #include <iostream>
 #include<vector>
 #include<cmath>
+#include "helper.hpp"
 using namespace std;
 
 const vector<int> shipPortal = {0, 0, 0};
