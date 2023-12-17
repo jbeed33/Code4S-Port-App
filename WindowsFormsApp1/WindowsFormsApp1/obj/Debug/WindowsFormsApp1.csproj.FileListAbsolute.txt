@@ -23,3 +23,12 @@ C:\Users\USER\Documents\GitHub\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1
 C:\Users\USER\Documents\GitHub\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.reminder.resources
 C:\Users\USER\Documents\GitHub\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Properties.Resources.resources
 C:\Users\USER\Documents\GitHub\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.GenerateResource.cache
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.AssemblyReference.cache
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.moves.resources
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.mainMenu.resources
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.reminder.resources
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Properties.Resources.resources
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.GenerateResource.cache
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.CoreCompileInputs.cache
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.exe
+D:\phoen\Documents\Senior Project\Code4S-Port-App\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.pdb

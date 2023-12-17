@@ -66,8 +66,6 @@ namespace WindowsFormsApp1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-			//Load variables from files
-			Helper.loadVariablesFromFile();
 			windows.Add(new mainMenu());
             Application.Run(windows[0]);
         }

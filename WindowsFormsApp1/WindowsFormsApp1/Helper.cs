@@ -123,19 +123,19 @@ namespace WindowsFormsApp1
 			try
 			{
 				//Ship variable paths
-				//string shipPath = findFileInAppdatad("ship.shp");
-				string shipStatePath = findFileInAppdatad("shipState.shp");
-				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
-				string shipDataPath = findFileInAppdatad("shipData.xml");
+				//string shipPath = findFileInAppData("ship.shp");
+				string shipStatePath = findFileInAppData("shipState.shp");
+				string shipWeightPath = findFileInAppData("shipWeight.shp");
+				string shipDataPath = findFileInAppData("shipData.xml");
 
 				//Buffer variable paths
-				string bufferStatePath = findFileInAppdatad("bufferState.shp");
-				string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
-				string bufferDataPath = findFileInAppdatad("bufferData.xml");
+				string bufferStatePath = findFileInAppData("bufferState.shp");
+				string bufferWeightPath = findFileInAppData("bufferWeight.shp");
+				string bufferDataPath = findFileInAppData("bufferData.xml");
 
 				//Other variable paths
-				string pathPath = findFileInAppdatad("path.shp");
-				string iteratorPath = findFileInAppdatad("iterator.shp");
+				string pathPath = findFileInAppData("path.shp");
+				string iteratorPath = findFileInAppData("iterator.shp");
 
 				//Save ship object
 				//saveObjectToFile(shipPath, Program.ship);
@@ -201,18 +201,18 @@ namespace WindowsFormsApp1
 		{
 			try
 			{
-				string shipStatePath = findFileInAppdatad("shipState.shp");
-				string shipWeightPath = findFileInAppdatad("shipWeight.shp");
-				string shipDataPath = findFileInAppdatad("shipData.xml");
+				string shipStatePath = findFileInAppData("shipState.shp");
+				string shipWeightPath = findFileInAppData("shipWeight.shp");
+				string shipDataPath = findFileInAppData("shipData.xml");
 
 				//Buffer variable paths
-				string bufferStatePath = findFileInAppdatad("bufferState.shp");
-				string bufferWeightPath = findFileInAppdatad("bufferWeight.shp");
-				string bufferDataPath = findFileInAppdatad("bufferData.xml");
+				string bufferStatePath = findFileInAppData("bufferState.shp");
+				string bufferWeightPath = findFileInAppData("bufferWeight.shp");
+				string bufferDataPath = findFileInAppData("bufferData.xml");
 
 				//Other variable paths
-				string pathPath = findFileInAppdatad("path.shp");
-				string iteratorPath = findFileInAppdatad("iterator.shp");
+				string pathPath = findFileInAppData("path.shp");
+				string iteratorPath = findFileInAppData("iterator.shp");
 
 
 				// Ship variable paths
@@ -228,13 +228,13 @@ namespace WindowsFormsApp1
 				loadObjectFromFile(iteratorPath, out Program.iterator);
 
 				// Ship data
-				using (Stream stream = File.Open(findFileInAppdatad("shipData.xml"), FileMode.Open))
+				using (Stream stream = File.Open(findFileInAppData("shipData.xml"), FileMode.Open))
 				{
 					Program.shipData.ReadXml(stream);
 				}
 
 				// Buffer data
-				using (Stream stream = File.Open(findFileInAppdatad("bufferData.xml"), FileMode.Open))
+				using (Stream stream = File.Open(findFileInAppData("bufferData.xml"), FileMode.Open))
 				{
 					Program.bufferData.ReadXml(stream);
 				}
