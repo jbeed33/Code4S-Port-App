@@ -582,12 +582,11 @@ void craneDropsOffBox(Node &n, vector<Node> &expandedNodesList){
 	int startCol = n.cranePos.second;
 	int startZone = n.craneLocation;
 
-    int newRow = 8;
+    int newRow = findTopContainerInColWithStartingRow(n1, startCol, startZone, startRow + 1) - 1;
+
+	if(1 == startZone)
+		return;
     
-    if(startRow < newRow){
-        newRow = findTopContainerInColWithStartingRow(n1, startCol, startZone, startRow + 1);
-        newRow -= 1;
-    }
 
     swapContainers(n1, startRow, startCol, newRow, startCol, startZone, startZone);
     n1.cranePos = {newRow, startCol};
@@ -617,6 +616,10 @@ void cranePicksUpBox(Node &n, vector<Node> &expandedNodesList){
 				return;
 		}
 		else if(newRow < BUFFERHEIGHT)
+			isRowEmpty = false;
+	}
+	else{
+		if(0 < n.numToLoad)
 			isRowEmpty = false;
 	}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -20,8 +21,8 @@ namespace WindowsFormsApp1
 		Color unticked = Color.DeepSkyBlue;
 		Color empty = Color.White;
 		Color wall = Color.Black;
-		Color start = Color.LimeGreen;
-		Color end = Color.MediumPurple;
+		Color start = Color.Chartreuse;
+		Color end = Color.LightSlateGray;
 
 		int ExpectedTime;
 
@@ -388,12 +389,15 @@ namespace WindowsFormsApp1
 			Program.windows[0].Show();
 			Program.iterator = 0;
 			Helper.deleteFiles();
+			Program.removeList.Clear();
 		}
 
 		void finishedSteps()
 		{
 			ManifestManager.UpdateManifest(Program.ship, Program.manifestFile);
 			reminder rem = new reminder();
+			string path = Path.GetFileNameWithoutExtension(Program.manifestFile);
+			LogManager.AddNoteToLogFile("Finished a cycle. Manifest " + path + "OUTBOUND.txt was written over " + path + ".txt, and a reminder popup to send a file was displayed.");
 			rem.ShowDialog();
 		}
 
@@ -418,32 +422,44 @@ namespace WindowsFormsApp1
 
 		private void nextStep_Click(object sender, EventArgs e)
 		{
-			if (false == Program.displayingSteps)	//Load/unload, still need to get the user input
+			if (false == Program.displayingSteps)   //Load/unload, still need to get the user input
 			{
 				if ("" == numToLoadField.Text)
 					return;
 				Program.numToLoad = int.Parse(numToLoadField.Text);
 				Helper.runAi();
+				Program.removeList.Clear();
 				Program.displayingSteps = true;
 				ship.Refresh();
 				progress.Text = "Step " + (Program.iterator + 1).ToString() + " out of " + Program.path.Count.ToString();
+				sumTime();
 				timeRemaining.Text = ExpectedTime.ToString() + " minutes remaining";
 				loadForm.Hide();
 				colorStates();
 				displayMove(Program.path[Program.iterator]);
 				return;
 			}
-			if (1 == Program.path[Program.iterator][0][2])	//Starting on the truck means loading a container
+			if (1 == Program.path[Program.iterator][0][2])  //Starting on the truck means loading a container
 			{
-				if(true == Helper.inputValidator(newName.Text, newWeight.Text))
+				if (true == Helper.inputValidator(newName.Text, newWeight.Text))
 				{
 					loadContainer(newName.Text, int.Parse(newWeight.Text));
+					LogManager.AddNoteToLogFile(newName.Text + " is onloaded");
 				}
 				else
 				{
 					invalidContainerInput();
 					return;
 				}
+			}
+			if (1 == Program.path[Program.iterator][1][2])
+			{
+				string name;
+				if (0 == Program.path[Program.iterator][0][2])
+					name = Program.shipNames[Program.path[Program.iterator][0][0]][Program.path[Program.iterator][0][1]];
+				else
+					name = Program.bufferData.Rows[Program.path[Program.iterator][0][0]][Program.path[Program.iterator][0][1]].ToString();
+				LogManager.AddNoteToLogFile(name + " is offloaded");
 			}
 			moveContainer(Program.path[Program.iterator]);
 			ExpectedTime -= Program.path[Program.iterator][2][0];
@@ -491,6 +507,12 @@ namespace WindowsFormsApp1
 		private void numToLoadField_TextChanged(object sender, EventArgs e)
 		{
 			Helper.textBoxValidator(sender, @"^\d{1,2}$", 1000);
+		}
+
+		private void noteButton_Click(object sender, EventArgs e)
+		{
+			LogManager.AddNoteToLogFile(newNote.Text);
+			newNote.Clear();
 		}
 	}
 }

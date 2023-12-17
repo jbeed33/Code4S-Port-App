@@ -111,6 +111,7 @@ namespace WindowsFormsApp1
 			string shipStatePath = Helper.findFileInAppData("shipState.shp");
 			if (false == File.Exists(shipStatePath))
 				return;
+			LogManager.AddNoteToLogFile("Recovered from power outage, operations will continue as normal");
 			Program.resumeMoves = true;
 			Program.displayingSteps = true;
 			Helper.loadVariablesFromFile();

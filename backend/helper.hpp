@@ -247,6 +247,10 @@ inline double findDistanceToBalanced(Node current){
 	int lZone = -1;
 	int right = -1;
 	int rZone = -1;
+	if(0 < current.numToLoad){
+		left = BUFFERWIDTH - 1;
+		lZone = 2;
+	}
  	for (int j = 0; j < SHIPWIDTH; j++) {
 		for (int i = SHIPHEIGHT - 1; i >= 0; i--) {
  			if (0 < current.ship[i][j].status){

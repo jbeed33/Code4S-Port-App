@@ -365,7 +365,7 @@ namespace WindowsFormsApp1
 		{
 			string path = findFileInAppData("shippingAi.exe");
 			string args = Program.manifestFile;
-			if(0 < Program.removeList.Count)
+			if(0 < Program.removeList.Count || 0 < Program.numToLoad)
 			{
 				args += " ";
 				args += Program.numToLoad.ToString();

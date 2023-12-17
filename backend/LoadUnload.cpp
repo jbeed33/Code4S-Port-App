@@ -64,6 +64,11 @@ double LoadUnload::heuristic(Node current){
 				heur += PORTALTIME;
 				heur += max(current.cranePos.second, col) - min(current.cranePos.second, col);
 			}
+			else if(2 == ship[row][col].status){
+				if(row < SHIPHEIGHT - 1)
+					if(0 == ship[row+1][col].status)
+						heur += 1;	//No more floating finishes
+			}
 		}
 	}
 
